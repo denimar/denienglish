@@ -62,7 +62,7 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
 				],
 				theme: {
-					url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
+					url: "dist/videogular/videogular.css"
 				},
 				plugins: {
 					controls: {

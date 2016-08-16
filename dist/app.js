@@ -28,70 +28,6 @@ angular.module('app', [
 angular.module('app').config(function($compileProvider){
 	$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|javascript):/);
 });
-angular.module('app').service('categoryRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.add = function(cd_categoria_pai, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Adding',
-			message: 'Category added successfully!'
-		}
-		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
-	}
-
-	vm.rename = function(cd_categoria, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Editing',
-			message: 'Category renamed successfully!'
-		}
-		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-	}
-
-	vm.del = function(cd_categoria) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Category deleted successfully!'
-		}
-		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-	}
-
-
-});
-
-angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.add = function(scope, cd_categoria_pai) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-			categoryRestSrv.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0]);
-			});
-		});
-
-		return deferred.promise;		
-	}
-
-	vm.rename = function(scope, cd_categoria, ds_categoria) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-			categoryRestSrv.rename(cd_categoria, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0].dsCategoria);
-			});
-		});
-
-		return deferred.promise;		
-	}
-
-	vm.del = function(cd_categoria) {
-		return categoryRestSrv.del(cd_categoria);		
-	}
-
-});
 angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -172,6 +108,70 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv) {
 
 		return deferred.promise;
 	}		
+
+});
+angular.module('app').service('categoryRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.add = function(cd_categoria_pai, ds_categoria) {
+		var successfullyMessage = {
+			title: 'Adding',
+			message: 'Category added successfully!'
+		}
+		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+	}
+
+	vm.rename = function(cd_categoria, ds_categoria) {
+		var successfullyMessage = {
+			title: 'Editing',
+			message: 'Category renamed successfully!'
+		}
+		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+	}
+
+	vm.del = function(cd_categoria) {
+		var successfullyMessage = {
+			title: 'Deleting',
+			message: 'Category deleted successfully!'
+		}
+		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+	}
+
+
+});
+
+angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
+
+	var vm = this;
+
+	vm.add = function(scope, cd_categoria_pai) {
+		var deferred = $q.defer();
+
+		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
+			categoryRestSrv.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0]);
+			});
+		});
+
+		return deferred.promise;		
+	}
+
+	vm.rename = function(scope, cd_categoria, ds_categoria) {
+		var deferred = $q.defer();
+
+		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
+			categoryRestSrv.rename(cd_categoria, enteredText).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0].dsCategoria);
+			});
+		});
+
+		return deferred.promise;		
+	}
+
+	vm.del = function(cd_categoria) {
+		return categoryRestSrv.del(cd_categoria);		
+	}
 
 });
 angular.module('app').service('ItemRestSrv', function(AppSrv) {
@@ -979,7 +979,6 @@ angular.module('spacedRevisionMdl').directive('spacedRevision', function(spacedR
 	}
 	
 });
-
 angular.module('app').service('TextRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -1034,6 +1033,7 @@ angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, Strin
 
 
 });
+
 angular.module('app').service('VideoRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -1128,7 +1128,7 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
 				],
 				theme: {
-					url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
+					url: "dist/videogular/videogular.css"
 				},
 				plugins: {
 					controls: {
@@ -1335,6 +1335,66 @@ angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalS
 	vm.edit = function(scope, controller) {
 		return _getSubtitleModal(scope, controller, EnumOperation.EDITING);
 	}
+
+});
+angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
+     
+    var vm = this;
+    vm.editing = false;
+    vm.params = $routeParams;
+    vm.texts = [];
+    vm.selectedIndex = -1;
+    vm.contentStored = ''; //used by cancel button to rescue the previous value
+    vm.content = '';
+    vm.formatedContent = '';     
+    vm.t07txt = null;
+
+    TextSrv.configWYSIWYG(vm, $scope);
+
+    TextRestSrv.list(vm.params.cdItem).then(function(serverResponse) {
+    	vm.texts = serverResponse.data.data;
+        vm.selectedIndex = 0;     	
+    });
+
+    $scope.$watch('ctrl.selectedIndex', function(current, old){
+        if (current != old) {
+        	if (vm.texts.length > 0) {
+                $rootScope.loading = true;
+    	    	vm.t07txt = vm.texts[current];
+
+    			TextRestSrv.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
+    				GeneralSrv.getAllExpressions().then(function(response) {
+                        TextSrv.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
+                        $rootScope.loading = false;
+    				});
+    			});
+    		}	
+        }
+    });    
+
+    vm.editClick = function() {
+        vm.contentStored = vm.content;
+        vm.editing = true;
+    }
+
+    $scope.openDictionary = function(expression) {
+
+        uiDeniModalSrv.createWindow({
+            scope: $scope,
+            title: 'Dictionary - ' + expression,
+            width: '600px',         
+            height: '300px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK],
+            htmlTemplate: '<dictionary-view expression="house" style="width:100%;height:100%;display:block;"></dictionary-view>',
+            modal: true
+        }).show();        
+
+    }     
+
+    $scope.openPronunciation = function(expression) {
+    	alert('Pronunciation - ' + expression);
+    }     
 
 });
 angular.module('app').controller('HomeCtrl', function($sce, $scope, $rootScope, $routeParams, $log, $timeout, $mdSidenav, AppConsts, AppEnums, AppSrv, ItemRestSrv, itemSrv, uiDeniModalSrv, ItemRestSrv, StringSrv, spacedRevisionSrv, categorySrv) {
@@ -1633,66 +1693,6 @@ angular.module('app').controller('HomeCtrl', function($sce, $scope, $rootScope, 
 		});
     }
 
-
-});
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
-     
-    var vm = this;
-    vm.editing = false;
-    vm.params = $routeParams;
-    vm.texts = [];
-    vm.selectedIndex = -1;
-    vm.contentStored = ''; //used by cancel button to rescue the previous value
-    vm.content = '';
-    vm.formatedContent = '';     
-    vm.t07txt = null;
-
-    TextSrv.configWYSIWYG(vm, $scope);
-
-    TextRestSrv.list(vm.params.cdItem).then(function(serverResponse) {
-    	vm.texts = serverResponse.data.data;
-        vm.selectedIndex = 0;     	
-    });
-
-    $scope.$watch('ctrl.selectedIndex', function(current, old){
-        if (current != old) {
-        	if (vm.texts.length > 0) {
-                $rootScope.loading = true;
-    	    	vm.t07txt = vm.texts[current];
-
-    			TextRestSrv.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
-    				GeneralSrv.getAllExpressions().then(function(response) {
-                        TextSrv.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
-                        $rootScope.loading = false;
-    				});
-    			});
-    		}	
-        }
-    });    
-
-    vm.editClick = function() {
-        vm.contentStored = vm.content;
-        vm.editing = true;
-    }
-
-    $scope.openDictionary = function(expression) {
-
-        uiDeniModalSrv.createWindow({
-            scope: $scope,
-            title: 'Dictionary - ' + expression,
-            width: '600px',         
-            height: '300px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK],
-            htmlTemplate: '<dictionary-view expression="house" style="width:100%;height:100%;display:block;"></dictionary-view>',
-            modal: true
-        }).show();        
-
-    }     
-
-    $scope.openPronunciation = function(expression) {
-    	alert('Pronunciation - ' + expression);
-    }     
 
 });
 
