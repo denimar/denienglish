@@ -1,7 +1,7 @@
 <div class="new-video-item-modal-tpl" layout="row">
 
 	<div class="kind-of-video">
-		<md-radio-group ng-model="newVideoItemModal.kindOfVideo">
+		<md-radio-group ng-model="newVideoItemModal.tp_video">
 			<md-radio-button class="md-primary" aria-label="youtube" ng-value="0">
 	          <img src="src/assets/images/32x32/youtube.png">
 			</md-radio-button>		
@@ -21,10 +21,10 @@
 
 		<md-input-container class="md-block video-id-input" layout="column">
 			<label>Video Id</label>
-			<input ng-model="newVideoItemModal.videoId">
+			<input ng-model="newVideoItemModal.id_video">
 		</md-input-container>
 
-		<img class="image-preview" ng-src="{{newVideoItemModal.getImagePreviewUrl()}}"  />
+		<img class="image-preview ng-hide" ng-src="{{newVideoItemModal.getImagePreviewUrl()}}" ng-show="newVideoItemModal.canShowImagePreview"  />
 
 	</div>		
 
@@ -33,7 +33,7 @@
 <div class="new-video-item-modal-tpl" layout="row" ng-controller="NewVideoItemModalCtrl as ctrl">
 
 	<div class="kind-of-video">
-		<md-radio-group ng-model="ctrl.kindOfVideo">
+		<md-radio-group ng-model="ctrl.tp_video">
 			<md-radio-button class="md-primary" aria-label="youtube" ng-value="1">
 	          <img src="src/assets/images/32x32/youtube.png">
 			</md-radio-button>		
@@ -53,7 +53,7 @@
 
 		<md-input-container class="md-block video-id-input" layout="column">
 			<label>Video Id</label>
-			<input ng-model="ctrl.videoId" id="newVideoVideoId">
+			<input ng-model="ctrl.id_video" id="newVideoVideoId">
 		</md-input-container>
 
 		<img class="image-preview" ng-src="{{ctrl.getImagePreviewUrl()}}"  />

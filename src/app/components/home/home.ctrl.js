@@ -126,14 +126,14 @@ angular.module('app').controller('HomeCtrl', function($sce, $scope, $rootScope, 
 					var selected = record.blFavorite ? 'selected' : '';
   					var cellTemplate = '<div class="cell-template">\n' +
 									   '    <img class="item-image"\n' +
-									   '        src="{0}item/image/get?topCategoryNode={8}&cd_item={1}&time={5}" \n' +
+									   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
 									   '    />\n' +                                  
 									   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
 									   '    <div>{4}</div>\n' +									   
 									   '    <md-icon class="material-icons favorite {6}" ng-click="funcaoTeste()"> {7} </md-icon>\n' +
 									   '<div>';
 
-  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, selected, favorite, topParentNode);
+  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, selected, favorite);
         		}
         	},
         	{
@@ -288,7 +288,8 @@ angular.module('app').controller('HomeCtrl', function($sce, $scope, $rootScope, 
 
 		itemSrv.add($scope, topParentNode).then(function(addedItem) {
 			$scope.gridOptions.api.reload().then(function(responseData) {
-				var cdItemAdded = addedItem.data[0].cdItem;
+				var objAdded = addedItem.data[0];
+				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
 		        $scope.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
 			});
 		});

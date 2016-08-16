@@ -1,7 +1,7 @@
 angular.module('dictionaryViewMdl', []);
 angular.module('spacedRevisionMdl', []);
-angular.module('VideoMdl', []);
 angular.module('TextMdl', []);
+angular.module('VideoMdl', []);
 angular.module('app', [
 	'ngRoute',
 	'TextMdl',
@@ -223,7 +223,7 @@ angular.module('app').service('ItemRestSrv', function(AppSrv) {
 	}	
 
 });
-angular.module('app').service('itemSrv', function($q, ItemRestSrv, AppSrv, uiDeniModalSrv, newVideoItemModalSrv, AppEnums, VideoRestSrv) {
+angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, AppSrv, uiDeniModalSrv, newVideoItemModalSrv, AppEnums, VideoRestSrv, AppConsts) {
 
 	var vm = this;
 
@@ -254,30 +254,40 @@ angular.module('app').service('itemSrv', function($q, ItemRestSrv, AppSrv, uiDen
 	 */
 	 var _addItemVideo = function(scope) {
 	 	var deferred = $q.defer();
-	 	scope.newVideoItemModal = {};
+	 	scope.newVideoItemModal = {
+	 		canShowImagePreview: false,
+	 		tp_video: 0
+	 	};
 
 		scope.newVideoItemModal.getImagePreviewUrl = function() {
-			if (scope.newVideoItemModal.kindOfVideo == "0") { //youtube
-				return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId + '/default.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/0.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/1.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/2.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/3.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/jpg.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/mqdefault.jpg';
-				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.videoId '/maxresdefault.jpg';
+			scope.newVideoItemModal.canShowImagePreview = (scope.newVideoItemModal.id_video) &&
+				                                          (
+			                                                ((scope.newVideoItemModal.tp_video == 0) && (scope.newVideoItemModal.id_video.length == 11)) || //youtube
+														    ((scope.newVideoItemModal.tp_video == 1) && (scope.newVideoItemModal.id_video.length == 28)) //google drive
+														  );  
 
-			} else if (scope.newVideoItemModal.kindOfVideo == "1") { //google drive
-				return 'https://docs.google.com/vt?id=' + scope.newVideoItemModal.videoId;
-			} else {
-				return '';
-			}	
+		    if (scope.newVideoItemModal.canShowImagePreview) {
+				return AppConsts.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
+			} 
+			return null;
+
+			/*
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/0.jpg';
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/1.jpg';
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/2.jpg';
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/3.jpg';
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/jpg.jpg';
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/mqdefault.jpg';
+			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/maxresdefault.jpg';
+			*/
 		};
 
 
 	 	newVideoItemModalSrv.showModal(scope).then(function(response) {
-	 		VideoRestSrv.add(AppSrv.currentCategory, scope.newVideoItemModal.kindOfVideo, scope.newVideoItemModal.videoId, scope.newVideoItemModal.description).then(function(serverResponse) {
+	 		$rootScope.loading = true;
+	 		VideoRestSrv.add(AppSrv.currentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
  				deferred.resolve(serverResponse);
+ 				$rootScope.loading = false;
 	 		});
 	 	});
 
@@ -979,6 +989,61 @@ angular.module('spacedRevisionMdl').directive('spacedRevision', function(spacedR
 	}
 	
 });
+
+angular.module('app').service('TextRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.list = function(cd_item) {
+		return AppSrv.requestWithPromise('text/list', {'cd_item': cd_item});
+	}
+
+	vm.getContent = function(cd_texto) {
+		return AppSrv.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
+	}
+
+	vm.setContent = function(cd_texto, content) {
+		var successfullyMessage = {
+			title: 'Texts',
+			message: 'text updated successfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
+	}
+
+
+});
+angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, GeneralSrv) {
+
+	var vm = this;
+
+	vm.configWYSIWYG = function(controller, scope) {
+
+		var fnExecSaveButton = function() {
+			TextRestSrv.setContent(controller.t07txt.cdTexto, controller.content).then(function(serverResponse) {			
+				vm.setContent(controller, scope, serverResponse.data[0].txConteudo);
+				controller.editing = false;				
+			});	
+		}
+
+		var fnExecCancelButton = function() {
+			controller.content = controller.contentStored;			
+			controller.editing = false;
+			scope.$apply();
+		}
+
+		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
+	}
+
+	vm.setContent = function(controller, scope, content) {
+        var panelEditor = $('.text .text-content');                        
+		controller.content = content;
+        //controller.formatedContent = $sce.trustAsHtml(StringSrv.addLinksDictionaryAndPronunciation(controller.content));
+        controller.formatedContent = StringSrv.addLinksDictionaryAndPronunciation(controller.content);
+		GeneralSrv.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
+	}
+
+
+});
 angular.module('app').service('VideoRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -1170,61 +1235,6 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 	}
 
 });
-
-angular.module('app').service('TextRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.list = function(cd_item) {
-		return AppSrv.requestWithPromise('text/list', {'cd_item': cd_item});
-	}
-
-	vm.getContent = function(cd_texto) {
-		return AppSrv.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
-	}
-
-	vm.setContent = function(cd_texto, content) {
-		var successfullyMessage = {
-			title: 'Texts',
-			message: 'text updated successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
-	}
-
-
-});
-angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, GeneralSrv) {
-
-	var vm = this;
-
-	vm.configWYSIWYG = function(controller, scope) {
-
-		var fnExecSaveButton = function() {
-			TextRestSrv.setContent(controller.t07txt.cdTexto, controller.content).then(function(serverResponse) {			
-				vm.setContent(controller, scope, serverResponse.data[0].txConteudo);
-				controller.editing = false;				
-			});	
-		}
-
-		var fnExecCancelButton = function() {
-			controller.content = controller.contentStored;			
-			controller.editing = false;
-			scope.$apply();
-		}
-
-		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
-	}
-
-	vm.setContent = function(controller, scope, content) {
-        var panelEditor = $('.text .text-content');                        
-		controller.content = content;
-        //controller.formatedContent = $sce.trustAsHtml(StringSrv.addLinksDictionaryAndPronunciation(controller.content));
-        controller.formatedContent = StringSrv.addLinksDictionaryAndPronunciation(controller.content);
-		GeneralSrv.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
-	}
-
-
-});
 angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -1334,87 +1344,6 @@ angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalS
 
 	vm.edit = function(scope, controller) {
 		return _getSubtitleModal(scope, controller, EnumOperation.EDITING);
-	}
-
-});
-
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv) {
-	var vm = this;
-	vm.scope = $scope;
-
-	$scope.name = "VideoCtrl";
-	$scope.params = $routeParams;	
-	vm.cdItem = $scope.params.cdItem;
-	vm.commentaries = '';
-	vm.initialCommentaries = '';
-
-    $scope.openDictionary = function(expression) {
-    	alert('dictionary');
-    }     
-
-    $scope.openPronunciation = function(expression) {
-    	alert('Pronunciation - ' + expression);
-    }     
-
-
-	VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
-		vm.t08vdo = t08vdo;
-		//vm.commentaries = t08vdo.txComentarios;
-	});
-
-	VideoSrv.configGridSubtitles(vm, $scope.params.cdItem);		
-	VideoSrv.configWYSIWYG(vm, $scope.params.cdItem);	
-	GeneralSrv.getAllExpressions().then(function(response) {
-		vm.gridSubtitlesOptions.api.repaint();
-	});
-
-	vm.addSubtitleButtonClick = function() {
-		subtitleModalSrv.add($scope, vm).then(function(subtitleAdded) {
-			vm.gridSubtitlesOptions.api.reload().then(function() {
-				vm.gridSubtitlesOptions.api.findKey(subtitleAdded.cdItemSubtitle, {inLine: true});
-			});
-		});
-	}
-
-	vm.editSubtitleButtonClick = function() {
-		subtitleModalSrv.edit($scope, vm).then(function(subtitleUpdated) {
-			vm.gridSubtitlesOptions.api.reload().then(function() {
-				vm.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
-			});
-		});
-	}
-
-	vm.delSubtitleButtonClick = function() {
-		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-		SubtitleRestSrv.del(record.cdItemSubtitle).then(function() {
-			vm.gridSubtitlesOptions.api.reload();
-		});
-	}
-
-	var _incrementOneSecond = function(increment) {
-		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-		var cdItemSubtitle = record.cdItemSubtitle;
-		record.nrStart = record.nrStart + increment;
-		record.nrEnd = record.nrEnd + increment;		
-
-		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(responseServer) {
-			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
-			vm.gridSubtitlesOptions.api.repaint();
-			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});
-		});
-	}
-
-	vm.decreaseOneSecondButtonClick = function() {
-		_incrementOneSecond(-1);
-	}
-
-	vm.incrementOneSecondButtonClick = function() {
-		_incrementOneSecond(1);
-	}
-
-	vm.listenButtonClick = function() {
-		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-		pronunciationSrv.listenExpression(record.dsTexto);
 	}
 
 });
@@ -1546,14 +1475,14 @@ angular.module('app').controller('HomeCtrl', function($sce, $scope, $rootScope, 
 					var selected = record.blFavorite ? 'selected' : '';
   					var cellTemplate = '<div class="cell-template">\n' +
 									   '    <img class="item-image"\n' +
-									   '        src="{0}item/image/get?topCategoryNode={8}&cd_item={1}&time={5}" \n' +
+									   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
 									   '    />\n' +                                  
 									   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
 									   '    <div>{4}</div>\n' +									   
 									   '    <md-icon class="material-icons favorite {6}" ng-click="funcaoTeste()"> {7} </md-icon>\n' +
 									   '<div>';
 
-  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, selected, favorite, topParentNode);
+  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, selected, favorite);
         		}
         	},
         	{
@@ -1708,7 +1637,8 @@ angular.module('app').controller('HomeCtrl', function($sce, $scope, $rootScope, 
 
 		itemSrv.add($scope, topParentNode).then(function(addedItem) {
 			$scope.gridOptions.api.reload().then(function(responseData) {
-				var cdItemAdded = addedItem.data[0].cdItem;
+				var objAdded = addedItem.data[0];
+				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
 		        $scope.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
 			});
 		});
@@ -1774,6 +1704,87 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     $scope.openPronunciation = function(expression) {
     	alert('Pronunciation - ' + expression);
     }     
+
+});
+
+angular.module('VideoMdl').controller('VideoCtrl', function($scope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv) {
+	var vm = this;
+	vm.scope = $scope;
+
+	$scope.name = "VideoCtrl";
+	$scope.params = $routeParams;	
+	vm.cdItem = $scope.params.cdItem;
+	vm.commentaries = '';
+	vm.initialCommentaries = '';
+
+    $scope.openDictionary = function(expression) {
+    	alert('dictionary');
+    }     
+
+    $scope.openPronunciation = function(expression) {
+    	alert('Pronunciation - ' + expression);
+    }     
+
+
+	VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
+		vm.t08vdo = t08vdo;
+		//vm.commentaries = t08vdo.txComentarios;
+	});
+
+	VideoSrv.configGridSubtitles(vm, $scope.params.cdItem);		
+	VideoSrv.configWYSIWYG(vm, $scope.params.cdItem);	
+	GeneralSrv.getAllExpressions().then(function(response) {
+		vm.gridSubtitlesOptions.api.repaint();
+	});
+
+	vm.addSubtitleButtonClick = function() {
+		subtitleModalSrv.add($scope, vm).then(function(subtitleAdded) {
+			vm.gridSubtitlesOptions.api.reload().then(function() {
+				vm.gridSubtitlesOptions.api.findKey(subtitleAdded.cdItemSubtitle, {inLine: true});
+			});
+		});
+	}
+
+	vm.editSubtitleButtonClick = function() {
+		subtitleModalSrv.edit($scope, vm).then(function(subtitleUpdated) {
+			vm.gridSubtitlesOptions.api.reload().then(function() {
+				vm.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
+			});
+		});
+	}
+
+	vm.delSubtitleButtonClick = function() {
+		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
+		SubtitleRestSrv.del(record.cdItemSubtitle).then(function() {
+			vm.gridSubtitlesOptions.api.reload();
+		});
+	}
+
+	var _incrementOneSecond = function(increment) {
+		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
+		var cdItemSubtitle = record.cdItemSubtitle;
+		record.nrStart = record.nrStart + increment;
+		record.nrEnd = record.nrEnd + increment;		
+
+		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(responseServer) {
+			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
+			vm.gridSubtitlesOptions.api.repaint();
+			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});
+		});
+	}
+
+	vm.decreaseOneSecondButtonClick = function() {
+		_incrementOneSecond(-1);
+	}
+
+	vm.incrementOneSecondButtonClick = function() {
+		_incrementOneSecond(1);
+	}
+
+	vm.listenButtonClick = function() {
+		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
+		pronunciationSrv.listenExpression(record.dsTexto);
+	}
 
 });
 //CONSTANTS
