@@ -1,0 +1,13 @@
+{
+  "name": "ui-deni-modal",
+  "homepage": "https://github.com/denimar/ui-deni-modal",
+  "_release": "3cc3457424",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "3cc3457424cfd99a2fa4d48eb19f854de8ce0490"
+  },
+  "_source": "https://github.com/denimar/ui-deni-modal.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/denimar/ui-deni-modal.git"
+}

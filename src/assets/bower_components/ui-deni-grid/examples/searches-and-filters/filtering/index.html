@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	#deniGrid {
+		height: 400px;
+		width: 800px;
+	}
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="ExampleCtrl as ctrl">
+		<input type="text" ng-model="textFilter" placeHolder="type here to filter" autofocus></input>
+		<button disabled ng-click="gridOptions.api.filter(textFilter)" ng-disabled="((textFilter == '') || (textFilter == null))">Filter</button>
+		<br>
+		<br>	
+	
+		<ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+	</section>	
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular.min.js"></script>
+
+	<script src="../../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>

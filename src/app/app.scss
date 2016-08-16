@@ -1,0 +1,101 @@
+$body-padding-top: 10px;
+$body-padding-right: 5px;
+$body-padding-bottom: 5px;
+$body-padding-left: 5px;
+$header-height: 64px;
+$footer-height: 12px;
+
+body {
+	margin: 0;
+	padding-top: $body-padding-top;
+	padding-right: $body-padding-right;
+	padding-bottom: $body-padding-bottom;
+	padding-left: $body-padding-left;	
+	overflow-y: hidden;
+}
+
+header {
+	#md-toolbar-tools-main {
+		height: $header-height;
+		background-color: #004466 !important;
+		color: #D5E7FC !important;
+
+		.hamburger-button {
+			width: 24px;
+			height: 24px;
+		}
+	}
+
+	.progress-bar-loading {
+		height: 3px;
+		width: 100%;
+		//border-width: 0;
+		//background-color: #004466;
+
+		md-progress-linear .md-container {
+		    background-color: white;
+			height: 3px;
+
+			.md-bar {
+			    background-color: chartreuse;
+			}			
+		}
+	}
+}
+
+.material-icons {
+	color: #a6a6a6;
+
+	&:hover {
+		color: #3764A0;
+	}
+
+	&.disabled {
+		color: #d9d9d9 !important;
+	}
+}
+
+
+section {
+	height: calc(100% - #{$header-height} - #{$footer-height} - #{$body-padding-top});
+	overflow: hidden;
+	
+	.page-view {
+		height: 100%;
+		position: relative;
+		padding-top: 0px;
+	}
+	
+}
+
+footer {
+
+	div {
+		color: gray;
+		text-align: right;
+		height: footer-height;
+		padding: 0px;
+		font-size: 12px;
+	}
+	
+}
+
+
+/* It's necessary because the bootstrap had changed this */
+label {
+    font-weight: normal !important; 
+}
+
+.dictionary-link {
+	color: #15498B;
+	cursor: pointer;
+	text-decoration: underline;
+	outline: 0;
+}
+
+.pronunciation-link {
+	color: green;
+	cursor: pointer;	
+	text-decoration: underline;	
+	outline: 0;
+}

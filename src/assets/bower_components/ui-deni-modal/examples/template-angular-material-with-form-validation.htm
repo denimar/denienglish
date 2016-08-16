@@ -1,0 +1,44 @@
+<div class="angular-material-template-with-form-validation" layout="column">
+
+<form name="cityForm">
+
+  <md-content flex layout="column">
+
+      <md-input-container flex>
+        <label>City</label>
+        <input ng-model="data.nameCity" required>
+      </md-input-container>
+
+      <md-input-container flex>
+        <label>Mayor e-mail</label>
+        <input ng-model="data.mayorEmail" type="email">
+      </md-input-container>
+
+      <div layout="row">
+        <md-input-container>
+          <label>State</label>
+          <md-select ng-model="data.state">
+            <md-option ng-repeat="state in states" value="{{state.abbrev}}">
+              {{state.abbrev}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+
+        <md-input-container>
+          <label>Inhabitants</label>
+          <input ng-model="data.inhabitants" type="number" min="1000" max="1000000" required>        
+        </md-input-container>
+
+      </div>
+
+      <div class="checkboxes" layout="row">
+        <md-checkbox md-no-ink aria-label="Checkbox No Ink" ng-model="isMetropolis" class="md-primary">
+          Is it a metropolis?
+        </md-checkbox>      
+      </div>  
+
+  </md-content>
+
+</form>
+
+</div>

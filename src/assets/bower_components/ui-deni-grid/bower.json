@@ -1,0 +1,18 @@
+{
+  "name": "ui-deni-grid",
+  "description": "Data Table for Angular",
+  "homepage": "http://denimar-moraes.com/",
+  "authors": [
+    "Denimar de Moraes <denimar@gmail.com>"
+  ],  
+  "version": "1.0.0",
+  "_release": "1.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.0",
+    "commit": "ec31d7621d95ca0cd997182e0337cab9311e4a8f"
+  },
+  "_source": "git@github.com:denimar/ag-denitable.git",
+  "_target": "1.0.0",
+  "_originalSource": "ag-denigrid"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "deni-english",
+  "description": "This Application Aim the Learning of the English Language",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "DeniEnglish"
+  ],
+  "authors": [
+    "Denimar de Moraes"
+  ],
+  "license": "MIT",
+  "homepage": "denimar.com.br",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+ "dependencies": {
+    "jquery": "2.2.4",
+    "angular": "1.5.6",
+    "angular-aria": "1.5.6",
+    "angular-resource": "1.5.6",
+    "angular-animate": "1.5.6",
+    "angular-sanitize": "1.5.6",
+    "angular-route": "1.5.6",
+    "angular-material": "master",
+    "svg-assets-cache": "latest",
+    "jstree": "3.3.1",
+    "ui-deni-grid": "https://github.com/denimar/ui-deni-grid.git#latest",
+    "ui-deni-modal": "https://github.com/denimar/ui-deni-modal.git#latest",
+    "summernote": "latest",
+    "angular-summernote": "latest",
+    "videogular": "latest"
+  }
+}

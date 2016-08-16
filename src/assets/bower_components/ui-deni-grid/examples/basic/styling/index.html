@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+	<link rel="stylesheet" type="text/css" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.0-rc.5/angular-material.css">
+	<link rel="stylesheet" type="text/css" href="https://material.angularjs.org/1.1.0-rc.5/docs.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<style>
+
+	body {
+		padding: 4px;
+	}
+
+	.div-container {
+		border: solid 2px orange;
+	}
+
+	#deniGrid {
+		height: 100%;
+		width: 100%;
+	}
+	
+	
+	#deniGrid .ui-deni-grid-container {
+		font-size: 14px !important;		
+	}
+
+	#deniGrid .material-icons {	
+		font-size: 24px;	
+	}	
+
+	.brother-div {
+		border: solid 1px green;
+		height: 250px;
+	}
+
+
+</style>
+
+<body ng-app="myApp" layout="column">
+
+	<div data-ng-controller="ExampleCtrl" layout="column" layout-align="start stretch"  flex>
+
+	  <md-toolbar style="color:white;">   
+	    <div class="md-toolbar-tools" style="color:white;">
+	      <h2>
+	        <span style="color:white;">Gráfico de Releases</span>
+	      </h2>
+	    </div>
+	  </md-toolbar>   
+
+	  <div style="background-color: white; padding: 4px; border: solid 2px orange;" layout="column" flex>
+
+	    <ui-deni-grid style="border: solid 1px red" id="deniGrid" options="gridOptions" flex></ui-deni-grid>
+
+	    <div style="border: solid 1px red;" flex> Div Teste </div>
+
+	  </div>
+	</div>  	
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
+    <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.0-rc.5/angular-material.js"></script>
+	<script src="../../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>

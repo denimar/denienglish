@@ -1,0 +1,51 @@
+<div class="text" layout="row" flex>
+	<div class="main-div" flex layout="column">
+
+		<md-content class="ng-hide" ng-show="ctrl.texts.length > 1">
+			<md-tabs md-selected="ctrl.selectedIndex" md-border-bottom>
+				<md-tab ng-repeat="text in ctrl.texts" label="{{text.dsTitulo}}">
+				</md-tab>
+			</md-tabs>
+	  	</md-content>
+
+
+	  	<div class="content" flex>
+
+		  	<div class="editor ng-hide" ng-show="ctrl.editing">
+				<summernote id="summernote" config="ctrl.options" ng-model="ctrl.content"></summernote>		  		
+		  	</div>
+
+			<div class="text-content ng-hide" ng-show="!ctrl.editing">			
+			</div>
+		</div>	
+
+	</div>
+	
+	<div class="toolbar-div">
+
+		<md-button class="md-icon-button" aria-label="edit" ng-click="ctrl.editClick()">
+			<md-tooltip>Edit the current text</md-tooltip>
+			<md-icon class="material-icons"> edit </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator"></div>
+
+		<md-button class="md-icon-button" aria-label="Dictionary">
+			<md-tooltip>Open the Dictionary Window</md-tooltip>
+			<md-icon class="material-icons"> local_library </md-icon>
+		</md-button>	
+		<md-button class="md-icon-button" aria-label="Pronunciation">
+			<md-tooltip>Open the Pronunciation Window</md-tooltip>
+			<md-icon class="material-icons"> hearing </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator"></div>
+
+		<md-button class="md-icon-button" aria-label="Listen">
+			<md-tooltip>Listen a selected text</md-tooltip>
+			<md-icon class="material-icons"> headset </md-icon>
+		</md-button>	
+
+	</div>	
+
+</div>	

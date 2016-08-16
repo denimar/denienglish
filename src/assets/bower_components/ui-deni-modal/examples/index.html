@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../dist/ui-deni-modal.min.css">
+	<link rel="stylesheet" type="text/css" href="index.css">	
+	<link rel="stylesheet" href="../assets/libs/angular-material/angular-material.css">	
+</head>
+
+<style>
+
+	body {
+		padding: 4px;
+	}
+
+	.examples {
+		border: solid 1px purple;		
+		margin-bottom: 8px;
+		padding: 8px;
+	}
+
+	.examples > button {
+		margin-bottom: 2px;
+	}	
+
+	#examples-img {
+		width: 120;
+		height: 120;		
+		border: solid 1px orange;		
+	}
+
+	#examples-dsc {
+		font-weight: bold;
+		color: green;
+		font-size: 14px;
+		font-family: arial;
+	}
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="ExampleCtrl as ctrl">
+
+		<div style="font-weight:bold;">ui-deni-modal - Examples</div>		
+
+		<div class="examples">
+			<button ng-click="ctrl.openWindowWithTemplateAngularMaterial()">With Template Angular Material</button>
+			<button ng-click="ctrl.openWindowWithTemplateAngularMaterialWithFormValidation()">With Template Angular Material with Form Validation</button>			
+		</div>			
+
+		<div class="examples">
+			<button ng-click="ctrl.openSimpleWindow()">Open a simple window</button><br>
+			<button ng-click="ctrl.openWindowWithHtmlTemplate()">Open window with template</button><br>
+		</div>	
+
+		<div class="examples">
+			<button ng-click="ctrl.openDialogConfirm()">Dialog Confirm</button><br>				
+			<button ng-click="ctrl.openDialogInfo()">Dialog Info</button><br>				
+			<button ng-click="ctrl.openDialogWarning()">Dialog Warning</button><br>				
+			<button ng-click="ctrl.openDialogError()">Dialog Error</button><br>			
+			<button ng-click="ctrl.openWaiting()">Waiting...</button><br>					
+
+		</div>
+			
+		<div class="examples">	
+			<div style=""><button ng-click="ctrl.showGhostMessage1()">Ghost Message - Top Right</button><br><button ng-click="ctrl.showGhostMessage2()">Ghost Message - Bottom Right</button><br></div>
+		</div>	
+
+		<div class="examples">
+			Dialog with a Image and Description:<br>
+			<button ng-click="ctrl.openDialogImageAndDescriptionAdd()">Add</button>&nbsp<button ng-click="ctrl.openDialogImageAndDescriptionEdit()">Edit</button><br>
+			<table><tr><td><img id="examples-img" /></td><td id="examples-dsc"></td></tr>
+		</div>	
+
+
+
+	</section>	
+
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/angular/angular.min.js"></script>
+    <script src="../assets/libs/angular-aria/angular-aria.min.js"></script>
+    <script src="../assets/libs/angular-animate/angular-animate.min.js"></script>
+    <script src="../assets/libs/angular-sanitize/angular-sanitize.min.js"></script>        
+    <script src="../assets/libs/angular-messages/angular-messages.min.js"></script>
+    <script src="../assets/libs/svg-assets-cache/svg-assets-cache.js"></script>		
+    <script src="../assets/libs/angular-material/angular-material.min.js"></script>
+
+	<script src="../dist/ui-deni-modal.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+
+</html>

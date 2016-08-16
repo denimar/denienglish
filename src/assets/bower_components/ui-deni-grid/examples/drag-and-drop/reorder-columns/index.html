@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	#deniGrid {
+		height: 300px;
+		width: 800px;
+	}
+
+	.divButtons {
+		margin-top: 5px;
+		display: flex;
+	}
+
+	.divButtons > button {		
+		margin-right: 2px;		
+	}
+
+	.divResponse {
+		margin-top: 5px;		
+		background-color: orange;
+	}
+
+	textarea {
+		height: 100px;
+		width: 300px;
+	}
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="SimpleCtrl as ctrl">
+
+		<ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+
+		<hr />
+
+		<br>
+		<div><b>Todo:</b></div>
+		<ul>
+			<li>Look that example: http://docs.sencha.com/extjs/4.0.7/#!/example/dd/dnd_grid_to_grid.html</li>					
+			<li>To rows reorder too.</li>			
+		</ul>
+
+	</section>	
+
+	<script src="../../../../../jquery/dist/jquery.min.js"></script>
+	<script src="../../../../../angular/angular.js"></script>
+
+	<script src="../../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>

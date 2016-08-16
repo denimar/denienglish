@@ -1,0 +1,65 @@
+<div class="home category" flex="30" flex-gt-xs="30" show-gt-xs hide-xs>
+
+	<div id="categoryPanel">
+		<div id="categoryButtons">
+			<md-button class="md-icon-button" ng-click="ctrl.addCategoryClick()" aria-label="" ng-disabled="ctrl.currentCategoryNode == null">
+				<md-tooltip md-direction="down">
+					Add a Child Category for the Selected Category
+				</md-tooltip>						  
+				<md-icon class="material-icons" ng-class="{'disabled' : ctrl.currentCategoryNode == null}"> create_new_folder </md-icon>
+			</md-button>					
+			<md-button class="md-icon-button" ng-click="ctrl.editCategoryClick()" ng-disabled="ctrl.currentCategoryNode == null">
+				<md-icon class="material-icons" ng-class="{'disabled' : ctrl.currentCategoryNode == null}"> edit </md-icon>
+				<md-tooltip md-direction="down">
+					Edit the Selected Category
+				</md-tooltip>						  
+			</md-button>					
+			<md-button class="md-icon-button" ng-click="ctrl.delCategoryClick()" ng-disabled="ctrl.currentCategoryNode == null">
+				<md-icon class="material-icons" ng-class="{'disabled' : ctrl.currentCategoryNode == null}"> delete_forever </md-icon>
+				<md-tooltip md-direction="down">
+					Delete the Selected Category
+				</md-tooltip>						  
+			</md-button>					
+		</div>            		
+	
+		<div id="categoryTreeview"></div>
+	</div>
+
+</div>
+
+
+<div class="home items" flex="70" flex-gt-xs="70" flex-xs="100" container="column">
+
+	<div id="categoryInfoPanel">
+		<div id="categoryPath" ng-bind-html="ctrl.categoryPath"></div>				
+	</div>
+
+	<div class="nav-bar-items-container">
+		<div id="mdNavBarItems">
+			<md-nav-bar md-selected-nav-item="ctrl.currentNavItem" nav-bar-aria-label="navigation links">
+			  <md-nav-item md-nav-click="goto('pageItems')" name="pageItems">Items</md-nav-item>
+			  <md-nav-item md-nav-click="goto('pageRevisions')" name="pageRevisions">Revision Pending</md-nav-item>
+			  <md-nav-item md-nav-click="goto('pageFavorites')" name="pageFavorites">Favorites</md-nav-item>
+			</md-nav-bar>
+		</div>
+		
+		<div id="itemsButtons">
+			<md-button class="md-icon-button" ng-show="ctrl.currentNavItem == 'pageItems'" ng-click="ctrl.addNewItemButtonClick($event)"  ng-disabled="ctrl.currentCategoryNode == null">
+				<md-icon class="material-icons" ng-class="{'disabled' : ctrl.currentCategoryNode == null}"> note_add </md-icon>
+				<md-tooltip md-direction="down">
+					Add a New Item
+				</md-tooltip>						  
+			</md-button>					
+			<md-button class="md-icon-button" ng-show="ctrl.currentNavItem == 'pageRevisions'" ng-disabled="ctrl.currentCategoryNode == null">
+				<md-icon class="material-icons" ng-class="{'disabled' : ctrl.currentCategoryNode == null}"> build </md-icon>
+				<md-tooltip md-direction="down">
+					Configurations
+				</md-tooltip>						  
+			</md-button>					
+		</div>            		
+		
+	</div>	
+
+	<ui-deni-grid id="mainGrid" options="gridOptions" flex></ui-deni-grid>
+
+</div>

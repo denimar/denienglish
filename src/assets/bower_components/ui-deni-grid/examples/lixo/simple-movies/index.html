@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	#deniGrid {
+		height: 300px;
+		width: 800px;
+	}
+
+	.divButtons {
+		margin-top: 5px;
+		display: flex;
+	}
+
+	.divButtons > button {		
+		margin-right: 2px;		
+	}
+
+	.divResponse {
+		margin-top: 5px;		
+		background-color: orange;
+	}
+
+	textarea {
+		height: 100px;
+		width: 300px;
+	}
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="SimpleCtrl as ctrl">
+
+		<ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+
+		<hr />
+		<div class="divResponse">
+		</div>
+		<hr />
+
+	</section>	
+
+	<script src="../../../../jquery/dist/jquery.min.js"></script>
+	<script src="../../../../angular/angular.js"></script>
+
+	<script src="../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>

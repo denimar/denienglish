@@ -1,0 +1,158 @@
+$default-border-color: #99BCE8;
+$height-md-navbar-items: 48px;
+$category-buttons-height: 36px;
+
+.home {
+
+	&.category {
+		border: solid 1px $default-border-color;
+		margin-right: 2px;		
+		
+		#categoryPanel {
+		    width: 100%;
+		    position: relative;
+		    height: 100%;
+		    float: left;
+		    overflow-y: auto;
+		    box-sizing: border-box;     
+		    //padding: 4px;	
+
+			#categoryButtons {
+				float: right;
+				border-bottom: solid 1px #d9d9d9;		
+				width: 100%;
+				text-align: right;
+				height: $category-buttons-height;
+				box-sizing: border-box;
+			}
+			
+			#categoryTreeview {
+			}
+		}			
+
+		.jstree-default {
+
+			.jstree-wholerow-clicked {
+		    	background: -webkit-linear-gradient(top, #DAEAFC 0, #B7D5FB 100%) !important;
+		    	background: linear-gradient(to bottom, #DAEAFC 0, #B7D5FB 100%);		
+		    	border-top: solid 1px #b8d6fb !important;
+		    	border-bottom: solid 1px #b8d6fb !important;
+		    }	
+
+		    .jstree-wholerow-hovered {
+		    	background: -webkit-linear-gradient(top, #FEFEFF 0, #EBF3FD 100%);
+		    	background: linear-gradient(to bottom, #FEFEFF 0, #EBF3FD 100%);		
+		    	border-top: solid 1px #b8d6fb !important;
+		    	border-bottom: solid 1px #b8d6fb !important;
+		    }
+		}				
+	}
+
+	&.items {
+		border: solid 1px $default-border-color;		
+		box-sizing: border-box;
+
+		#categoryInfoPanel {
+			height: $category-buttons-height;
+			border-bottom: solid 1px #d9d9d9;		
+			//background-color: #f2f2f2;
+			box-sizing: border-box;
+			padding: 5px 0px 0px 15px;
+
+			#categoryPath {
+				color: gray;
+				font-size: 14px;
+				color: gray;
+					
+				.categoryPathTitle {
+					font-size: 18px;
+					font-weight: bold;
+				}
+			}
+		}
+
+		.nav-bar-items-container {
+			height: $height-md-navbar-items;		
+
+			#mdNavBarItems {
+				width: calc(100% - 70px);
+				height: $height-md-navbar-items;
+				float: left;
+				margin-bottom: 4px;
+				
+				.md-nav-bar {
+					height: $height-md-navbar-items;
+				}
+			}	
+
+			#itemsButtons {
+				float: right;
+			}
+		}
+
+		#mainGrid {
+			height: calc(100% - #{$height-md-navbar-items + $category-buttons-height} - 4px);
+			width: 100%;
+			border: 0px;
+
+			a:link {
+				color: #0086c6;
+				text-decoration: none;
+			}
+
+			a:visited {
+				color: #0086c6;
+				text-decoration: none;
+			}
+
+			a:hover {
+				color: #009de6;
+				text-decoration: underline;
+			}
+
+			.ui-body-viewport {
+			}
+
+			.cell-template {
+				padding-left: 5px;
+				width:100%; 
+				color:gray;
+				height: 90px;
+				padding: 3px;
+				box-sizing: border-box;
+
+				.item-image {
+					float: left;
+					width: 120px;
+					height: 84px;
+					margin-right: 4px;
+					border: solid 1px silver;
+					box-sizing: border-box;
+				}   
+
+				.description {
+					float: left;
+					width: 610px;
+					height: 65px;       
+					overflow-y: auto;
+					box-sizing: border-box;    
+				}
+
+				.material-icons.favorite {
+					cursor: pointer;
+
+					&:hover {
+						color: orange;						
+					}
+
+					&.selected {
+						color: orange;	
+					}
+				}
+				
+			}   
+		}	
+		
+	}
+	
+}	

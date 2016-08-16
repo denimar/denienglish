@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	#deniGrid {
+	  	height: 550px;
+	  	width: 900px;
+	}
+
+	.card-view-item {
+	  	width: 100%;
+	  	height: 100%;
+	  	position: relative;
+	  	cursor: pointer;
+	}
+
+	.card-view-image {
+	  	width: 120px;
+		height: 100%;
+		border: solid 1px #ccc;
+		position: absolute;
+		float: left;
+	}
+
+	.card-view-info {
+		float: right;
+		width: calc(100% - 130px);
+		height: 155px;		
+		position: relative;	
+    	overflow-y: auto;
+	}
+
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="ExampleCtrl as ctrl">
+	  <ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+		<span>*Select a card and see the selected record in console.</span>
+	</section>
+	
+		<br />
+		<br />		
+		<hr />		
+				
+		<div style="color:red; font-weight:bold;display:block">TODO:</div>
+		<ul>
+			<li>see example: <a href="https://demos.devexpress.com/ASPxCardViewDemos/PagingAndScrolling/EndlessPaging.aspx">Cool example using endless feature</a></li>
+		</ul>	
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="https://code.angularjs.org/1.5.5/angular.min.js"></script>
+
+	<script src="../../../dist/ui-deni-grid.js"></script>
+
+	<script src="script.js"></script>
+</body>
+</html>

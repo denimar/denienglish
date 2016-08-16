@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel=stylesheet href="style.css">
+</head>
+<body ng-app="myApp">
+	
+	<section ng-controller="MainCtrl" class="examples-ui-deni-grid">
+		<h1>ui-deni-grid - Examples</h1>
+		<div ng-repeat="example in examples">
+			<div class="group" ng-bind="example.text"></div>
+			
+			<div class="items-container">
+				<hr>	
+				<div class="item" ng-repeat="item in example.children" ng-show="showItem(this)" ng-click="itemClick(item)">
+					<img class="item-image" ng-src="images/{{item.img}}" />
+					<div class="item-text" ng-bind="item.text"></div>
+				</div>
+			</div>	
+		</div>
+		
+		<br />
+		<br />		
+		<hr />		
+				
+		<div style="color:red; font-weight:bold;display:block">TODO:</div>
+		<ul>
+			<li>There are a severeal cool things to see in those examples: <a href="https://demos.devexpress.com/ASPxCardViewDemos/PagingAndScrolling/Scrolling.aspx">Exemplos legais com grid</a></li>
+			<li>Enable to choose a theme</li>
+			<li>Create routines to export data</li>			
+		</ul>
+		
+	</section>	
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular.min.js"></script>
+	<script src="app.js"></script>	
+</body>
+
+</html>
+	

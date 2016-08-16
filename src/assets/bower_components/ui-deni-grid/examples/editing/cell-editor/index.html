@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	#deniGrid {
+		height: 300px;
+		width: 800px;
+	}
+
+	.divButtons {
+		margin-top: 5px;
+		display: flex;
+	}
+
+	.divButtons > button {		
+		margin-right: 2px;		
+	}
+
+	.divResponse {
+		margin-top: 5px;		
+		background-color: orange;
+	}
+
+	textarea {
+		height: 100px;
+		width: 300px;
+	}
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="SimpleCtrl as ctrl">
+
+		<ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+		
+		<hr />
+		<div class="divResponse">
+		</div>
+
+		<hr />
+		<span><strong>"editor.type" can be set with the folowing values:</strong></span>
+		<ul>
+			<li>color</li>
+			<li>date</li>
+			<li>datetime</li>
+			<li>datetime-local</li>
+			<li>email</li>
+			<li>month</li>
+			<li>number</li>
+			<li>range</li>
+			<li>search</li>
+			<li>tel</li>
+			<li>time</li>
+			<li>url</li>
+			<li>week</li>
+		</ul>	
+		<span>To more details, see <a href="http://www.w3schools.com/html/html_form_input_types.asp">http://www.w3schools.com/html/html_form_input_types.asp</a></span>
+
+		<br>
+		<span style="color:red;"><b>TODO:</b><br>
+			<ul>
+				<li>Test each type of input and make the consistences, for example, when was set "minVale", "maxValue", "required", ....</li>
+				<li>To the type "select" prepare to use a url property in order to get a list fed by server </li>				
+			</ul>				
+		</span>
+		
+
+	</section>	
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular.min.js"></script>
+
+	<script src="../../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>
