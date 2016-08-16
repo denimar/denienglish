@@ -34,6 +34,8 @@
     "ui-deni-modal": "https://github.com/denimar/ui-deni-modal.git#latest",
     "summernote": "latest",
     "angular-summernote": "latest",
-    "videogular": "latest"
+    "videogular": "latest",
+    "videogular-youtube": "latest",
+    "videogular-controls": "latest"
   }
 }
