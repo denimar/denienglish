@@ -45,12 +45,54 @@
 
 	.definition-container {
 		border: solid 1px $default-border-color;
-		overflow: auto;
 		height: 150px;
 		padding: 4px;
 
-		.definition {
+		.definition-toolbar {
+			height: 30px;
+			max-height: 30px;
+			min-height: 30px;			
+			border-top: solid 1px #f2f2f2;
+			padding: 2px;
 
+			.definition-toolbar-buttons {
+
+				.material-icons {
+					cursor: pointer;
+				}
+
+			}
 		}
+
+		.definition {
+			overflow: auto;
+		}
+
+		.editor-summernote-container {
+			box-sizing: border-box;
+			height: 100%;
+
+			.note-editor {
+			    height: 100%;
+			    box-sizing: border-box;
+			    border-width: 0px;
+
+				.note-editing-area {
+					box-sizing: border-box;
+					height: calc(100% - 41px);
+					overflow-y: auto;
+
+					.panel-body {
+						box-sizing: border-box;
+						height: 100%;
+					}
+				}
+
+				.note-statusbar {
+					display: none;
+				}
+			}
+		}	
+
 	}
 }

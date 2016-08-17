@@ -293,9 +293,34 @@ label {
         color: red !important; }
   .dictionary-modal .definition-container {
     border: solid 1px #99bce8;
-    overflow: auto;
     height: 150px;
     padding: 4px; }
+    .dictionary-modal .definition-container .definition-toolbar {
+      height: 30px;
+      max-height: 30px;
+      min-height: 30px;
+      border-top: solid 1px #f2f2f2;
+      padding: 2px; }
+      .dictionary-modal .definition-container .definition-toolbar .definition-toolbar-buttons .material-icons {
+        cursor: pointer; }
+    .dictionary-modal .definition-container .definition {
+      overflow: auto; }
+    .dictionary-modal .definition-container .editor-summernote-container {
+      box-sizing: border-box;
+      height: 100%; }
+      .dictionary-modal .definition-container .editor-summernote-container .note-editor {
+        height: 100%;
+        box-sizing: border-box;
+        border-width: 0px; }
+        .dictionary-modal .definition-container .editor-summernote-container .note-editor .note-editing-area {
+          box-sizing: border-box;
+          height: calc(100% - 41px);
+          overflow-y: auto; }
+          .dictionary-modal .definition-container .editor-summernote-container .note-editor .note-editing-area .panel-body {
+            box-sizing: border-box;
+            height: 100%; }
+        .dictionary-modal .definition-container .editor-summernote-container .note-editor .note-statusbar {
+          display: none; }
 
 .new-video-item-modal-tpl {
   height: 100%;

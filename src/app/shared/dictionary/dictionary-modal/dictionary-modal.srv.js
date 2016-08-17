@@ -4,6 +4,8 @@ angular.module('app').service('dictionaryModalSrv', function(uiDeniModalSrv, Dic
       vm.controller;      
       vm.getDefinitionFn;
 
+      var currentCdDicionario;
+
       vm.setController = function(controller) {
             vm.controller = controller;
       }
@@ -14,7 +16,7 @@ angular.module('app').service('dictionaryModalSrv', function(uiDeniModalSrv, Dic
 		uiDeniModalSrv.createWindow({
             scope: scope,
             title: 'Dictionary',
-            width: '650px',         
+            width: '700px',         
             height: '580px',
             position: uiDeniModalSrv.POSITION.CENTER,
             buttons: [uiDeniModalSrv.BUTTON.OK],
@@ -30,6 +32,13 @@ angular.module('app').service('dictionaryModalSrv', function(uiDeniModalSrv, Dic
         }).show();
 
 	}	
+
+      var _updateDefinitionDiv = function(definition) {
+            var div = $(document.createElement('div'));
+            div.html(definition);
+            $('.dictionary-modal .definition').html('');
+            $('.dictionary-modal .definition').append(div);
+      }
 
       vm.getGridDictionaryOptions = function() {
 
@@ -63,17 +72,17 @@ angular.module('app').service('dictionaryModalSrv', function(uiDeniModalSrv, Dic
                         onselectionchange: function(ctrl, element, rowIndex, record) {
 
                               vm.getDefinitionFn(record.cdDicionario).then(function(expression) {
+                                    currentCdDicionario = record.cdDicionario;
+                                    vm.controller.currentDefinitionBeforeEditing = expression;                                    
+                                    vm.controller.currentDefinition = expression;
 
-                                    var div = $(document.createElement('div'));
-                                    div.html(expression);
-                                    $('.dictionary-modal .definition').html('');
-                                    $('.dictionary-modal .definition').append(div);
+                                   _updateDefinitionDiv(expression);
                               });               
 
                         },
 
                         onbeforeload: function() {
-                              $('.dictionary-modal .definition').html('');
+                              _updateDefinitionDiv('');
                         }
                   }   
             }
@@ -127,5 +136,22 @@ angular.module('app').service('dictionaryModalSrv', function(uiDeniModalSrv, Dic
       vm.showLoading = function() {
             return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
       }
+
+      vm.definitionEditClick = function() {
+            vm.controller.editingDefinition = true;
+      }
+
+      vm.definitionSaveClick = function() {
+            DictionaryRestSrv.definitionSet(currentCdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
+                  vm.controller.editingDefinition = false;                  
+                  _updateDefinitionDiv(vm.controller.currentDefinition);
+            });
+      }
+
+      vm.definitionCancelClick = function() {
+            vm.controller.currentDefinition = vm.controller.currentDefinitionBeforeEditing;
+            vm.controller.editingDefinition = false;
+      }
+
 
 });
