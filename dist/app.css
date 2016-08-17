@@ -14,15 +14,6 @@ header #md-toolbar-tools-main {
     width: 24px;
     height: 24px; }
 
-header .progress-bar-loading {
-  height: 3px;
-  width: 100%; }
-  header .progress-bar-loading md-progress-linear .md-container {
-    background-color: white;
-    height: 3px; }
-    header .progress-bar-loading md-progress-linear .md-container .md-bar {
-      background-color: chartreuse; }
-
 .material-icons {
   color: #a6a6a6; }
   .material-icons:hover {
@@ -44,6 +35,15 @@ footer div {
   height: footer-height;
   padding: 0px;
   font-size: 12px; }
+
+.progress-bar-loading {
+  height: 3px;
+  width: 100%; }
+  .progress-bar-loading md-progress-linear .md-container {
+    background-color: white;
+    height: 3px; }
+    .progress-bar-loading md-progress-linear .md-container .md-bar {
+      background-color: chartreuse; }
 
 /* It's necessary because the bootstrap had changed this */
 label {
@@ -264,6 +264,39 @@ label {
     padding: 0px;
     margin: 15px 5px 0px 0px; }
 
+.dictionary-modal {
+  height: 100%;
+  width: 100%;
+  padding: 2px;
+  box-sizing: border-box; }
+  .dictionary-modal .search-input-container {
+    border: solid 1px #99bce8;
+    height: 30px;
+    box-sizing: border-box; }
+    .dictionary-modal .search-input-container .search-input {
+      border-width: 0px;
+      font-size: 16px;
+      padding-left: 4px;
+      box-sizing: border-box; }
+      .dictionary-modal .search-input-container .search-input:focus {
+        outline: none; }
+    .dictionary-modal .search-input-container .material-icons {
+      color: #03698C;
+      opacity: 0.4;
+      cursor: pointer; }
+  .dictionary-modal .grid-container {
+    height: 180px;
+    margin-bottom: 2px; }
+    .dictionary-modal .grid-container .gridDictionary {
+      color: black; }
+      .dictionary-modal .grid-container .gridDictionary .material-icons:hover {
+        color: red !important; }
+  .dictionary-modal .definition-container {
+    border: solid 1px #99bce8;
+    overflow: auto;
+    height: 150px;
+    padding: 4px; }
+
 .new-video-item-modal-tpl {
   height: 100%;
   box-sizing: border-box;
@@ -283,42 +316,32 @@ label {
     width: 120px;
     height: 100px; }
 
-dictionary-view .dictionary-view-container {
-  padding: 4px; }
-  dictionary-view .dictionary-view-container .dictionary-view-toolbar {
-    height: 25px;
-    background-color: silver; }
-  dictionary-view .dictionary-view-container .dictionary-view-definition {
-    background-color: orange; }
-
-spaced-revision {
-  height: 350px;
+.spaced-revision-modal {
   box-sizing: border-box;
   font-family: arial;
   /* border: solid 1px $default-border-color;*/ }
-  spaced-revision .spaced-revision-container {
+  .spaced-revision-modal .spaced-revision-container {
     width: 100%;
     height: 100%;
     box-sizing: border-box; }
-    spaced-revision .spaced-revision-container .item-detail {
+    .spaced-revision-modal .spaced-revision-container .item-detail {
       height: 136px;
       min-height: 136px;
       padding: 8px;
       box-sizing: border-box;
       box-shadow: 0px 10px 30px #c6cceb;
       z-index: 999; }
-      spaced-revision .spaced-revision-container .item-detail .item-detail-img {
+      .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-img {
         width: 180px;
         height: 120px;
         border: solid 1px silver;
+        padding: 2px;
         box-sizing: border-box;
-        float: left;
-        border-radius: 5px; }
-        spaced-revision .spaced-revision-container .item-detail .item-detail-img img {
+        float: left; }
+        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-img img {
           width: 100%;
-          height: 100%;
-          border-radius: 5px; }
-      spaced-revision .spaced-revision-container .item-detail .item-detail-data {
+          height: 100%; }
+      .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data {
         box-sizing: border-box;
         float: right;
         padding: 4px 0px 0px 12px;
@@ -326,38 +349,38 @@ spaced-revision {
         margin-left: 4px;
         /*border: solid 1px #d9d9d9;*/
         border-radius: 5px; }
-        spaced-revision .spaced-revision-container .item-detail .item-detail-data .item-detail-data-breadcrumb {
+        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-breadcrumb {
           font-family: verdana;
           color: silver;
           font-size: 12px;
           margin-top: 4px;
           height: 16px; }
-        spaced-revision .spaced-revision-container .item-detail .item-detail-data .item-detail-data-description {
+        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-description {
           font-weight: bold;
           font-size: 18px;
           margin-top: -2px; }
-        spaced-revision .spaced-revision-container .item-detail .item-detail-data .item-detail-data-number-expressions {
-          color: #009900;
+        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-number-expressions {
+          color: silver;
           font-size: 12px; }
-        spaced-revision .spaced-revision-container .item-detail .item-detail-data .item-detail-data-progress-bar {
-          border: solid 1px green;
+        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-progress-bar {
           width: 350px;
           height: 20px;
-          opacity: 0.3; }
-          spaced-revision .spaced-revision-container .item-detail .item-detail-data .item-detail-data-progress-bar .item-detail-data-progress {
-            background: linear-gradient(to right, white, #009900);
+          opacity: 0.5;
+          border: solid 1px silver; }
+          .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-progress-bar .item-detail-data-progress {
+            background: linear-gradient(to right, white, green);
             width: 150px;
             height: 100%; }
-        spaced-revision .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied {
+        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied {
           text-transform: none;
           color: gray; }
-          spaced-revision .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied:hover {
+          .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied:hover {
             color: #0080ff; }
-          spaced-revision .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied .material-icons {
+          .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied .material-icons {
             color: inherit; }
-    spaced-revision .spaced-revision-container .definition-detail {
+    .spaced-revision-modal .spaced-revision-container .definition-detail {
       box-sizing: border-box; }
-      spaced-revision .spaced-revision-container .definition-detail .definition-detail-type {
+      .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-type {
         height: 10px;
         padding: 0px;
         /*background-color: #b3d9ff;*/
@@ -366,7 +389,7 @@ spaced-revision {
         color: gray;
         font-size: 10px;
         /*background: linear-gradient(rgb(153,188,232), white);*/ }
-      spaced-revision .spaced-revision-container .definition-detail .definition-detail-toolbar {
+      .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-toolbar {
         height: 32px;
         /*background-color: #d9b3ff;*/
         box-sizing: border-box;
@@ -376,78 +399,69 @@ spaced-revision {
         align-items: top;
         height: 24px;
         background-color: #f2f2f2; }
-      spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator {
+      .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator {
         height: 36px;
         min-height: 36px;
         color: orange;
         padding: 0px;
         box-sizing: border-box; }
-        spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons {
+        .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons {
           box-sizing: border-box;
           padding: 0px;
           /*background-color: #f2f2f2;*/
           border: dash 1px #e6e6e6; }
-          spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button {
+          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button {
             width: 40px;
             min-width: 40px;
             padding: 0px;
             margin: 0px;
             line-height: 0px;
             color: #004d99; }
-            spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button:hover {
+            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button:hover {
               color: #0080ff; }
-            spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button .material-icons {
+            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button .material-icons {
               color: inherit; }
-          spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button[disabled] {
+          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator .definition-detail-navigator-buttons .md-button[disabled] {
             color: silver; }
-        spaced-revision .spaced-revision-container .definition-detail .definition-detail-navigator .definition-navigator-status {
+        .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator .definition-navigator-status {
           color: silver;
           height: 20px;
           font-size: 11px; }
-      spaced-revision .spaced-revision-container .definition-detail .definition-detail-content {
+      .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content {
         box-sizing: border-box;
-        margin: 0px 4px 4px 4px;
-        /*
-				md-fab-speed-dial {
-					margin: 0px !important;
-					border: solid 1px red;
-					width: 250px;
-				
-					.md-button.md-raised.md-mini {
-						width: 28px;
-						height: 28px;
-						line-height: 28px;
-						min-height: 28px;
-						vertical-align: top;
-						font-size: 10px;
-						padding: 0 0;
-						margin: 0;
-					}				
-				}	
-				*/ }
-        spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned {
+        margin: 0px 4px 4px 4px; }
+        .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned {
           margin-top: 40px;
           width: 60px;
           background-color: #f2f2f2; }
-          spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned .learned-rate {
+          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned .learned-rate {
             color: #ff4081;
             padding: 4px 0px 4px 0px; }
-            spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned .learned-rate::after {
+            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned .learned-rate::after {
               content: '%'; }
-          spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned .material-icons {
+          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-learned .material-icons {
             font-size: 32px;
             color: silver; }
-        spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-content {
+        .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-content {
           padding: 4px;
           overflow-y: auto;
-          border: dotted 1px silver; }
-        spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar {
+          border: dotted 1px silver;
+          height: 330px; }
+        .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar {
           float: right; }
-          spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button {
+          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button {
             color: silver; }
-            spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button:hover {
+            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button:hover {
               color: #004d99; }
-            spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button .material-icons {
+            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button .material-icons {
               color: inherit; }
-          spaced-revision .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar md-slider-container {
+          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar md-slider-container {
             background-color: white; }
+
+dictionary-view .dictionary-view-container {
+  padding: 4px; }
+  dictionary-view .dictionary-view-container .dictionary-view-toolbar {
+    height: 25px;
+    background-color: silver; }
+  dictionary-view .dictionary-view-container .dictionary-view-definition {
+    background-color: orange; }

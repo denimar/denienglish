@@ -160,7 +160,7 @@ angular.module('app').service('homeSrv', function($timeout, categorySrv, AppCons
 	 *
 	 *
 	 */
-	vm.configureGridItems = function(controller) {
+	vm.configureGridItems = function(controller, scope) {
 	    controller.gridOptions = {
 	    	hideHeaders: true,
 			colLines: false,
@@ -202,7 +202,7 @@ angular.module('app').service('homeSrv', function($timeout, categorySrv, AppCons
 		                mdIcon: 'restore',
 		                tooltip: '',
 		                fn: function(record, column, imgActionColumn) {
-							spacedRevisionSrv.showModal(record.cdItem);
+							spacedRevisionSrv.showModal(scope, record.cdItem);
 		                }
 		            }        		
 	        	},
@@ -223,7 +223,8 @@ angular.module('app').service('homeSrv', function($timeout, categorySrv, AppCons
 							var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
 							wndDescriptionMorImage.show().then(function(response) {
 								if (response.button == 'ok') {								
-									ItemRestSrv.upd(record.cdItem, AppSrv.currentCategory, response.data.description, response.data.image).then(function(responseUpd) {
+									var uriImage = AppSrv.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
+									ItemRestSrv.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
 										controller.gridOptions.api.reload().then(function(responseData) {
 											imgEl.attr('src', response.data.image);								
 

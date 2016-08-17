@@ -1,5 +1,5 @@
 
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv) {
+angular.module('VideoMdl').controller('VideoCtrl', function($scope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, dictionarySrv) {
 	var vm = this;
 	vm.scope = $scope;
 
@@ -9,16 +9,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $routeParams
 	vm.commentaries = '';
 	vm.initialCommentaries = '';
 
-    $scope.openDictionary = function(expression) {
-    	alert('dictionary');
-    }     
-
-    $scope.openPronunciation = function(expression) {
-    	alert('Pronunciation - ' + expression);
-    }     
-
-
-	VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
+    VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
 		vm.t08vdo = t08vdo;
 		//vm.commentaries = t08vdo.txComentarios;
 	});
@@ -28,6 +19,10 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $routeParams
 	GeneralSrv.getAllExpressions().then(function(response) {
 		vm.gridSubtitlesOptions.api.repaint();
 	});
+
+	vm.dictionaryModalClick = function() {
+		dictionarySrv.showModal($scope);
+	}
 
 	vm.addSubtitleButtonClick = function() {
 		subtitleModalSrv.add($scope, vm).then(function(subtitleAdded) {

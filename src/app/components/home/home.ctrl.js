@@ -1,10 +1,10 @@
 angular.module('app').controller('HomeCtrl', function($scope, $routeParams, homeSrv, AppEnums, AppSrv) {
 	
 	var vm = this;
+	vm.categoryPath = null;		
 
 	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
 
-	vm.categoryPath = null;
 	vm.currentNavItem = "pageItems";
 	vm.currentCategoryNode = null; //Category Node
 	
@@ -28,7 +28,7 @@ angular.module('app').controller('HomeCtrl', function($scope, $routeParams, home
 
 	homeSrv.configureTreeView(vm, AppSrv.currentCategory || $routeParams.cdCategoria);
 
-	homeSrv.configureGridItems(vm);
+	homeSrv.configureGridItems(vm, $scope);
 		
     $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
     	vm.currentNavItem = newCurrentNavItem;

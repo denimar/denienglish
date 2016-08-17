@@ -1,13 +1,12 @@
-$default-border-color: #99bce8;
-$item-detail-height: 136px;
-$item-detail-img-width: 180px;
-$item-detail-img-height: 120px;
-$definition-detail-type-height: 10px;
-$definition-detail-toolbar-height: 32px;
-$definition-detail-navigator-height: 36px;
+.spaced-revision-modal {
+	$default-border-color: #99bce8;
+	$item-detail-height: 136px;
+	$item-detail-img-width: 180px;
+	$item-detail-img-height: 120px;
+	$definition-detail-type-height: 10px;
+	$definition-detail-toolbar-height: 32px;
+	$definition-detail-navigator-height: 36px;
 
-spaced-revision {
-	height: 350px;
 	box-sizing: border-box;
 	font-family: arial;
 	/* border: solid 1px $default-border-color;*/
@@ -29,14 +28,13 @@ spaced-revision {
 				width: $item-detail-img-width;
 				height: $item-detail-img-height;
 				border: solid 1px silver;
+				padding: 2px;
 				box-sizing: border-box;
 				float: left;
-				border-radius: 5px;
-
+				
 				img {
 					width: 100%;
 					height: 100%;
-					border-radius: 5px;
 				}
 	
 			}
@@ -65,18 +63,18 @@ spaced-revision {
 				}
 
 				.item-detail-data-number-expressions {
-					color: #009900;
+					color: silver;
 					font-size: 12px;					
 				}
 
 				.item-detail-data-progress-bar {
-					border: solid 1px green;
 					width: 350px;
 					height: 20px;
-					opacity: 0.3;
+					opacity: 0.5;
+					border: solid 1px silver;
 
 					.item-detail-data-progress {
-						background: linear-gradient(to right, white , #009900);					
+						background: linear-gradient(to right, white , green);					
 						width: 150px;
 						height: 100%;
 					}
@@ -170,7 +168,7 @@ spaced-revision {
 			.definition-detail-content {
 				box-sizing: border-box;				
 				margin: 0px 4px 4px 4px;
-
+				
 				.definition-detail-learned {
 					margin-top: 40px;				
 					width: 60px;
@@ -195,10 +193,10 @@ spaced-revision {
 					padding: 4px;
 					overflow-y: auto;
 					border: dotted 1px silver;
+					height: 330px;
 				}
 				
 				.definition-detail-content-toolbar {
-
 					float: right;
 					
 					.md-button {
@@ -218,24 +216,6 @@ spaced-revision {
 					}
 				}
 				
-				/*
-				md-fab-speed-dial {
-					margin: 0px !important;
-					border: solid 1px red;
-					width: 250px;
-				
-					.md-button.md-raised.md-mini {
-						width: 28px;
-						height: 28px;
-						line-height: 28px;
-						min-height: 28px;
-						vertical-align: top;
-						font-size: 10px;
-						padding: 0 0;
-						margin: 0;
-					}				
-				}	
-				*/
 			}
 		}
 		

@@ -39,6 +39,7 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     }
 
     $scope.openDictionary = function(expression) {
+        alert('here');
 
         uiDeniModalSrv.createWindow({
             scope: $scope,

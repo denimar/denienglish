@@ -1,20 +1,20 @@
 angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
 
-	var me = this;
+	var vm = this;
 
-	me.currentCategory = null; //Category Id	
+	vm.currentCategory = null; //Category Id	
 	
-	me.allExpressions = []; //All Expressions (Dictionary plus Pronunciations)
-	me.dictionaryExpressions = [];
-	me.pronunciationExpressions = [];	
-	me.auxiliarMenu = [];
+	vm.allExpressions = []; //All Expressions (Dictionary plus Pronunciations)
+	vm.dictionaryExpressions = [];
+	vm.pronunciationExpressions = [];	
+	vm.auxiliarMenu = [];
 
 	/**
 	 * className is waiting for a array of String considering: hide-x, hide-gt-xs, hide-sm, hide-md...
 	 * side is waiting for AppEnums.Side.LEFT | AppEnums.Side.RIGHT
 	 * reference: https://material.angularjs.org/latest/layout/options
 	 */
-	me.createHamburgerButton = function(classArray, side) {
+	vm.createHamburgerButton = function(classArray, side) {
 		var hamburgerIconButton = $(document.createElement('button'));
 		hamburgerIconButton.addClass("md-button");		
 		hamburgerIconButton.addClass("md-icon-button");
@@ -45,14 +45,14 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 	 * It works like this: ng-repeat="rec in grid.data track by getTrackById(rec)"
  	 * 	
 	 */
-	me.getNgRepeatTrackById = function(record) {
+	vm.getNgRepeatTrackById = function(record) {
 		//The first property is gonna be the id property
 		var keyField = Object.keys(record)[0];
 		//Get the id value
 		return record[keyField];
 	}
    
-	me.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
+	vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
 
 		var saveButton = function (context) {
 		  var ui = $.summernote.ui;
@@ -105,7 +105,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
 	}
 
-    me.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
+    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
 		var deferred = $q.defer();
 		var parametrosUrl = {params: parameters};
 
@@ -146,7 +146,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		return deferred.promise;
     };
 
-    me.requestWithPromisePayLoad = function(relativeUrl, parameters, parametersPayLoad, successMessage, confirmMessage) {
+    vm.requestWithPromisePayLoad = function(relativeUrl, parameters, parametersPayLoad, successMessage, confirmMessage) {
 		var deferred = $q.defer();
 		var parametrosUrl = {params: parameters};
 
@@ -193,7 +193,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		return deferred.promise;
     };
 
-	me.getDataURLImagemObjeto = function(prObjeto, prLargura, prAltura, prQualidade) {
+	vm.getDataURLImagemObjeto = function(prObjeto, prLargura, prAltura, prQualidade) {
 		var xLarguraOriginal = 0;
 		var xAlturaOriginal = 0;	
 		if (prObjeto instanceof HTMLImageElement) { //Imagem
@@ -233,7 +233,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 	}
 	*/
 
-	me.listenExpression = function(expression, callbackFunction) {
+	vm.listenExpression = function(expression, callbackFunction) {
 		if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
 			//var xSiteBuscar = 'http://emmasaying.com/?s=';
 			var xSiteBuscar = 'http://www.wordreference.com/enpt/'

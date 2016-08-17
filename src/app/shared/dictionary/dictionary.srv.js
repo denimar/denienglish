@@ -1,4 +1,4 @@
-angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv) {
+angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv) {
 
 	var vm = this;
 
@@ -31,6 +31,10 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv) {
 		});
 
 		return deferred.promise;
-	}		
+	}	
+
+	vm.showModal = function(scope) {
+		return dictionaryModalSrv.showModal(scope, vm.definitionGet);
+	}	
 
 });

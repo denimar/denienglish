@@ -1,6 +1,7 @@
-angular.module('spacedRevisionMdl').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionSrv) {
+angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionSrv) {
 	
 	var vm = this;
+	spacedRevisionSrv.setController(vm);
 
 	vm.learnedRate = 60;
 	vm.expressions = [];
@@ -13,15 +14,15 @@ angular.module('spacedRevisionMdl').controller('SpacedRevisionCtrl', function(St
 	vm.model.navigatorStatus = '';	
 
 	vm.navigate = function(number) {
-		spacedRevisionSrv.selectExpression(vm, vm.currentExpressionIndex + number);
+		spacedRevisionSrv.selectExpression(vm.currentExpressionIndex + number);
 	}
 	
 	vm.navigateFirst = function() {
-		spacedRevisionSrv.selectExpression(vm, 0);
+		spacedRevisionSrv.selectExpression(0);
 	}
 
 	vm.navigateLast = function() {
-		spacedRevisionSrv.selectExpression(vm, vm.expressions.length - 1);
+		spacedRevisionSrv.selectExpression(vm.expressions.length - 1);
 	}	
 
 	vm.showResult = function() {
@@ -40,6 +41,7 @@ angular.module('spacedRevisionMdl').controller('SpacedRevisionCtrl', function(St
 		console.log('TODO: VERIFICAR TAMBÉM O UI-DENI-MODAL... PASSAGEM DO Scope...');		
 	}
 
+	/*
 	if (vm.cdItem) {
 		vm.itemImage = StringSrv.format('{0}item/image/get?cd_item={1}&time={2}', AppConsts.SERVER_URL, vm.cdItem, (new Date()).getMilliseconds());
 
@@ -51,5 +53,6 @@ angular.module('spacedRevisionMdl').controller('SpacedRevisionCtrl', function(St
 	} else {
 		new Error('Attributes passed in a wrong way!')
 	}
+	*/
 
 });

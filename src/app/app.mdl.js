@@ -9,7 +9,6 @@ angular.module('app', [
 	'material.svgAssetsCache', 
 	'ui-deni-grid',
 	'uiDeniModalMdl',
-	'spacedRevisionMdl',
 
 	"com.2fdevs.videogular",
 	"com.2fdevs.videogular.plugins.controls",
