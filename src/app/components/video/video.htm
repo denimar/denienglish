@@ -88,6 +88,33 @@
 			<md-icon class="material-icons"> exposure_plus_1 </md-icon>
 		</md-button>	
 
+		<div class="toolbar-separator"></div>
+
+		<md-menu class="connected-user-menu-button" md-position-mode="target-right target" layout="row">
+            <md-button class="drop-down" ng-click="$mdOpenMenu($event)">
+				<md-tooltip>Import Subtitles</md-tooltip>
+				<md-icon class="material-icons drop-down"> closed_caption </md-icon>
+				<span class="drop-down-menu"></span>
+            </md-button>
+            <md-menu-content width="3" >
+              <md-menu-item>
+                <md-button ng-click="ctrl.importSubtitleFromLyrics()">
+                    <div layout="row" flex>
+                      <p flex>from Lyrics</p>
+                      <md-icon md-menu-align-target class="material-icons"> queue_music </md-icon>
+                    </div>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="ctrl.importSubtitleFromSrtFile()">
+                    <div layout="row" flex>
+                      <p flex>from a .srt File</p>
+                      <md-icon md-menu-align-target class="material-icons"> closed_caption </md-icon>
+                    </div>
+                </md-button>
+              </md-menu-item>              
+            </md-menu-content>
+		</md-menu>  
 
 	</div>	
 

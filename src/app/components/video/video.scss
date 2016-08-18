@@ -71,9 +71,18 @@ $default-color-border: #99bce8;
 		width: 50px;
 		border: solid 1px #99bce8;
 		margin-left: 2px;
+		padding: 0px;
 
-		.md-icon-button {
+		.md-button {
 			color: gray;
+			padding: 0px;
+			margin: 0px;
+			min-height: 0px;
+    		min-width: 0px;
+
+			&.drop-down {
+				margin-left: 4px;
+			}
 
 			&:hover {
 				color: #04408C;
@@ -81,7 +90,21 @@ $default-color-border: #99bce8;
 
 			.material-icons {
 				color: inherit;
+
+				&.drop-down {
+					width: 32px;
+				}
 			}
+
+			.drop-down-menu {
+				margin-left: -8px;
+
+				&::after {
+					content: '\25BC';
+					font-size: 6px;
+				}	
+			}
+			
 		}
 
 		.toolbar-separator {

@@ -89,4 +89,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
         pronunciationSrv.listenExpression(dsExpressao);
     }
 
+    vm.importSubtitleFromLyrics = VideoSrv.importSubtitleFromLyrics;
+    vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
+
 });

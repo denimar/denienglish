@@ -251,13 +251,27 @@ label {
 .video .toolbar-div {
   width: 50px;
   border: solid 1px #99bce8;
-  margin-left: 2px; }
-  .video .toolbar-div .md-icon-button {
-    color: gray; }
-    .video .toolbar-div .md-icon-button:hover {
+  margin-left: 2px;
+  padding: 0px; }
+  .video .toolbar-div .md-button {
+    color: gray;
+    padding: 0px;
+    margin: 0px;
+    min-height: 0px;
+    min-width: 0px; }
+    .video .toolbar-div .md-button.drop-down {
+      margin-left: 4px; }
+    .video .toolbar-div .md-button:hover {
       color: #04408C; }
-    .video .toolbar-div .md-icon-button .material-icons {
+    .video .toolbar-div .md-button .material-icons {
       color: inherit; }
+      .video .toolbar-div .md-button .material-icons.drop-down {
+        width: 32px; }
+    .video .toolbar-div .md-button .drop-down-menu {
+      margin-left: -8px; }
+      .video .toolbar-div .md-button .drop-down-menu::after {
+        content: '\25BC';
+        font-size: 6px; }
   .video .toolbar-div .toolbar-separator {
     border-bottom: solid 1px #e6e6e6;
     margin: 4px; }

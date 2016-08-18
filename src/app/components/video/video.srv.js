@@ -141,7 +141,7 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 	    };
 
 
-	}
+	};
 
 	vm.configWYSIWYG = function(controller, cdItem) {
 
@@ -156,6 +156,15 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 		}
 
 		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
-	}
+	};
+
+    vm.importSubtitleFromLyrics = function() {
+    	alert('import subtitle from lyrics here');
+    };
+
+    vm.importSubtitleFromSrtFile = function() {
+    	alert('import subtitle from srt file here');
+    };
+
 
 });
