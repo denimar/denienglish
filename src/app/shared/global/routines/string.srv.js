@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('app').service('StringSrv', function(AppSrv) {
 
 	var me = this;
@@ -9,13 +11,13 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 			formatted = formatted.replace(regexp, arguments[i]);
 		}
 		return formatted;        
-	}
+	};
 
 
     me.leftPad = function(numero, qtdVezes, caracterRepetir) {
         var retorno = qtdVezes - numero.toString().length + 1;
         return Array(+(retorno > 0 && retorno)).join(caracterRepetir) + numero;
-    }    
+    }  ;  
 
     me.replaceAll = function(string, find, replace) {
         if (string) {
@@ -23,7 +25,7 @@ angular.module('app').service('StringSrv', function(AppSrv) {
         } else {
             return '';
         }
-    }       
+    };       
 
 
     me.doubleToStrTime = function(segundos) {
@@ -53,7 +55,7 @@ angular.module('app').service('StringSrv', function(AppSrv) {
         xSegundosStr = me.leftPad(Math.floor(xSegundosStr), 2, "0") + "," + xSegundosFrac; 
         
         return xHorasStr + ":" + xMinutosStr + ":" + xSegundosStr;
-    }   
+    };   
 
     me.strTimeToDouble = function(strTime) {
         //00:05:22,900
@@ -64,7 +66,7 @@ angular.module('app').service('StringSrv', function(AppSrv) {
         var xSeconds = parseFloat(xTimeStr);        
         
         return (xHours * 3600) + (xMinutes * 60) + xSeconds;
-    }       
+    };       
 
 
 	/*
@@ -127,6 +129,6 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 
 			return texto;
 		}	
-	}
+	};
 
 });

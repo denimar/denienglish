@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('app').service('GeneralSrv', function($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
 
 	var me = this;
@@ -23,7 +25,7 @@ angular.module('app').service('GeneralSrv', function($q, $sce, $compile, Diction
 
 
 		return deferred.promise;
-	}
+	};
 
 	/**
 	 * Insert into a element a specific html and binding it with a controller
@@ -45,6 +47,6 @@ angular.module('app').service('GeneralSrv', function($q, $sce, $compile, Diction
 		var $div = $('<div>' + html + '</div>');
 		$compile($div)(scope);
 		targetElement.append($div);
-	}	
+	};	
 
 });

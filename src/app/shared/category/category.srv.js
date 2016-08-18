@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
 	var vm = this;
@@ -12,7 +14,7 @@ angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDen
 		});
 
 		return deferred.promise;		
-	}
+	};
 
 	vm.rename = function(scope, cd_categoria, ds_categoria) {
 		var deferred = $q.defer();
@@ -24,10 +26,10 @@ angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDen
 		});
 
 		return deferred.promise;		
-	}
+	};
 
 	vm.del = function(cd_categoria) {
 		return categoryRestSrv.del(cd_categoria);		
-	}
+	};
 
 });

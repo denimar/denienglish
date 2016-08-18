@@ -1,5 +1,7 @@
 angular.module('TextMdl', []);
 angular.module('VideoMdl', []);
+'use strict';
+
 angular.module('app', [
 	'ngRoute',
 	'TextMdl',
@@ -49,6 +51,109 @@ angular.module('app').constant('PronunciationModalEnums', {
 	},
 
 });	
+'use strict';
+
+angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.list = function() {
+		return AppSrv.requestWithPromise('dictionary/list');
+	};
+
+	vm.add = function(ds_expressao, ds_tags) {
+		var successfullyMessage = {
+			title: 'Inserting',
+			message: 'Expression added successfully!'
+		};
+		return AppSrv.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
+	};
+
+	vm.del = function(cd_dicionario) {
+		var successfullyMessage = {
+			title: 'Deleting',
+			message: 'Expression deleted successfully!'
+		};
+		return AppSrv.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
+	};
+
+
+	vm.learnedToogle = function(cd_dicionario) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Expression updated successfully!'
+		};
+		return AppSrv.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
+	};
+
+	vm.definitionSet = function(cd_dicionario, definition) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Expression updated successfully!'
+		};
+		return AppSrv.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
+	};
+
+	vm.definitionGet = function(cd_dicionario) {
+		return AppSrv.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
+	};	
+
+});
+'use strict';
+
+angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv) {
+
+	var vm = this;
+
+	vm.list = function() {
+		return DictionaryRestSrv.list();
+	};
+
+	vm.add = function(ds_expressao, ds_tags) {
+		return DictionaryRestSrv.add(ds_expressao, ds_tags);
+	}
+
+	vm.del = function(cd_dicionario) {
+		return DictionaryRestSrv.del(cd_dicionario);
+	};
+
+
+	vm.learnedToogle = function(cd_dicionario) {
+		return DictionaryRestSrv.learnedToogle(cd_dicionario);
+	};
+
+	vm.definitionSet = function(cd_dicionario, definition) {
+		return DictionaryRestSrv.definitionSet(cd_dicionario, definition);
+	};
+
+	vm.definitionGet = function(cd_dicionario) {
+		var deferred = $q.defer();
+
+		DictionaryRestSrv.definitionGet(cd_dicionario).then(function(serverResponse) {
+			deferred.resolve(serverResponse.data.data[0].txDefinicao);			
+		});
+
+		return deferred.promise;
+	};
+
+	vm.openDictionaryDefinitionView = function(scope, cdDicionario) {
+
+        uiDeniModalSrv.createWindow({
+            scope: scope,
+            title: 'Dictionary',
+            width: '750px',         
+            height: '400px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK],
+            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
+            modal: true
+        }).show();        
+
+	};	
+
+});
+'use strict';
+
 angular.module('app').service('categoryRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -57,28 +162,30 @@ angular.module('app').service('categoryRestSrv', function(AppSrv) {
 		var successfullyMessage = {
 			title: 'Adding',
 			message: 'Category added successfully!'
-		}
+		};
 		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
-	}
+	};
 
 	vm.rename = function(cd_categoria, ds_categoria) {
 		var successfullyMessage = {
 			title: 'Editing',
 			message: 'Category renamed successfully!'
-		}
+		};
 		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-	}
+	};
 
 	vm.del = function(cd_categoria) {
 		var successfullyMessage = {
 			title: 'Deleting',
 			message: 'Category deleted successfully!'
-		}
+		};
 		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-	}
+	};
 
 
 });
+
+'use strict';
 
 angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
@@ -94,7 +201,7 @@ angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDen
 		});
 
 		return deferred.promise;		
-	}
+	};
 
 	vm.rename = function(scope, cd_categoria, ds_categoria) {
 		var deferred = $q.defer();
@@ -106,108 +213,11 @@ angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDen
 		});
 
 		return deferred.promise;		
-	}
+	};
 
 	vm.del = function(cd_categoria) {
 		return categoryRestSrv.del(cd_categoria);		
-	}
-
-});
-angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.list = function() {
-		return AppSrv.requestWithPromise('dictionary/list');
-	}
-
-	vm.add = function(ds_expressao, ds_tags) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Expression added successfully!'
-		}
-		return AppSrv.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
-	}
-
-	vm.del = function(cd_dicionario) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Expression deleted successfully!'
-		}
-		return AppSrv.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
-	}
-
-
-	vm.learnedToogle = function(cd_dicionario) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Expression updated successfully!'
-		}
-		return AppSrv.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
-	}
-
-	vm.definitionSet = function(cd_dicionario, definition) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Expression updated successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
-	}
-
-	vm.definitionGet = function(cd_dicionario) {
-		return AppSrv.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
-	}	
-
-});
-angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.list = function() {
-		return DictionaryRestSrv.list();
-	}
-
-	vm.add = function(ds_expressao, ds_tags) {
-		return DictionaryRestSrv.add(ds_expressao, ds_tags);
-	}
-
-	vm.del = function(cd_dicionario) {
-		return DictionaryRestSrv.del(cd_dicionario);
-	}
-
-
-	vm.learnedToogle = function(cd_dicionario) {
-		return DictionaryRestSrv.learnedToogle(cd_dicionario);
-	}
-
-	vm.definitionSet = function(cd_dicionario, definition) {
-		return DictionaryRestSrv.definitionSet(cd_dicionario, definition);
-	}
-
-	vm.definitionGet = function(cd_dicionario) {
-		var deferred = $q.defer();
-
-		DictionaryRestSrv.definitionGet(cd_dicionario).then(function(serverResponse) {
-			deferred.resolve(serverResponse.data.data[0].txDefinicao);			
-		});
-
-		return deferred.promise;
-	}
-
-	vm.openDictionaryDefinitionView = function(scope, cdDicionario) {
-
-        uiDeniModalSrv.createWindow({
-            scope: scope,
-            title: 'Dictionary',
-            width: '750px',         
-            height: '400px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK],
-            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
-            modal: true
-        }).show();        
-
-	}	
+	};
 
 });
 angular.module('app').service('ItemRestSrv', function(AppSrv) {
@@ -536,6 +546,199 @@ angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
 
 
 });
+'use strict';
+
+angular.module('app').service('DatabaseSrv', function() {
+
+	var me = this;
+
+});
+'use strict';
+
+angular.module('app').service('GeneralSrv', function($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
+
+	var me = this;
+
+	me.getAllExpressions = function() {
+		var deferred = $q.defer();
+
+		DictionaryRestSrv.list().then(function(responseDictionary) {
+			AppSrv.dictionaryExpressions = responseDictionary.data.data;
+	
+			PronunciationRestSrv.list().then(function(responsePronunciation) {
+				AppSrv.pronunciationExpressions = responsePronunciation.data.data;	
+
+				AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(AppSrv.pronunciationExpressions);
+				deferred.resolve(AppSrv.allExpressions);
+			}, function(reasonPronunciation) {
+				console.error(reasonPronunciation);
+			});
+
+		}, function(reasonDictionary) {
+			console.error(reasonDictionary);
+		});
+
+
+		return deferred.promise;
+	};
+
+	/**
+	 * Insert into a element a specific html and binding it with a controller
+	 * passed by parameter
+	 *
+	 */
+	 /*
+	me.insertHtmlWithController = function(targetElement, html, controller) {
+		var $div = $('<div ng-controller="' + controller + '">' + html + '</div>');
+		targetElement.append($div);
+
+		var scope = angular.element($div).scope();
+		$compile($div)(scope);
+	}
+	*/
+
+	me.insertHtmlWithController = function(targetElement, html, controller, scope) {	
+		targetElement.html('')
+		var $div = $('<div>' + html + '</div>');
+		$compile($div)(scope);
+		targetElement.append($div);
+	};	
+
+});
+'use strict';
+
+angular.module('app').service('StringSrv', function(AppSrv) {
+
+	var me = this;
+
+	me.format = function() {
+		var formatted = arguments[0];
+		for (var i = 1; i < arguments.length; i++) {
+			var regexp = new RegExp('\\{' + (i - 1).toString() + '\\}', 'gi');
+			formatted = formatted.replace(regexp, arguments[i]);
+		}
+		return formatted;        
+	};
+
+
+    me.leftPad = function(numero, qtdVezes, caracterRepetir) {
+        var retorno = qtdVezes - numero.toString().length + 1;
+        return Array(+(retorno > 0 && retorno)).join(caracterRepetir) + numero;
+    }  ;  
+
+    me.replaceAll = function(string, find, replace) {
+        if (string) {
+            return string.replace(RegExp('\\b' + find + '\\b','g'), replace);   
+        } else {
+            return '';
+        }
+    };       
+
+
+    me.doubleToStrTime = function(segundos) {
+        //00:05:22,900
+
+        var  SEGUNDOS_HORA = 3600;      
+        var SEGUNDOS_MINUTO = 60;
+        
+        //var xSegundos = segundos;
+        
+        var xHoras = (segundos / SEGUNDOS_HORA);
+        var xHorasStr = me.leftPad(Math.floor(xHoras), 2, "0");
+        
+        //xSegundos = xSegundos % SEGUNDOS_HORA;
+        
+        var xMinutos = (segundos / SEGUNDOS_MINUTO);
+        var xMinutosStr = me.leftPad(Math.floor(xMinutos), 2, "0");
+
+        var xSegundosStr = (segundos % SEGUNDOS_MINUTO).toString();   
+        var xSegundosFrac = "000";
+        var xPosSeg = xSegundosStr.indexOf(".");
+        if (xPosSeg != -1) {
+            xSegundosFrac = xSegundosStr.substring(xPosSeg + 1).substring(0, 3);
+            xSegundosFrac += "0".repeat(3 - xSegundosFrac.length);
+            xSegundosStr = xSegundosStr.substring(0, xPosSeg);
+        }
+        xSegundosStr = me.leftPad(Math.floor(xSegundosStr), 2, "0") + "," + xSegundosFrac; 
+        
+        return xHorasStr + ":" + xMinutosStr + ":" + xSegundosStr;
+    };   
+
+    me.strTimeToDouble = function(strTime) {
+        //00:05:22,900
+        var xTimeStr = strTime;
+        var xHours = parseInt(xTimeStr.substring(0, 2));
+        var xMinutes = parseInt(xTimeStr.substring(3, 5));
+        xTimeStr = xTimeStr.substring(6, xTimeStr.length).replace(",", ".");
+        var xSeconds = parseFloat(xTimeStr);        
+        
+        return (xHours * 3600) + (xMinutes * 60) + xSeconds;
+    };       
+
+
+	/*
+	 * @param array deve conter os array do dicionário e das pronúncias contatenado, formando um grande array.
+	 *
+	 */
+	me.addLinksDictionaryAndPronunciation = function(text) {
+		var array = AppSrv.allExpressions;
+		if (array.length == 0) {
+			return text;
+		} else {
+			var texto = me.replaceAll(text, '"', "'");
+			var textoLower = texto.toLowerCase();	
+			var matrizSubst = 'matrizsubst1-{0}-matrizsubst2';
+			var expressoesSubst = [];
+			var contaSubst = 0;
+			
+			for (var conta = 0 ; conta < array.length ; conta++) {
+				var item = array[conta];
+				var expressao = item.dsExpressao.toLowerCase();
+
+				var pos = textoLower.search(new RegExp('\\b' + expressao + '\\b'));
+				while (pos != -1) {
+					var textoSubs = texto.substring(pos, pos + expressao.length);
+					if (textoSubs.toLowerCase() == expressao) {
+						expressoesSubst.push({
+							cd_pronuncia: item.cdPronuncia,
+							cd_dicionario: item.cdDicionario,								
+							ds_expressao: item.dsExpressao,
+							texto: textoSubs
+						});
+						var subst = me.format(matrizSubst, contaSubst);
+						texto = texto.replace(new RegExp('\\b' + textoSubs + '\\b', "g"), subst);
+
+						contaSubst++;
+						//xPos += subst.length;
+						textoLower = texto.toLowerCase();	
+					}
+					
+					pos = textoLower.search(new RegExp('\\b' + expressao + '\\b'));
+				}
+			}
+
+			for (var conta = 0 ; conta < expressoesSubst.length ; conta++) {
+				var item = expressoesSubst[conta];
+				var find = me.format(matrizSubst, conta);
+				var replace = null;
+				var functionExec = null;
+				var classLink = null;
+				if (item.cd_dicionario) {
+					functionExec = 'openDictionary(' + item.cd_dicionario + ');';
+					classLink = 'dictionary-link';
+				} else {
+					functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					
+					classLink = 'pronunciation-link';					
+				}
+				replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.ds_expressao, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
+				texto = me.replaceAll(texto, find, replace);		
+			}					
+
+			return texto;
+		}	
+	};
+
+});
 angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv) {
 
 	var vm = this;
@@ -682,193 +885,6 @@ angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv,
             return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
       }
 
-
-});
-angular.module('app').service('DatabaseSrv', function() {
-
-	var me = this;
-
-});
-angular.module('app').service('GeneralSrv', function($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
-
-	var me = this;
-
-	me.getAllExpressions = function() {
-		var deferred = $q.defer();
-
-		DictionaryRestSrv.list().then(function(responseDictionary) {
-			AppSrv.dictionaryExpressions = responseDictionary.data.data;
-	
-			PronunciationRestSrv.list().then(function(responsePronunciation) {
-				AppSrv.pronunciationExpressions = responsePronunciation.data.data;	
-
-				AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(AppSrv.pronunciationExpressions);
-				deferred.resolve(AppSrv.allExpressions);
-			}, function(reasonPronunciation) {
-				console.error(reasonPronunciation);
-			});
-
-		}, function(reasonDictionary) {
-			console.error(reasonDictionary);
-		});
-
-
-		return deferred.promise;
-	}
-
-	/**
-	 * Insert into a element a specific html and binding it with a controller
-	 * passed by parameter
-	 *
-	 */
-	 /*
-	me.insertHtmlWithController = function(targetElement, html, controller) {
-		var $div = $('<div ng-controller="' + controller + '">' + html + '</div>');
-		targetElement.append($div);
-
-		var scope = angular.element($div).scope();
-		$compile($div)(scope);
-	}
-	*/
-
-	me.insertHtmlWithController = function(targetElement, html, controller, scope) {	
-		targetElement.html('')
-		var $div = $('<div>' + html + '</div>');
-		$compile($div)(scope);
-		targetElement.append($div);
-	}	
-
-});
-angular.module('app').service('StringSrv', function(AppSrv) {
-
-	var me = this;
-
-	me.format = function() {
-		var formatted = arguments[0];
-		for (var i = 1; i < arguments.length; i++) {
-			var regexp = new RegExp('\\{' + (i - 1).toString() + '\\}', 'gi');
-			formatted = formatted.replace(regexp, arguments[i]);
-		}
-		return formatted;        
-	}
-
-
-    me.leftPad = function(numero, qtdVezes, caracterRepetir) {
-        var retorno = qtdVezes - numero.toString().length + 1;
-        return Array(+(retorno > 0 && retorno)).join(caracterRepetir) + numero;
-    }    
-
-    me.replaceAll = function(string, find, replace) {
-        if (string) {
-            return string.replace(RegExp('\\b' + find + '\\b','g'), replace);   
-        } else {
-            return '';
-        }
-    }       
-
-
-    me.doubleToStrTime = function(segundos) {
-        //00:05:22,900
-
-        var  SEGUNDOS_HORA = 3600;      
-        var SEGUNDOS_MINUTO = 60;
-        
-        //var xSegundos = segundos;
-        
-        var xHoras = (segundos / SEGUNDOS_HORA);
-        var xHorasStr = me.leftPad(Math.floor(xHoras), 2, "0");
-        
-        //xSegundos = xSegundos % SEGUNDOS_HORA;
-        
-        var xMinutos = (segundos / SEGUNDOS_MINUTO);
-        var xMinutosStr = me.leftPad(Math.floor(xMinutos), 2, "0");
-
-        var xSegundosStr = (segundos % SEGUNDOS_MINUTO).toString();   
-        var xSegundosFrac = "000";
-        var xPosSeg = xSegundosStr.indexOf(".");
-        if (xPosSeg != -1) {
-            xSegundosFrac = xSegundosStr.substring(xPosSeg + 1).substring(0, 3);
-            xSegundosFrac += "0".repeat(3 - xSegundosFrac.length);
-            xSegundosStr = xSegundosStr.substring(0, xPosSeg);
-        }
-        xSegundosStr = me.leftPad(Math.floor(xSegundosStr), 2, "0") + "," + xSegundosFrac; 
-        
-        return xHorasStr + ":" + xMinutosStr + ":" + xSegundosStr;
-    }   
-
-    me.strTimeToDouble = function(strTime) {
-        //00:05:22,900
-        var xTimeStr = strTime;
-        var xHours = parseInt(xTimeStr.substring(0, 2));
-        var xMinutes = parseInt(xTimeStr.substring(3, 5));
-        xTimeStr = xTimeStr.substring(6, xTimeStr.length).replace(",", ".");
-        var xSeconds = parseFloat(xTimeStr);        
-        
-        return (xHours * 3600) + (xMinutes * 60) + xSeconds;
-    }       
-
-
-	/*
-	 * @param array deve conter os array do dicionário e das pronúncias contatenado, formando um grande array.
-	 *
-	 */
-	me.addLinksDictionaryAndPronunciation = function(text) {
-		var array = AppSrv.allExpressions;
-		if (array.length == 0) {
-			return text;
-		} else {
-			var texto = me.replaceAll(text, '"', "'");
-			var textoLower = texto.toLowerCase();	
-			var matrizSubst = 'matrizsubst1-{0}-matrizsubst2';
-			var expressoesSubst = [];
-			var contaSubst = 0;
-			
-			for (var conta = 0 ; conta < array.length ; conta++) {
-				var item = array[conta];
-				var expressao = item.dsExpressao.toLowerCase();
-
-				var pos = textoLower.search(new RegExp('\\b' + expressao + '\\b'));
-				while (pos != -1) {
-					var textoSubs = texto.substring(pos, pos + expressao.length);
-					if (textoSubs.toLowerCase() == expressao) {
-						expressoesSubst.push({
-							cd_pronuncia: item.cdPronuncia,
-							cd_dicionario: item.cdDicionario,								
-							ds_expressao: item.dsExpressao,
-							texto: textoSubs
-						});
-						var subst = me.format(matrizSubst, contaSubst);
-						texto = texto.replace(new RegExp('\\b' + textoSubs + '\\b', "g"), subst);
-
-						contaSubst++;
-						//xPos += subst.length;
-						textoLower = texto.toLowerCase();	
-					}
-					
-					pos = textoLower.search(new RegExp('\\b' + expressao + '\\b'));
-				}
-			}
-
-			for (var conta = 0 ; conta < expressoesSubst.length ; conta++) {
-				var item = expressoesSubst[conta];
-				var find = me.format(matrizSubst, conta);
-				var replace = null;
-				var functionExec = null;
-				var classLink = null;
-				if (item.cd_dicionario) {
-					functionExec = 'openDictionary(' + item.cd_dicionario + ');';
-					classLink = 'dictionary-link';
-				} else {
-					functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					
-					classLink = 'pronunciation-link';					
-				}
-				replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.ds_expressao, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
-				texto = me.replaceAll(texto, find, replace);		
-			}					
-
-			return texto;
-		}	
-	}
 
 });
 angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSrv) {
@@ -1394,6 +1410,8 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 	}
 
 });
+'use strict';
+
 angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionSrv, uiDeniModalSrv, ItemRestSrv) {
 
 	var vm = this;
@@ -1417,7 +1435,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 				jsTreeInstance.select_node(addedNode);
 			});		
 		});
-	}	
+	};	
 
 
 	/**
@@ -1428,7 +1446,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		categorySrv.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
 			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
 		});
-	}	
+	};
 
 	/**
 	 *
@@ -1440,7 +1458,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 			jsTreeInstance.delete_node([currentCategoryNode]);
 			jsTreeInstance.select_node(parentNode);
 		});
-	}
+	};
 
 	/**
 	 *
@@ -1452,7 +1470,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		} else {
 			return controller.currentCategoryNode.parents[controller.currentCategoryNode.parents.length - 2];
 		}	
-	}
+	};
 
 
 	/**
@@ -1470,7 +1488,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		        controller.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
 			});
 		});
-    }
+    };
 
 
 	/**
@@ -1492,7 +1510,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
     	}
 
 		controller.categoryPath = path;
-    }	
+    };	
 
 	/**
 	 *
@@ -1515,7 +1533,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 			controller.gridOptions.api.reload();
 		}	
 
-    }
+    };
 
 	/**
 	 *
@@ -1550,7 +1568,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 				],
 			});
 
-	}
+	};
 
 	/**
 	 *
@@ -1648,7 +1666,8 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 
 	        ],
 	        listeners: {
-				onafterload: function(data, options) {
+				onbeforeload: function(data, options) {
+					$rootScope.subTitle = '';
 				},
 
 	            onafterrepaintrow: function(rowIndex, elementRow) {
@@ -1672,7 +1691,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 			}			
 	    };		
 
-	}
+	};
 
 });
 angular.module('app').service('TextRestSrv', function(AppSrv) {
@@ -2054,6 +2073,8 @@ angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $route
     });
 
 });
+'use strict';
+
 angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
      
     var vm = this;
@@ -2076,16 +2097,16 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
         dictionaryModalSrv.showModal($rootScope).then(function(dictionaryData) {
             TextSrv.setContent(vm, $scope, vm.content);
         });
-    }
+    };
 
     vm.pronunciationModalClick = function() {
         pronunciationModalSrv.showModal($rootScope).then(function(pronunciationData) {
             TextSrv.setContent(vm, $scope, vm.content);
         });
-    }
+    };
 
     $scope.$watch('ctrl.selectedIndex', function(current, old){
-        if ((angular.isDefined(current)) && (current != old)) {
+        if ((angular.isDefined(current)) && (current !== old)) {
         	if (vm.texts.length > 0) {
                 $rootScope.loading = true;
     	    	vm.t07txt = vm.texts[current];
@@ -2103,34 +2124,34 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.editClick = function() {
         vm.contentStored = vm.content;
         vm.editing = true;
-    }
+    };
 
     vm.saveClick = function() {
         TextRestSrv.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
             TextSrv.setContent(vm, $scope, serverResponse.data[0].txConteudo);
             vm.editing = false;             
         });
-    }
+    };
 
     vm.cancelClick = function() {
         vm.content = vm.contentStored;          
         vm.editing = false;
-    }
+    };
 
     vm.listenSelectedTextClick = function() {
         var selection = window.getSelection();
         if (selection) {
             pronunciationSrv.listenExpression(selection.toString().trim());
         }
-    }
+    };
 
     $scope.openDictionary = function(cdDicionario) {
         dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario);
-    }     
+    };    
 
     $scope.openPronunciation = function(dsExpressao) {
         pronunciationSrv.listenExpression(dsExpressao);
-    }     
+    };     
 
 });
 
@@ -2273,6 +2294,8 @@ angular.module('app').config(function($routeProvider) {
     	});	
 
 });
+'use strict';
+
 angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
 
 	var vm = this;
@@ -2308,12 +2331,12 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
 		var mainToobar = $('#md-toolbar-tools-main');
 
-		if (side == AppEnums.Side.LEFT) {
+		if (side === AppEnums.Side.LEFT) {
 			mainToobar.prepend(hamburgerIconButton);
 		} else {
 			mainToobar.append(hamburgerIconButton);			
 		}	
-	}
+	};
 
 	/**
 	 *
@@ -2325,11 +2348,11 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		var keyField = Object.keys(record)[0];
 		//Get the id value
 		return record[keyField];
-	}
+	};
    
 	vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
 
-		var saveButton = function (context) {
+		var saveButton = function () {
 		  var ui = $.summernote.ui;
 		  
 		  // create button
@@ -2342,10 +2365,10 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		  });
 
 		  return button.render();   // return button as jquery object 
-		}
+		};
 
 
-		var cancelButton = function (context) {
+		var cancelButton = function () {
 		  var ui = $.summernote.ui;
 		  
 		  // create button
@@ -2358,7 +2381,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		  });
 
 		  return button.render();   // return button as jquery object 
-		}
+		};
 
 	    return {
 	      toolbar: [
@@ -2378,13 +2401,13 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		  }
 	    };
 
-	}
+	};
 
     vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
 		var deferred = $q.defer();
-		var parametrosUrl = {params: parameters};
 
 		var execRequest = function() {
+			var parametrosUrl = {params: parameters};			
 			$http.get(AppConsts.SERVER_URL + relativeUrl, parametrosUrl)
 				.then(function(retornoServer) {
 					if (retornoServer.data.success) {
@@ -2405,7 +2428,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
 					deferred.reject(retornoServer);
 				});
-		}
+		};
 
 		if (confirmMessage) {
 			uiDeniModalSrv.confirm(confirmMessage)
@@ -2423,7 +2446,6 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
     vm.requestWithPromisePayLoad = function(relativeUrl, parameters, parametersPayLoad, successMessage, confirmMessage) {
 		var deferred = $q.defer();
-		var parametrosUrl = {params: parameters};
 
 		var execRequest = function() {
 	        var resource = $resource(AppConsts.SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
@@ -2453,7 +2475,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 					}	
 					deferred.reject(retornoServer);
 				});
-		}
+		};
 
 		if (confirmMessage) {
 			w2confirm(confirmMessage, function (btn) { 
@@ -2511,7 +2533,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 	vm.listenExpression = function(expression, callbackFunction) {
 		if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
 			//var siteBuscar = 'http://emmasaying.com/?s=';
-			var siteBuscar = 'http://www.wordreference.com/enpt/'
+			var siteBuscar = 'http://www.wordreference.com/enpt/';
 			window.open(siteBuscar + expression);
 		} else {
 			var u = new SpeechSynthesisUtterance();
@@ -2530,7 +2552,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 			
 			speechSynthesis.speak(u);
 		}	
-	}
+	};
 
 	/*
 	this.getArrayPronunciasEDicionario = function() {

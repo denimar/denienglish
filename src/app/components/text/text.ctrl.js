@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
      
     var vm = this;
@@ -20,16 +22,16 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
         dictionaryModalSrv.showModal($rootScope).then(function(dictionaryData) {
             TextSrv.setContent(vm, $scope, vm.content);
         });
-    }
+    };
 
     vm.pronunciationModalClick = function() {
         pronunciationModalSrv.showModal($rootScope).then(function(pronunciationData) {
             TextSrv.setContent(vm, $scope, vm.content);
         });
-    }
+    };
 
     $scope.$watch('ctrl.selectedIndex', function(current, old){
-        if ((angular.isDefined(current)) && (current != old)) {
+        if ((angular.isDefined(current)) && (current !== old)) {
         	if (vm.texts.length > 0) {
                 $rootScope.loading = true;
     	    	vm.t07txt = vm.texts[current];
@@ -47,33 +49,33 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.editClick = function() {
         vm.contentStored = vm.content;
         vm.editing = true;
-    }
+    };
 
     vm.saveClick = function() {
         TextRestSrv.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
             TextSrv.setContent(vm, $scope, serverResponse.data[0].txConteudo);
             vm.editing = false;             
         });
-    }
+    };
 
     vm.cancelClick = function() {
         vm.content = vm.contentStored;          
         vm.editing = false;
-    }
+    };
 
     vm.listenSelectedTextClick = function() {
         var selection = window.getSelection();
         if (selection) {
             pronunciationSrv.listenExpression(selection.toString().trim());
         }
-    }
+    };
 
     $scope.openDictionary = function(cdDicionario) {
         dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario);
-    }     
+    };    
 
     $scope.openPronunciation = function(dsExpressao) {
         pronunciationSrv.listenExpression(dsExpressao);
-    }     
+    };     
 
 });

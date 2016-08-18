@@ -1,10 +1,12 @@
+'use strict';
+
 angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv) {
 
 	var vm = this;
 
 	vm.list = function() {
 		return DictionaryRestSrv.list();
-	}
+	};
 
 	vm.add = function(ds_expressao, ds_tags) {
 		return DictionaryRestSrv.add(ds_expressao, ds_tags);
@@ -12,16 +14,16 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 
 	vm.del = function(cd_dicionario) {
 		return DictionaryRestSrv.del(cd_dicionario);
-	}
+	};
 
 
 	vm.learnedToogle = function(cd_dicionario) {
 		return DictionaryRestSrv.learnedToogle(cd_dicionario);
-	}
+	};
 
 	vm.definitionSet = function(cd_dicionario, definition) {
 		return DictionaryRestSrv.definitionSet(cd_dicionario, definition);
-	}
+	};
 
 	vm.definitionGet = function(cd_dicionario) {
 		var deferred = $q.defer();
@@ -31,7 +33,7 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 		});
 
 		return deferred.promise;
-	}
+	};
 
 	vm.openDictionaryDefinitionView = function(scope, cdDicionario) {
 
@@ -46,6 +48,6 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
             modal: true
         }).show();        
 
-	}	
+	};	
 
 });

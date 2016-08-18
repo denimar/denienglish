@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
 
 	var vm = this;
@@ -33,12 +35,12 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
 		var mainToobar = $('#md-toolbar-tools-main');
 
-		if (side == AppEnums.Side.LEFT) {
+		if (side === AppEnums.Side.LEFT) {
 			mainToobar.prepend(hamburgerIconButton);
 		} else {
 			mainToobar.append(hamburgerIconButton);			
 		}	
-	}
+	};
 
 	/**
 	 *
@@ -50,11 +52,11 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		var keyField = Object.keys(record)[0];
 		//Get the id value
 		return record[keyField];
-	}
+	};
    
 	vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
 
-		var saveButton = function (context) {
+		var saveButton = function () {
 		  var ui = $.summernote.ui;
 		  
 		  // create button
@@ -67,10 +69,10 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		  });
 
 		  return button.render();   // return button as jquery object 
-		}
+		};
 
 
-		var cancelButton = function (context) {
+		var cancelButton = function () {
 		  var ui = $.summernote.ui;
 		  
 		  // create button
@@ -83,7 +85,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		  });
 
 		  return button.render();   // return button as jquery object 
-		}
+		};
 
 	    return {
 	      toolbar: [
@@ -103,13 +105,13 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		  }
 	    };
 
-	}
+	};
 
     vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
 		var deferred = $q.defer();
-		var parametrosUrl = {params: parameters};
 
 		var execRequest = function() {
+			var parametrosUrl = {params: parameters};			
 			$http.get(AppConsts.SERVER_URL + relativeUrl, parametrosUrl)
 				.then(function(retornoServer) {
 					if (retornoServer.data.success) {
@@ -130,7 +132,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
 					deferred.reject(retornoServer);
 				});
-		}
+		};
 
 		if (confirmMessage) {
 			uiDeniModalSrv.confirm(confirmMessage)
@@ -148,7 +150,6 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
     vm.requestWithPromisePayLoad = function(relativeUrl, parameters, parametersPayLoad, successMessage, confirmMessage) {
 		var deferred = $q.defer();
-		var parametrosUrl = {params: parameters};
 
 		var execRequest = function() {
 	        var resource = $resource(AppConsts.SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
@@ -178,7 +179,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 					}	
 					deferred.reject(retornoServer);
 				});
-		}
+		};
 
 		if (confirmMessage) {
 			w2confirm(confirmMessage, function (btn) { 
@@ -236,7 +237,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 	vm.listenExpression = function(expression, callbackFunction) {
 		if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
 			//var siteBuscar = 'http://emmasaying.com/?s=';
-			var siteBuscar = 'http://www.wordreference.com/enpt/'
+			var siteBuscar = 'http://www.wordreference.com/enpt/';
 			window.open(siteBuscar + expression);
 		} else {
 			var u = new SpeechSynthesisUtterance();
@@ -255,7 +256,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 			
 			speechSynthesis.speak(u);
 		}	
-	}
+	};
 
 	/*
 	this.getArrayPronunciasEDicionario = function() {

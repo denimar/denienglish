@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionSrv, uiDeniModalSrv, ItemRestSrv) {
 
 	var vm = this;
@@ -21,7 +23,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 				jsTreeInstance.select_node(addedNode);
 			});		
 		});
-	}	
+	};	
 
 
 	/**
@@ -32,7 +34,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		categorySrv.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
 			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
 		});
-	}	
+	};
 
 	/**
 	 *
@@ -44,7 +46,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 			jsTreeInstance.delete_node([currentCategoryNode]);
 			jsTreeInstance.select_node(parentNode);
 		});
-	}
+	};
 
 	/**
 	 *
@@ -56,7 +58,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		} else {
 			return controller.currentCategoryNode.parents[controller.currentCategoryNode.parents.length - 2];
 		}	
-	}
+	};
 
 
 	/**
@@ -74,7 +76,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		        controller.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
 			});
 		});
-    }
+    };
 
 
 	/**
@@ -96,7 +98,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
     	}
 
 		controller.categoryPath = path;
-    }	
+    };	
 
 	/**
 	 *
@@ -119,7 +121,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 			controller.gridOptions.api.reload();
 		}	
 
-    }
+    };
 
 	/**
 	 *
@@ -154,7 +156,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 				],
 			});
 
-	}
+	};
 
 	/**
 	 *
@@ -252,7 +254,8 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 
 	        ],
 	        listeners: {
-				onafterload: function(data, options) {
+				onbeforeload: function(data, options) {
+					$rootScope.subTitle = '';
 				},
 
 	            onafterrepaintrow: function(rowIndex, elementRow) {
@@ -276,6 +279,6 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 			}			
 	    };		
 
-	}
+	};
 
 });

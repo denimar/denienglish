@@ -8,6 +8,7 @@ var uglify = require('gulp-uglify');
 var uglifycss = require('gulp-uglifycss');
 var browserSync = require('browser-sync').create();
 var livereload = require('gulp-livereload');
+var jshint = require('gulp-jshint');
 
 // Script Task
 // Uglifies
@@ -63,13 +64,17 @@ gulp.task('scripts', function() {
 	//REST FOLDER
 	.pipe(addsrc.append('src/app/rest/*srv.js'))  	
 
-	
 	//APP FOLDER
 	.pipe(addsrc.append('src/app/app.cnst.js'))
 	.pipe(addsrc.append('src/app/app.enum.js')) 
 	.pipe(addsrc.append('src/app/app.cfg.js')) 
 	.pipe(addsrc.append('src/app/app.srv.js')) 		
 	.pipe(addsrc.append('src/app/app.ctrl.js'))
+
+	//	
+	.pipe(jshint('.jshintrc'))
+	.pipe(jshint.reporter('default'))
+
 
   // Concatenate all files into a one
   .pipe(concat('dist/app.js'))

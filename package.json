@@ -21,8 +21,10 @@
     "gulp-add-src": "^0.2.0",
     "gulp-bower": "0.0.13",
     "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^2.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-util": "^3.0.7"
+    "gulp-util": "^3.0.7",
+    "jshint": "^2.9.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
