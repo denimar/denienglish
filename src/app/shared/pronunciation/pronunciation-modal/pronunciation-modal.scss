@@ -1,4 +1,4 @@
-.dictionary-modal {
+.pronunciation-modal {
 	$default-border-color: #99bce8;
 
 	height: 100%;
@@ -31,8 +31,8 @@
 	}
 
 	.grid-container {
-		height: 180px;
 		margin-bottom: 2px;
+		height: 350px;
 		
 		.gridDictionary {
 			color: black;
@@ -43,8 +43,4 @@
 		}
 	}	
 
-	.dictionary-definition-view {
-		height: 310px;
-		border: solid 1px $default-border-color;
-	}
 }

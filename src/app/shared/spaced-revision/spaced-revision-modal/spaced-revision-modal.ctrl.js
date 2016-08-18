@@ -3,6 +3,7 @@ angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppCo
 	var vm = this;
 	spacedRevisionSrv.setController(vm);
 
+	vm.showDefinitionContent = false;
 	vm.learnedRate = 60;
 	vm.expressions = [];
 	vm.currentExpression;

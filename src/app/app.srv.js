@@ -235,9 +235,9 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 
 	vm.listenExpression = function(expression, callbackFunction) {
 		if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
-			//var xSiteBuscar = 'http://emmasaying.com/?s=';
-			var xSiteBuscar = 'http://www.wordreference.com/enpt/'
-			window.open(xSiteBuscar + expression);
+			//var siteBuscar = 'http://emmasaying.com/?s=';
+			var siteBuscar = 'http://www.wordreference.com/enpt/'
+			window.open(siteBuscar + expression);
 		} else {
 			var u = new SpeechSynthesisUtterance();
 			u.text = expression;

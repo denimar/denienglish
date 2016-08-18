@@ -1,4 +1,4 @@
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
+angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
      
     var vm = this;
     vm.editing = false;
@@ -10,15 +10,25 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.formatedContent = '';     
     vm.t07txt = null;
 
-    TextSrv.configWYSIWYG(vm, $scope);
-
     TextRestSrv.list(vm.params.cdItem).then(function(serverResponse) {
     	vm.texts = serverResponse.data.data;
         vm.selectedIndex = 0;     	
     });
 
+    vm.dictionaryModalClick = function() {
+        dictionaryModalSrv.showModal($rootScope).then(function(dictionaryData) {
+            TextSrv.setContent(vm, $scope, vm.content);
+        });
+    }
+
+    vm.pronunciationModalClick = function() {
+        pronunciationModalSrv.showModal($rootScope).then(function(pronunciationData) {
+            TextSrv.setContent(vm, $scope, vm.content);
+        });
+    }
+
     $scope.$watch('ctrl.selectedIndex', function(current, old){
-        if (current != old) {
+        if ((angular.isDefined(current)) && (current != old)) {
         	if (vm.texts.length > 0) {
                 $rootScope.loading = true;
     	    	vm.t07txt = vm.texts[current];
@@ -38,24 +48,31 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
         vm.editing = true;
     }
 
-    $scope.openDictionary = function(expression) {
-        alert('here');
+    vm.saveClick = function() {
+        TextRestSrv.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
+            TextSrv.setContent(vm, $scope, serverResponse.data[0].txConteudo);
+            vm.editing = false;             
+        });
+    }
 
-        uiDeniModalSrv.createWindow({
-            scope: $scope,
-            title: 'Dictionary - ' + expression,
-            width: '600px',         
-            height: '300px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK],
-            htmlTemplate: '<dictionary-view expression="house" style="width:100%;height:100%;display:block;"></dictionary-view>',
-            modal: true
-        }).show();        
+    vm.cancelClick = function() {
+        vm.content = vm.contentStored;          
+        vm.editing = false;
+    }
 
+    vm.listenSelectedTextClick = function() {
+        var selection = window.getSelection();
+        if (selection) {
+            pronunciationSrv.listenExpression(selection.toString().trim());
+        }
+    }
+
+    $scope.openDictionary = function(cdDicionario) {
+        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario);
     }     
 
-    $scope.openPronunciation = function(expression) {
-    	alert('Pronunciation - ' + expression);
+    $scope.openPronunciation = function(dsExpressao) {
+        pronunciationSrv.listenExpression(dsExpressao);
     }     
 
 });

@@ -1,4 +1,4 @@
-angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv) {
+angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv) {
 
 	var vm = this;
 
@@ -31,10 +31,21 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 		});
 
 		return deferred.promise;
-	}	
+	}
 
-	vm.showModal = function(scope) {
-		return dictionaryModalSrv.showModal(scope, vm.definitionGet);
+	vm.openDictionaryDefinitionView = function(scope, cdDicionario) {
+
+        uiDeniModalSrv.createWindow({
+            scope: scope,
+            title: 'Dictionary',
+            width: '750px',         
+            height: '400px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK],
+            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
+            modal: true
+        }).show();        
+
 	}	
 
 });

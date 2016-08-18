@@ -112,16 +112,16 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 				var item = expressoesSubst[conta];
 				var find = me.format(matrizSubst, conta);
 				var replace = null;
-				var functionName = null;
+				var functionExec = null;
 				var classLink = null;
 				if (item.cd_dicionario) {
-					functionName = 'openDictionary';
+					functionExec = 'openDictionary(' + item.cd_dicionario + ');';
 					classLink = 'dictionary-link';
 				} else {
-					functionName = 'openPronunciation';					
+					functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					
 					classLink = 'pronunciation-link';					
 				}
-				replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionName + '(\'' + item.ds_expressao + '\');\">' + item.ds_expressao + '</span>', me.replaceAll(item.ds_expressao, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
+				replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.ds_expressao, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
 				texto = me.replaceAll(texto, find, replace);		
 			}					
 

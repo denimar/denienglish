@@ -4,7 +4,6 @@ angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModal
 	dictionaryModalSrv.setController(this);
 
 	this.searchState = DictionaryModalEnums.SearchState.STOPPED; //will be fulfilled by DictionaryModalEnums.SearchState enum
-	this.editingDefinition = false;
 	this.searchValue = '';
 
 	this.gridDictionaryOptions = dictionaryModalSrv.getGridDictionaryOptions();
@@ -17,9 +16,5 @@ angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModal
 	this.showSearchButton = dictionaryModalSrv.showSearchButton;
 
 	this.showLoading = dictionaryModalSrv.showLoading;
-
-	this.definitionEditClick = dictionaryModalSrv.definitionEditClick;
-	this.definitionSaveClick = dictionaryModalSrv.definitionSaveClick;
-	this.definitionCancelClick = dictionaryModalSrv.definitionCancelClick;
 
 });

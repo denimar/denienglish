@@ -1,4 +1,4 @@
-<div class="dictionary-modal" layout="column" ng-controller="DictionaryModalCtrl as ctrl">
+<div class="pronunciation-modal" layout="column" ng-controller="PronunciationModalCtrl as ctrl">
 
 	<div class="search-input-container" layout="row">
 		
@@ -13,16 +13,10 @@
 		<md-progress-linear class="ng-hide" md-mode="indeterminate" ng-show="ctrl.showLoading()"></md-progress-linear>	
 	</div>	
 
-	<div class="grid-container" layout="row">
+	<div class="grid-container" layout="row" flex>
 
-		<ui-deni-grid class="gridDictionary" options="ctrl.gridDictionaryOptions" flex></ui-deni-grid>	
+		<ui-deni-grid class="gridPronunciation" options="ctrl.gridPronunciationOptions" flex></ui-deni-grid>	
 		
-	</div>
-
-	<div class="definition-container" layout="column" flex>
-
-		<dictionary-definition-view class="dictionary-definition-view"></dictionary-definition-view>
-
 	</div>
 	
 </div>

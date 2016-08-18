@@ -8,6 +8,7 @@ angular.module('app').service('spacedRevisionSrv', function($rootScope, StringSr
 	}
 
 	vm.selectExpression = function(index) {
+		vm.controller.showDefinitionContent = false;
 		if (vm.controller.expressions.length > 0) {
 			vm.controller.currentExpressionIndex = index;
 			vm.controller.currentExpression = vm.controller.expressions[index];
@@ -27,14 +28,15 @@ angular.module('app').service('spacedRevisionSrv', function($rootScope, StringSr
 				pronunciationSrv.listenExpression(controller.model.expression.dsExpressao);
 			}	
 
-			dictionarySrv.definitionGet(controller.currentExpression.cdDicionario).then(function(expression) {
-				controller.model.expression.definition = expression;
+			var dictionaryDefinitionView = $('.spaced-revision-modal .definition-detail-content-content dictionary-definition-view');
+			var element = angular.element(dictionaryDefinitionView);
+			var scope = element.scope();
+			scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.cdDicionario;
+			if (!scope.$$phase) {
+				scope.$apply();
+			}
 
-				var div = $(document.createElement('div'));
-				div.html(expression);
-				$('.definition-detail-content-content').html('');
-				$('.definition-detail-content-content').append(div);
-			});
+			vm.controller.showDefinitionContent = true;                              
 
 		//pronunciation Result
 		} else if (angular.isDefined(controller.currentExpression.cdPronuncia)) {

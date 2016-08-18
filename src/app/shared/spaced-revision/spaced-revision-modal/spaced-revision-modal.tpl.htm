@@ -65,7 +65,9 @@
 				<div class="definition-navigator-status">{{(ctrl.currentExpressionIndex + 1) + ' of ' + ctrl.expressions.length}}</div>			
 			</div>				
 			<div class="definition-detail-content" flex="auto" layout="row">
-				<div class="definition-detail-content-content" flex></div>
+				<div class="definition-detail-content-content" flex>
+					<dictionary-definition-view class="ng-hide" ng-show="ctrl.showDefinitionContent"></dictionary-definition-view>
+				</div>
 				<div class="definition-detail-content-toolbar">
 					<md-fab-actions>
 						<md-button aria-label="Twitter" class="md-fab md-raised md-mini">

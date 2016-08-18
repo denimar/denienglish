@@ -2,13 +2,6 @@ angular.module('app').service('pronunciationSrv', function($q, $window) {
 
 	var vm = this;
 
-	/*
-	this.listenExpression = function(expression) {
-		var utterance = new SpeechSynthesisUtterance(expression);
-		$window.speechSynthesis.speak(utterance);		
-	}	
-	*/
-
 	this.listenExpression = function(expression) {
 		var deferred = $q.defer();
 
@@ -54,5 +47,6 @@ angular.module('app').service('pronunciationSrv', function($q, $window) {
 
 		return deferred.promise;
 	}
+
 
 });

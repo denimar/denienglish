@@ -291,36 +291,9 @@ label {
       color: black; }
       .dictionary-modal .grid-container .gridDictionary .material-icons:hover {
         color: red !important; }
-  .dictionary-modal .definition-container {
-    border: solid 1px #99bce8;
-    height: 150px;
-    padding: 4px; }
-    .dictionary-modal .definition-container .definition-toolbar {
-      height: 30px;
-      max-height: 30px;
-      min-height: 30px;
-      border-top: solid 1px #f2f2f2;
-      padding: 2px; }
-      .dictionary-modal .definition-container .definition-toolbar .definition-toolbar-buttons .material-icons {
-        cursor: pointer; }
-    .dictionary-modal .definition-container .definition {
-      overflow: auto; }
-    .dictionary-modal .definition-container .editor-summernote-container {
-      box-sizing: border-box;
-      height: 100%; }
-      .dictionary-modal .definition-container .editor-summernote-container .note-editor {
-        height: 100%;
-        box-sizing: border-box;
-        border-width: 0px; }
-        .dictionary-modal .definition-container .editor-summernote-container .note-editor .note-editing-area {
-          box-sizing: border-box;
-          height: calc(100% - 41px);
-          overflow-y: auto; }
-          .dictionary-modal .definition-container .editor-summernote-container .note-editor .note-editing-area .panel-body {
-            box-sizing: border-box;
-            height: 100%; }
-        .dictionary-modal .definition-container .editor-summernote-container .note-editor .note-statusbar {
-          display: none; }
+  .dictionary-modal .dictionary-definition-view {
+    height: 310px;
+    border: solid 1px #99bce8; }
 
 .new-video-item-modal-tpl {
   height: 100%;
@@ -340,6 +313,34 @@ label {
   .new-video-item-modal-tpl .main .image-preview {
     width: 120px;
     height: 100px; }
+
+.pronunciation-modal {
+  height: 100%;
+  width: 100%;
+  padding: 2px;
+  box-sizing: border-box; }
+  .pronunciation-modal .search-input-container {
+    border: solid 1px #99bce8;
+    height: 30px;
+    box-sizing: border-box; }
+    .pronunciation-modal .search-input-container .search-input {
+      border-width: 0px;
+      font-size: 16px;
+      padding-left: 4px;
+      box-sizing: border-box; }
+      .pronunciation-modal .search-input-container .search-input:focus {
+        outline: none; }
+    .pronunciation-modal .search-input-container .material-icons {
+      color: #03698C;
+      opacity: 0.4;
+      cursor: pointer; }
+  .pronunciation-modal .grid-container {
+    margin-bottom: 2px;
+    height: 350px; }
+    .pronunciation-modal .grid-container .gridDictionary {
+      color: black; }
+      .pronunciation-modal .grid-container .gridDictionary .material-icons:hover {
+        color: red !important; }
 
 .spaced-revision-modal {
   box-sizing: border-box;
@@ -468,8 +469,6 @@ label {
             font-size: 32px;
             color: silver; }
         .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-content {
-          padding: 4px;
-          overflow-y: auto;
           border: dotted 1px silver;
           height: 330px; }
         .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar {
@@ -483,10 +482,38 @@ label {
           .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar md-slider-container {
             background-color: white; }
 
-dictionary-view .dictionary-view-container {
-  padding: 4px; }
-  dictionary-view .dictionary-view-container .dictionary-view-toolbar {
-    height: 25px;
-    background-color: silver; }
-  dictionary-view .dictionary-view-container .dictionary-view-definition {
-    background-color: orange; }
+.dictionary-definition-view-container {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box; }
+  .dictionary-definition-view-container .definition {
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 4px; }
+  .dictionary-definition-view-container .editor-summernote-container {
+    box-sizing: border-box;
+    height: 100%; }
+    .dictionary-definition-view-container .editor-summernote-container .note-editor {
+      height: 100%;
+      box-sizing: border-box;
+      border-width: 0px; }
+      .dictionary-definition-view-container .editor-summernote-container .note-editor .note-editing-area {
+        box-sizing: border-box;
+        height: calc(100% - 41px);
+        overflow-y: auto; }
+        .dictionary-definition-view-container .editor-summernote-container .note-editor .note-editing-area .panel-body {
+          box-sizing: border-box;
+          height: 100%; }
+      .dictionary-definition-view-container .editor-summernote-container .note-editor .note-statusbar {
+        display: none; }
+  .dictionary-definition-view-container .definition-toolbar {
+    height: 30px;
+    max-height: 30px;
+    min-height: 30px;
+    border: dotted 1px silver;
+    padding: 2px;
+    box-sizing: border-box;
+    background-color: #FAFAFA;
+    margin: 2px; }
+    .dictionary-definition-view-container .definition-toolbar .definition-toolbar-buttons .material-icons {
+      cursor: pointer; }

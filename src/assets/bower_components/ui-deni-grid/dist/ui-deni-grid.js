@@ -1975,8 +1975,7 @@ angular.module('ui-deni-grid').controller('uiDeniGridCtrl', function($scope, $el
 	me.checkedRecords = [];
 	me.filterInfo = null;
 	me.searchInfo = null;	
-	me.initialData = []; //It is used when I filter the data and there is a need to know the original data
-
+	
 	//
 	me.loading = false;	
 
@@ -2045,6 +2044,8 @@ angular.module('ui-deni-grid').controller('uiDeniGridCtrl', function($scope, $el
 
 	//Set the default options
 	uiDeniGridUtilSrv.setDefaultOptions(me, me.options);
+	
+	me.options.alldata = []; //It is used when I filter the data and there is a need to know the original data
 	
 	//Inherit API from ui-deni-view and create some new APIs too		
 	me.options.api = {
@@ -4816,9 +4817,9 @@ function xml2json(xml, tab) {
 				controller.options.data = $filter('filter')(data, controller.filterInfo.valuesToFilter);
 			}	
 		} else {
-			controller.options.data = data;			
-			controller.initialData = data;
+			controller.options.data = data;
 		}
+		controller.options.alldata = data;
 
 		//Records inside Grouping
 		controller.groupRecords = [];
@@ -4950,7 +4951,7 @@ function xml2json(xml, tab) {
 
 		uiDeniGridUtilSrv.remakeHeightBodyViewportWrapper(controller);
 
-		if (data.length > 0) {
+		if (controller.options.data.length > 0) {
 			controller.options.api.selectRow(0, false, false);
 		}
 
@@ -4958,7 +4959,7 @@ function xml2json(xml, tab) {
 		//AfterLoad Event
 		///////////////////////////////////////////////////////////////////////////
 		if (controller.options.listeners.onafterload) {
-			controller.options.listeners.onafterload(data, controller.options);
+			controller.options.listeners.onafterload(controller.options.data, controller.options);
 		}
 		///////////////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////////////
@@ -5155,7 +5156,7 @@ function xml2json(xml, tab) {
 			
 		//local filter			
 		} else {
-			controller.options.api.loadData(controller.initialData);
+			controller.options.api.loadData(controller.options.alldata);
 		}
 	}
 
