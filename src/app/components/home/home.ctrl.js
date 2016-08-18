@@ -1,4 +1,4 @@
-angular.module('app').controller('HomeCtrl', function($scope, $routeParams, homeSrv, AppEnums, AppSrv) {
+angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
 	
 	var vm = this;
 	vm.categoryPath = null;		

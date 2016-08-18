@@ -13,8 +13,9 @@
 	<header>
 		<nav>
 			<md-toolbar>
-			  <div id="md-toolbar-tools-main" class="md-toolbar-tools">
-				<h2>English Study</h2>
+			  <div id="md-toolbar-tools-main" class="md-toolbar-tools" layout="row">
+				<div class="title">English Study</div>
+				<div class="sub-title" ng-bind="$root.subTitle"></div>
 			  </div>
 			</md-toolbar>
 		</nav>
@@ -69,7 +70,7 @@
 
 	<script src="dist/app.js"></script>
 
-	<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+	<!--<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>-->
 	
 </body>
 </html>

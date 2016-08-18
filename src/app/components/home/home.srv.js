@@ -1,4 +1,4 @@
-angular.module('app').service('homeSrv', function($timeout, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionSrv, uiDeniModalSrv, ItemRestSrv) {
+angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionSrv, uiDeniModalSrv, ItemRestSrv) {
 
 	var vm = this;
 	var jsTreeInstance = null;
@@ -190,7 +190,7 @@ angular.module('app').service('homeSrv', function($timeout, categorySrv, AppCons
 										   '    />\n' +                                  
 										   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
 										   '    <div>{4}</div>\n' +									   
-										   '    <md-icon class="material-icons favorite {6}" ng-click="funcaoTeste()"> {7} </md-icon>\n' +
+										   '    <md-icon class="material-icons favorite {6}"> {7} </md-icon>\n' +
 										   '<div>';
 
 	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, selected, favorite);
@@ -265,6 +265,13 @@ angular.module('app').service('homeSrv', function($timeout, categorySrv, AppCons
 							});
 						});
 					}, 500);
+	            },
+
+	            onselectionchange: function(ctrl, element, rowIndex, record) {
+					$rootScope.subTitle = record.dsItem;
+					if (!scope.$$phase) {
+						scope.$apply();
+					}
 	            }
 			}			
 	    };		

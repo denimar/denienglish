@@ -8,11 +8,19 @@ body {
 
 header #md-toolbar-tools-main {
   height: 64px;
-  background-color: #004466 !important;
-  color: #D5E7FC !important; }
+  background-color: #004466 !important; }
   header #md-toolbar-tools-main .hamburger-button {
     width: 24px;
     height: 24px; }
+
+header .title {
+  color: white;
+  font-size: 24px; }
+
+header .sub-title {
+  color: #D5E7FC;
+  font-size: 14px;
+  margin: 8px 0px 0px 25px; }
 
 .material-icons {
   color: #a6a6a6; }

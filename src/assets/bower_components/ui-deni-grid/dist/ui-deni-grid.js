@@ -230,6 +230,15 @@ angular.module('ui-deni-grid').service('uiDeniGridUtilSrv', function($filter, ui
 				//
 				controller.options.api.updateCell(rowElement.attr('rowindex'), divCellElementKeyDown.attr('colindex'), newValue);
 
+				///////////////////////////////////////////////////////////////////////////
+				//OnResolveInputEditor Event
+				///////////////////////////////////////////////////////////////////////////
+				if (controller.options.listeners.onresolveinputeditor) {
+					controller.options.listeners.onresolveinputeditor(inputEditor);
+				}
+				//////////////////////////////////////////////////////////////////////////
+				///////////////////////////////////////////////////////////////////////////
+
 			//not confirmed
 			} else { 
 				//

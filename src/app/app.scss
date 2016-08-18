@@ -18,12 +18,22 @@ header {
 	#md-toolbar-tools-main {
 		height: $header-height;
 		background-color: #004466 !important;
-		color: #D5E7FC !important;
 
 		.hamburger-button {
 			width: 24px;
 			height: 24px;
 		}
+	}
+
+	.title {
+		color: white;		
+		font-size: 24px;
+	}
+
+	.sub-title {
+		color: #D5E7FC;	
+		font-size: 14px;	
+		margin: 8px 0px 0px 25px;
 	}
 }
 

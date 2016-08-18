@@ -89,6 +89,10 @@ angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv,
                               var element = angular.element(dictionaryDefinitionView);
                               var scope = element.scope();
                               scope.$$childTail.ctrl.cdDicionario = null;
+                        },
+
+                        onresolveinputeditor: function(inputEditor) {
+                              alert('edited')
                         }
                   }   
             }

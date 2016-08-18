@@ -1,6 +1,7 @@
 angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
      
     var vm = this;
+
     vm.editing = false;
     vm.params = $routeParams;
     vm.texts = [];
