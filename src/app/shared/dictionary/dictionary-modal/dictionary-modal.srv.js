@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
 
 	var vm = this;
@@ -5,7 +7,7 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
       
       vm.setController = function(controller) {
             vm.controller = controller;
-      }
+      };
 
 	vm.showModal = function(scope) {
             var deferred = $q.defer();
@@ -31,7 +33,17 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
             });
 
             return deferred.promise;
-	}	
+	};	
+
+      var _editExpression = function(record) {
+            dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
+                  record.dsExpressao = modelAdded.dsExpression;
+                  record.dsTags = modelAdded.dsTags;   
+                  var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
+                  vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
+                  vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
+            });
+      }
 
       vm.getGridDictionaryOptions = function() {
 
@@ -55,13 +67,7 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                                     mdIcon: 'edit',
                                     tooltip: 'Edit the current expression',
                                     fn: function(record, column, imgActionColumn) {
-                                          dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
-                                                record.dsExpressao = modelAdded.dsExpression;
-                                                record.dsTags = modelAdded.dsTags;   
-                                                var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
-                                                vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
-                                                vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
-                                          });
+                                          _editExpression(record);
                                     }
                               }                 
                         },
@@ -109,17 +115,17 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                               scope.$$childTail.ctrl.cdDicionario = null;
                         },
 
-                        onresolveinputeditor: function(inputEditor) {
-                              alert('edited')
+                        onrowdblclick: function(record, rowElement, rowIndex) {
+                              _editExpression(record);
                         }
                   }   
             }
 
-      }
+      };
 
       vm.searchInputChange = function() {
             vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHING;
-      }
+      };
 
       vm.searchInputKeydown = function() {
             if (event.keyCode == 13) {  //Return Key
@@ -133,20 +139,20 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                         vm.searchButtonAddClick()
                   }     
             }
-      }
+      };
 
       vm.showSearchButton = function(button) {
             return (
                         (button == 'search' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) ||
                         (button == 'add' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED)
                    );
-      }
+      };
 
       vm.searchButtonClick = function() {
             vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHED;            
             var searchInput = $('.dictionary-modal .search-input');            
             vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
-      }
+      };
 
       vm.searchButtonAddClick = function() {
             vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
@@ -173,11 +179,11 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
 
                   vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
             });
-      }
+      };
 
       vm.showLoading = function() {
             return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
-      }
+      };
 
 
 });

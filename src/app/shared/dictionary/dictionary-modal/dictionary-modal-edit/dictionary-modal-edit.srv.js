@@ -1,11 +1,13 @@
-angular.module('app').service('dictionaryModalEditSrv', function($q, $timeout, uiDeniModalSrv, DictionaryRestSrv) {
+'use strict';
+
+angular.module('app').service('dictionaryModalEditSrv', function($q, $interval, uiDeniModalSrv, DictionaryRestSrv) {
 
       var vm = this;
       vm.controller;      
       
       vm.setController = function(controller) {
             vm.controller = controller;
-      }
+      };
 
 	vm.showModal = function(scope, recordToEdit) {
             var deferred = $q.defer();
@@ -22,27 +24,34 @@ angular.module('app').service('dictionaryModalEditSrv', function($q, $timeout, u
                   listeners: {
 
                   	onshow: function(wnd) {
-                              $timeout(function() {
-                                    vm.controller.model.dsExpression = recordToEdit.dsExpressao;
-                                    vm.controller.model.dsTags = recordToEdit.dsTags;    
+                              var intervalPromise = $interval(function() {
 
-                                    $(wnd).keydown(function() {
-                                          var key = event.which || event.keyCode;  // Use either which or keyCode, depending on browser support
-                                          if ((key == 13) && (event.target.name == 'tagsEdit')) {  // 13 is the RETURN key
-                                                wnd.close('ok');
-                                          }
-                                    });
+                                    if (vm.controller) {
+                                          $interval.cancel(intervalPromise);
+
+                                          vm.controller.model.dsExpression = recordToEdit.dsExpressao;
+                                          vm.controller.model.dsTags = recordToEdit.dsTags;    
+
+                                          $(wnd).keydown(function() {
+                                                var key = event.which || event.keyCode;  // Use either which or keyCode, depending on browser support
+                                                if ((key == 13) && (event.target.name == 'tagsEdit')) {  // 13 is the RETURN key
+                                                      wnd.close('ok');
+                                                }
+                                          });
+                                    }
 
                               }, 100);
                   	}
 
                   }
-            }).show().then(function() {
-                  DictionaryRestSrv.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
-                  deferred.resolve(vm.controller.model);
+            }).show().then(function(modalResponse) {
+                  if (modalResponse.button == 'ok') {
+                        DictionaryRestSrv.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
+                        deferred.resolve(vm.controller.model);
+                  }
             });
 
             return deferred.promise;
-	}	
+	};
 
 });
