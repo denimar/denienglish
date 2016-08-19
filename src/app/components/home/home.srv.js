@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionSrv, uiDeniModalSrv, ItemRestSrv) {
+angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
 
 	var vm = this;
 	var jsTreeInstance = null;
@@ -204,7 +204,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		                mdIcon: 'restore',
 		                tooltip: '',
 		                fn: function(record, column, imgActionColumn) {
-							spacedRevisionSrv.showModal(scope, record.cdItem);
+							spacedRevisionModalSrv.showModal(scope, record.cdItem);
 		                }
 		            }        		
 	        	},

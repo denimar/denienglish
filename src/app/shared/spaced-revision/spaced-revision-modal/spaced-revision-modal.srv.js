@@ -1,4 +1,4 @@
-angular.module('app').service('spacedRevisionSrv', function($rootScope, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv) {
+angular.module('app').service('spacedRevisionModalSrv', function($rootScope, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv) {
 
 	var vm = this;
 	vm.controller;
@@ -68,8 +68,10 @@ angular.module('app').service('spacedRevisionSrv', function($rootScope, StringSr
 
 	vm.showModal = function(scope, cdItem) {
 		$rootScope.selectedCdItem = cdItem;
+		$rootScope.loading = true;
 	
 		revisionSrv.getExpressions(cdItem).then(function(response) {
+			$rootScope.loading = false;
 
 	        uiDeniModalSrv.createWindow({
 	            scope: $rootScope,

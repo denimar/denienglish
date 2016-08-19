@@ -1,7 +1,7 @@
-angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionSrv) {
+angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
 	
 	var vm = this;
-	spacedRevisionSrv.setController(vm);
+	spacedRevisionModalSrv.setController(vm);
 
 	vm.showDefinitionContent = false;
 	vm.learnedRate = 60;
@@ -15,29 +15,29 @@ angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppCo
 	vm.model.navigatorStatus = '';	
 
 	vm.navigate = function(number) {
-		spacedRevisionSrv.selectExpression(vm.currentExpressionIndex + number);
+		spacedRevisionModalSrv.selectExpression(vm.currentExpressionIndex + number);
 	}
 	
 	vm.navigateFirst = function() {
-		spacedRevisionSrv.selectExpression(0);
+		spacedRevisionModalSrv.selectExpression(0);
 	}
 
 	vm.navigateLast = function() {
-		spacedRevisionSrv.selectExpression(vm.expressions.length - 1);
+		spacedRevisionModalSrv.selectExpression(vm.expressions.length - 1);
 	}	
 
 	vm.showResult = function() {
-		spacedRevisionSrv.showResult(vm);
+		spacedRevisionModalSrv.showResult(vm);
 	}
 
 	vm.changeLearnedRate = function() {
 		revisionSrv.setLevelOfLearning(vm.currentExpression.cdDicionario, vm.currentExpression.cdPronuncia, vm.model.expression.learnedRate);
 		vm.currentExpression.nrLevelOfLearning = vm.model.expression.learnedRate;
-		spacedRevisionSrv.updateLearnedPercentage(vm);
+		spacedRevisionModalSrv.updateLearnedPercentage(vm);
 	}
 
 	vm.markAsReviewed = function(cd_item) {
-		spacedRevisionSrv.markAsReviewed(cd_item);
+		spacedRevisionModalSrv.markAsReviewed(cd_item);
 		console.log('TODO: FAZER UMA ROTINA NA uiDeniModal para fechar a janela ativa...');
 		console.log('TODO: VERIFICAR TAMBÉM O UI-DENI-MODAL... PASSAGEM DO Scope...');		
 	}
