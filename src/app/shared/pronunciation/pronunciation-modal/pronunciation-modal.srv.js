@@ -39,7 +39,7 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
             return {
                   keyField: 'cdPronuncia',
                   rowHeight: '25px',
-                  url: AppConsts.SERVER_URL + 'pronunciation/list',
+                  data: AppSrv.pronunciationExpressions,
                   hideHeaders: true,
                   columns: [
                         {
@@ -63,7 +63,20 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
                                     tooltip: 'Remove a expression from pronunciation',
                                     fn: function(record, column, imgActionColumn) {
                                           PronunciationRestSrv.del(record.cdPronuncia).then(function(serverResponse) {
-                                                vm.controller.gridPronunciationOptions.api.reload();
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdPronuncia == record.cdPronuncia) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridPronunciationOptions.data);
+                                                deleteItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                                                vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
                                           });
                                     }
                               }                 
@@ -107,12 +120,30 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
       vm.searchButtonAddClick = function() {
             vm.controller.searchState = PronunciationModalEnums.SearchState.ADDED;            
             var searchInput = $('.pronunciation-modal .search-input');            
+            var expressionAdd = searchInput.val();
             
-            PronunciationRestSrv.add(searchInput.val(), '').then(function(serverResponse) {
-                  vm.controller.gridPronunciationOptions.api.reload();
-                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;                  
+            PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+                  var itemToAdd = serverResponse.data.data[0];
+
+                  var insertItemFn = function(data) {
+                        var indexAdd = data.length;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                                    indexAdd = i;
+                                    break;
+                              }
+                        }
+                        data.splice(indexAdd, 0, itemToAdd);                        
+                  }
+
+                  insertItemFn(vm.controller.gridPronunciationOptions.data);
+                  insertItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                  vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
+                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;
             });
       }
+
 
       vm.showLoading = function() {
             return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;

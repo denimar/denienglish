@@ -393,6 +393,73 @@ angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, A
 
 
 });
+angular.module('app').service('RevisionRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.getItemInfo = function(cd_item) {
+		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
+	}
+
+	vm.getExpressions = function(cd_item) {
+		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item});
+	}
+
+	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
+		return AppSrv.requestWithPromise('revision/expressions/levelOfLearning/set', {'cd_dicionario': cd_dicionario, 'cd_pronuncia': cd_pronuncia, "nr_level_of_learning": nrLevelOfLearning});	
+	}
+
+	vm.markAsReviewed = function(cd_item) {
+		return AppSrv.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
+	}
+	
+
+});
+angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
+
+	var vm = this;
+
+	vm.getItemInfo = function(cd_item) {
+		var deferred = $q.defer();
+
+		RevisionRestSrv.getItemInfo(cd_item).then(function(serverResponse) {
+			var informations = serverResponse.data.data[0];
+			deferred.resolve(informations);
+		}, function(reason) {
+			deferred.reject(reason);
+		});
+
+		return deferred.promise;
+	}
+
+	vm.getExpressions = function(cd_item) {
+		var deferred = $q.defer();
+
+		RevisionRestSrv.getExpressions(cd_item).then(function(serverResponse) {
+			var expressions = serverResponse.data.data;
+			deferred.resolve(expressions);
+		}, function(reason) {
+			deferred.reject(reason);
+		});
+
+		return deferred.promise;
+	}
+
+	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
+		var deferred = $q.defer();
+
+		RevisionRestSrv.setLevelOfLearning(cd_dicionario, cd_pronuncia, nrLevelOfLearning).then(function(serverResponse) {
+			var result = serverResponse.data.data[0];
+			deferred.resolve(result);
+		}, function(reason) {
+			deferred.reject(reason);
+		});
+
+		return deferred.promise;
+	}
+
+
+});
 angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -479,73 +546,6 @@ angular.module('app').service('pronunciationSrv', function($q, $window) {
 
 
 });
-angular.module('app').service('RevisionRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.getItemInfo = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
-	}
-
-	vm.getExpressions = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item});
-	}
-
-	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
-		return AppSrv.requestWithPromise('revision/expressions/levelOfLearning/set', {'cd_dicionario': cd_dicionario, 'cd_pronuncia': cd_pronuncia, "nr_level_of_learning": nrLevelOfLearning});	
-	}
-
-	vm.markAsReviewed = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
-	}
-	
-
-});
-angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
-
-	var vm = this;
-
-	vm.getItemInfo = function(cd_item) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.getItemInfo(cd_item).then(function(serverResponse) {
-			var informations = serverResponse.data.data[0];
-			deferred.resolve(informations);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-	vm.getExpressions = function(cd_item) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.getExpressions(cd_item).then(function(serverResponse) {
-			var expressions = serverResponse.data.data;
-			deferred.resolve(expressions);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.setLevelOfLearning(cd_dicionario, cd_pronuncia, nrLevelOfLearning).then(function(serverResponse) {
-			var result = serverResponse.data.data[0];
-			deferred.resolve(result);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-
-});
 angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv) {
 
 	var vm = this;
@@ -586,7 +586,6 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
             return {
                   keyField: 'cdDicionario',
                   rowHeight: '25px',
-                  //url: AppConsts.SERVER_URL + 'dictionary/list',
                   data: AppSrv.dictionaryExpressions,
                   hideHeaders: true,
                   columns: [
@@ -615,7 +614,20 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
                                     tooltip: 'Remove a expression from dictionary',
                                     fn: function(record, column, imgActionColumn) {
                                           DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
-                                                vm.controller.gridDictionaryOptions.api.reload();
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdDicionario == record.cdDicionario) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
                                           });
                                     }
                               }                 
@@ -684,7 +696,6 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
             var expressionAdd = searchInput.val();
             
             DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  //vm.controller.gridDictionaryOptions.api.reload();
                   var itemToAdd = serverResponse.data.data[0];
 
                   var insertItemFn = function(data) {
@@ -953,128 +964,6 @@ angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSr
 	}
 
 });
-angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
-
-	var vm = this;
-      vm.controller;      
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      }
-
-	vm.showModal = function(scope) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Pronunciation',
-                  width: '550px',         
-                  height: '450px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
-                  urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(objWindow) {
-      					
-                  	}
-
-                  }
-            }).show().then(function() {
-                  AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
-                  deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
-            });
-
-            return deferred.promise;
-	}	
-
-      vm.getGridPronunciationOptions = function() {
-
-            return {
-                  keyField: 'cdPronuncia',
-                  rowHeight: '25px',
-                  url: AppConsts.SERVER_URL + 'pronunciation/list',
-                  hideHeaders: true,
-                  columns: [
-                        {
-                              name: 'dsExpressao',
-                              width: '80%'
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'headset',
-                                    tooltip: 'Listen the selected expression',
-                                    fn: function(record, column, imgActionColumn) {
-                                          pronunciationSrv.listenExpression(record.dsExpressao);                 
-                                    }
-                              }                 
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'delete_forever',
-                                    tooltip: 'Remove a expression from pronunciation',
-                                    fn: function(record, column, imgActionColumn) {
-                                          PronunciationRestSrv.del(record.cdPronuncia).then(function(serverResponse) {
-                                                vm.controller.gridPronunciationOptions.api.reload();
-                                          });
-                                    }
-                              }                 
-                        }
-                  ]
-            }
-
-      }
-
-      vm.searchInputChange = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHING;
-      }
-
-      vm.searchInputKeydown = function() {
-            if (event.keyCode == 13) {  //Return Key
-
-                  //Find a Record
-                  if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) {
-                        vm.searchButtonClick(vm.controller);
-
-                  //Add a Record    
-                  } else if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED) {
-                        vm.searchButtonAddClick()
-                  }     
-            }
-      }
-
-      vm.showSearchButton = function(button) {
-            return (
-                        (button == 'search' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) ||
-                        (button == 'add' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED)
-                   );
-      }
-
-      vm.searchButtonClick = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHED;            
-            var searchInput = $('.pronunciation-modal .search-input');            
-            vm.controller.gridPronunciationOptions.api.filter(searchInput.val());            
-      }
-
-      vm.searchButtonAddClick = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.ADDED;            
-            var searchInput = $('.pronunciation-modal .search-input');            
-            
-            PronunciationRestSrv.add(searchInput.val(), '').then(function(serverResponse) {
-                  vm.controller.gridPronunciationOptions.api.reload();
-                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;                  
-            });
-      }
-
-      vm.showLoading = function() {
-            return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;
-      }
-
-
-});
 angular.module('app').service('spacedRevisionSrv', function($rootScope, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv) {
 
 	var vm = this;
@@ -1182,6 +1071,159 @@ angular.module('app').service('spacedRevisionSrv', function($rootScope, StringSr
 
 	}
 	
+});
+angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
+
+	var vm = this;
+      vm.controller;      
+      
+      vm.setController = function(controller) {
+            vm.controller = controller;
+      }
+
+	vm.showModal = function(scope) {
+            var deferred = $q.defer();
+
+            uiDeniModalSrv.createWindow({
+                  scope: scope,
+                  title: 'Pronunciation',
+                  width: '550px',         
+                  height: '450px',
+                  position: uiDeniModalSrv.POSITION.CENTER,
+                  buttons: [uiDeniModalSrv.BUTTON.OK],
+                  urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
+                  modal: true,
+                  listeners: {
+
+                  	onshow: function(objWindow) {
+      					
+                  	}
+
+                  }
+            }).show().then(function() {
+                  AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
+                  deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
+            });
+
+            return deferred.promise;
+	}	
+
+      vm.getGridPronunciationOptions = function() {
+
+            return {
+                  keyField: 'cdPronuncia',
+                  rowHeight: '25px',
+                  data: AppSrv.pronunciationExpressions,
+                  hideHeaders: true,
+                  columns: [
+                        {
+                              name: 'dsExpressao',
+                              width: '80%'
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'headset',
+                                    tooltip: 'Listen the selected expression',
+                                    fn: function(record, column, imgActionColumn) {
+                                          pronunciationSrv.listenExpression(record.dsExpressao);                 
+                                    }
+                              }                 
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'delete_forever',
+                                    tooltip: 'Remove a expression from pronunciation',
+                                    fn: function(record, column, imgActionColumn) {
+                                          PronunciationRestSrv.del(record.cdPronuncia).then(function(serverResponse) {
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdPronuncia == record.cdPronuncia) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridPronunciationOptions.data);
+                                                deleteItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                                                vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
+                                          });
+                                    }
+                              }                 
+                        }
+                  ]
+            }
+
+      }
+
+      vm.searchInputChange = function() {
+            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHING;
+      }
+
+      vm.searchInputKeydown = function() {
+            if (event.keyCode == 13) {  //Return Key
+
+                  //Find a Record
+                  if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) {
+                        vm.searchButtonClick(vm.controller);
+
+                  //Add a Record    
+                  } else if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED) {
+                        vm.searchButtonAddClick()
+                  }     
+            }
+      }
+
+      vm.showSearchButton = function(button) {
+            return (
+                        (button == 'search' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) ||
+                        (button == 'add' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED)
+                   );
+      }
+
+      vm.searchButtonClick = function() {
+            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHED;            
+            var searchInput = $('.pronunciation-modal .search-input');            
+            vm.controller.gridPronunciationOptions.api.filter(searchInput.val());            
+      }
+
+      vm.searchButtonAddClick = function() {
+            vm.controller.searchState = PronunciationModalEnums.SearchState.ADDED;            
+            var searchInput = $('.pronunciation-modal .search-input');            
+            var expressionAdd = searchInput.val();
+            
+            PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+                  var itemToAdd = serverResponse.data.data[0];
+
+                  var insertItemFn = function(data) {
+                        var indexAdd = data.length;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                                    indexAdd = i;
+                                    break;
+                              }
+                        }
+                        data.splice(indexAdd, 0, itemToAdd);                        
+                  }
+
+                  insertItemFn(vm.controller.gridPronunciationOptions.data);
+                  insertItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                  vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
+                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;
+            });
+      }
+
+
+      vm.showLoading = function() {
+            return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;
+      }
+
+
 });
 angular.module('app').service('dictionaryDefinitionViewSrv', function(DictionaryRestSrv) {
 
@@ -1325,27 +1367,6 @@ angular.module('app').controller('NewVideoItemModalCtrl', function($sce) {
 	}
 
 });
-angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
-
-	//use this control in the service	
-	pronunciationModalSrv.setController(this);
-
-	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
-	this.searchValue = '';
-
-	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
-
-	this.searchInputChange = pronunciationModalSrv.searchInputChange;
-	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
-
-	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
-	this.searchButtonAddClick = pronunciationModalSrv.searchButtonClick;
-	this.showSearchButton = pronunciationModalSrv.showSearchButton;
-
-	this.showLoading = pronunciationModalSrv.showLoading;
-
-});
-
 angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionSrv) {
 	
 	var vm = this;
@@ -1405,6 +1426,27 @@ angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppCo
 	*/
 
 });
+angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
+
+	//use this control in the service	
+	pronunciationModalSrv.setController(this);
+
+	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
+	this.searchValue = '';
+
+	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
+
+	this.searchInputChange = pronunciationModalSrv.searchInputChange;
+	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
+
+	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
+	this.searchButtonAddClick = pronunciationModalSrv.searchButtonClick;
+	this.showSearchButton = pronunciationModalSrv.showSearchButton;
+
+	this.showLoading = pronunciationModalSrv.showLoading;
+
+});
+
 angular.module('app').controller('DictionaryDefinitionViewCtrl', function($scope, dictionaryDefinitionViewSrv) {
 	
 	dictionaryDefinitionViewSrv.setController(this);

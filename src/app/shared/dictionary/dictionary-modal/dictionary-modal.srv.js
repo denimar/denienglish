@@ -38,7 +38,6 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
             return {
                   keyField: 'cdDicionario',
                   rowHeight: '25px',
-                  //url: AppConsts.SERVER_URL + 'dictionary/list',
                   data: AppSrv.dictionaryExpressions,
                   hideHeaders: true,
                   columns: [
@@ -67,7 +66,20 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
                                     tooltip: 'Remove a expression from dictionary',
                                     fn: function(record, column, imgActionColumn) {
                                           DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
-                                                vm.controller.gridDictionaryOptions.api.reload();
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdDicionario == record.cdDicionario) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
                                           });
                                     }
                               }                 
@@ -136,7 +148,6 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
             var expressionAdd = searchInput.val();
             
             DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  //vm.controller.gridDictionaryOptions.api.reload();
                   var itemToAdd = serverResponse.data.data[0];
 
                   var insertItemFn = function(data) {
