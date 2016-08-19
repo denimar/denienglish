@@ -35,11 +35,11 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 		return deferred.promise;
 	};
 
-	vm.openDictionaryDefinitionView = function(scope, cdDicionario) {
+	vm.openDictionaryDefinitionView = function(scope, cdDicionario, dsExpressao) {
 
         uiDeniModalSrv.createWindow({
             scope: scope,
-            title: 'Dictionary',
+            title: 'Dictionary - ' + dsExpressao,
             width: '750px',         
             height: '400px',
             position: uiDeniModalSrv.POSITION.CENTER,

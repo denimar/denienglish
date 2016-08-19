@@ -70,8 +70,8 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
         }
     };
 
-    $scope.openDictionary = function(cdDicionario) {
-        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario);
+    $scope.openDictionary = function(cdDicionario, dsExpressao) {
+        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
     };    
 
     $scope.openPronunciation = function(dsExpressao) {

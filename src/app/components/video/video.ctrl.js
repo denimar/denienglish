@@ -81,8 +81,8 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		pronunciationSrv.listenExpression(record.dsTexto);
 	}
 
-    $scope.openDictionary = function(cdDicionario) {
-        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario);
+    $scope.openDictionary = function(cdDicionario, dsExpressao) {
+        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
     }     
 
 	$scope.openPronunciation = function(dsExpressao) {

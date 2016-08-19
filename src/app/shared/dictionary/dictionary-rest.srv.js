@@ -16,6 +16,14 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
 	};
 
+	vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Expression updated successfully!'
+		}
+		return AppSrv.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
+	}	
+
 	vm.del = function(cd_dicionario) {
 		var successfullyMessage = {
 			title: 'Deleting',

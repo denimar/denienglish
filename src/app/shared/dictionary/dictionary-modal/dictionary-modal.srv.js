@@ -1,4 +1,4 @@
-angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv) {
+angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
 
 	var vm = this;
       vm.controller;      
@@ -55,7 +55,13 @@ angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDen
                                     mdIcon: 'edit',
                                     tooltip: 'Edit the current expression',
                                     fn: function(record, column, imgActionColumn) {
-                                          alert('edit')
+                                          dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
+                                                record.dsExpressao = modelAdded.dsExpression;
+                                                record.dsTags = modelAdded.dsTags;   
+                                                var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
+                                                vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
+                                                vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
+                                          });
                                     }
                               }                 
                         },
