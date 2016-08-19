@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv) {
+angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv, pronunciationSrv) {
 
 	var vm = this;
 
@@ -37,16 +37,22 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 
 	vm.openDictionaryDefinitionView = function(scope, cdDicionario, dsExpressao) {
 
-        uiDeniModalSrv.createWindow({
-            scope: scope,
-            title: 'Dictionary - ' + dsExpressao,
-            width: '750px',         
-            height: '400px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK],
-            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
-            modal: true
-        }).show();        
+		if (event.ctrlKey) {
+			
+			pronunciationSrv.listenExpression(dsExpressao);
+
+		} else {
+	        uiDeniModalSrv.createWindow({
+	            scope: scope,
+	            title: 'Dictionary - ' + dsExpressao,
+	            width: '750px',         
+	            height: '400px',
+	            position: uiDeniModalSrv.POSITION.CENTER,
+	            buttons: [uiDeniModalSrv.BUTTON.OK],
+	            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
+	            modal: true
+	        }).show();        
+	    }
 
 	};	
 
