@@ -163,58 +163,6 @@ label {
         .home.items #mainGrid .cell-template .material-icons.favorite.selected {
           color: orange; }
 
-.text .main-div {
-  border: solid 1px #99bce8;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: solid 1px #99bce8; }
-  .text .main-div md-content {
-    overflow: hidden;
-    height: 50px;
-    box-sizing: border-box; }
-    .text .main-div md-content md-tabs {
-      height: 50px; }
-  .text .main-div .content {
-    margin: 0px 0px 0px 8px;
-    height: calc(100% - 50px - 1px);
-    box-sizing: border-box; }
-    .text .main-div .content .editor {
-      box-sizing: border-box;
-      height: 100%; }
-      .text .main-div .content .editor .note-editor {
-        height: 100%;
-        box-sizing: border-box;
-        border-width: 0px; }
-        .text .main-div .content .editor .note-editor .note-editing-area {
-          box-sizing: border-box;
-          height: calc(100% - 41px);
-          overflow-y: auto; }
-          .text .main-div .content .editor .note-editor .note-editing-area .panel-body {
-            box-sizing: border-box;
-            height: 100%; }
-        .text .main-div .content .editor .note-editor .note-statusbar {
-          display: none; }
-    .text .main-div .content .text-content {
-      box-sizing: border-box;
-      overflow-y: auto;
-      height: 100%;
-      padding: 10px; }
-
-.text .toolbar-div {
-  width: 50px;
-  border: solid 1px #99bce8;
-  margin-left: 2px; }
-  .text .toolbar-div .md-icon-button {
-    color: gray; }
-    .text .toolbar-div .md-icon-button:hover {
-      color: #04408C; }
-    .text .toolbar-div .md-icon-button .material-icons {
-      color: inherit; }
-  .text .toolbar-div .toolbar-separator {
-    border-bottom: solid 1px #e6e6e6;
-    margin: 4px; }
-
 .video .main-div {
   box-sizing: border-box; }
   .video .main-div .video-container-and-subtitles .video-container {
@@ -273,6 +221,58 @@ label {
         content: '\25BC';
         font-size: 6px; }
   .video .toolbar-div .toolbar-separator {
+    border-bottom: solid 1px #e6e6e6;
+    margin: 4px; }
+
+.text .main-div {
+  border: solid 1px #99bce8;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: solid 1px #99bce8; }
+  .text .main-div md-content {
+    overflow: hidden;
+    height: 50px;
+    box-sizing: border-box; }
+    .text .main-div md-content md-tabs {
+      height: 50px; }
+  .text .main-div .content {
+    margin: 0px 0px 0px 8px;
+    height: calc(100% - 50px - 1px);
+    box-sizing: border-box; }
+    .text .main-div .content .editor {
+      box-sizing: border-box;
+      height: 100%; }
+      .text .main-div .content .editor .note-editor {
+        height: 100%;
+        box-sizing: border-box;
+        border-width: 0px; }
+        .text .main-div .content .editor .note-editor .note-editing-area {
+          box-sizing: border-box;
+          height: calc(100% - 41px);
+          overflow-y: auto; }
+          .text .main-div .content .editor .note-editor .note-editing-area .panel-body {
+            box-sizing: border-box;
+            height: 100%; }
+        .text .main-div .content .editor .note-editor .note-statusbar {
+          display: none; }
+    .text .main-div .content .text-content {
+      box-sizing: border-box;
+      overflow-y: auto;
+      height: 100%;
+      padding: 10px; }
+
+.text .toolbar-div {
+  width: 50px;
+  border: solid 1px #99bce8;
+  margin-left: 2px; }
+  .text .toolbar-div .md-icon-button {
+    color: gray; }
+    .text .toolbar-div .md-icon-button:hover {
+      color: #04408C; }
+    .text .toolbar-div .md-icon-button .material-icons {
+      color: inherit; }
+  .text .toolbar-div .toolbar-separator {
     border-bottom: solid 1px #e6e6e6;
     margin: 4px; }
 

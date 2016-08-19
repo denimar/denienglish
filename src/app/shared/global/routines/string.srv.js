@@ -86,28 +86,39 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 			
 			for (var conta = 0 ; conta < array.length ; conta++) {
 				var item = array[conta];
-				var expressao = item.dsExpressao.toLowerCase();
+				var expressionsToReplace = [];
+				expressionsToReplace.push(item.dsExpressao.toLowerCase());
 
-				var pos = textoLower.search(new RegExp('\\b' + expressao + '\\b'));
-				while (pos != -1) {
-					var textoSubs = texto.substring(pos, pos + expressao.length);
-					if (textoSubs.toLowerCase() == expressao) {
-						expressoesSubst.push({
-							cd_pronuncia: item.cdPronuncia,
-							cd_dicionario: item.cdDicionario,								
-							ds_expressao: item.dsExpressao,
-							texto: textoSubs
-						});
-						var subst = me.format(matrizSubst, contaSubst);
-						texto = texto.replace(new RegExp('\\b' + textoSubs + '\\b', "g"), subst);
-
-						contaSubst++;
-						//xPos += subst.length;
-						textoLower = texto.toLowerCase();	
-					}
-					
-					pos = textoLower.search(new RegExp('\\b' + expressao + '\\b'));
+				if (item.dsTags) {
+					var tagsArray = item.dsTags.split(',');
+					angular.forEach(tagsArray, function(tag) {
+						expressionsToReplace.push(tag.trim().toLowerCase());
+					});
 				}
+
+				angular.forEach(expressionsToReplace, function(expressaoLower) {
+					var posExpressao = textoLower.search(new RegExp('\\b' + expressaoLower + '\\b'));
+					while (posExpressao != -1) {
+						var textoSubs = texto.substring(posExpressao, posExpressao + expressaoLower.length);
+						if (textoSubs.toLowerCase() == expressaoLower) {
+							expressoesSubst.push({
+								cd_pronuncia: item.cdPronuncia,
+								cd_dicionario: item.cdDicionario,								
+								ds_expressao: item.dsExpressao,
+								texto: textoSubs
+							});
+							var subst = me.format(matrizSubst, contaSubst);
+							texto = texto.replace(new RegExp('\\b' + textoSubs + '\\b', "g"), subst);
+
+							contaSubst++;
+							//xPos += subst.length;
+							textoLower = texto.toLowerCase();	
+						}
+						
+						posExpressao = textoLower.search(new RegExp('\\b' + expressaoLower + '\\b'));
+					}
+				});	
+
 			}
 
 			for (var conta = 0 ; conta < expressoesSubst.length ; conta++) {

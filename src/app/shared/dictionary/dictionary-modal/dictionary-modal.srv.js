@@ -1,4 +1,4 @@
-angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv) {
+angular.module('app').service('dictionaryModalSrv', function($q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv) {
 
 	var vm = this;
       vm.controller;      
@@ -22,7 +22,6 @@ angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv,
                   listeners: {
 
                   	onshow: function(objWindow) {
-      					
                   	}
 
                   }
@@ -39,7 +38,8 @@ angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv,
             return {
                   keyField: 'cdDicionario',
                   rowHeight: '25px',
-                  url: AppConsts.SERVER_URL + 'dictionary/list',
+                  //url: AppConsts.SERVER_URL + 'dictionary/list',
+                  data: AppSrv.dictionaryExpressions,
                   hideHeaders: true,
                   columns: [
                         {
@@ -133,9 +133,27 @@ angular.module('app').service('dictionaryModalSrv', function($q, uiDeniModalSrv,
       vm.searchButtonAddClick = function() {
             vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
             var searchInput = $('.dictionary-modal .search-input');            
+            var expressionAdd = searchInput.val();
             
-            DictionaryRestSrv.add(searchInput.val(), '').then(function(serverResponse) {
-                  vm.controller.gridDictionaryOptions.api.reload();
+            DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+                  //vm.controller.gridDictionaryOptions.api.reload();
+                  var itemToAdd = serverResponse.data.data[0];
+
+                  var insertItemFn = function(data) {
+                        var indexAdd = data.length;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                                    indexAdd = i;
+                                    break;
+                              }
+                        }
+                        data.splice(indexAdd, 0, itemToAdd);                        
+                  }
+
+                  insertItemFn(vm.controller.gridDictionaryOptions.data);
+                  insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                  vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
                   vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
             });
       }
