@@ -134,7 +134,8 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 					functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					
 					classLink = 'pronunciation-link';					
 				}
-				replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.ds_expressao, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
+				//replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.texto, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
+				replace = '<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.texto + '</span>';
 				texto = me.replaceAll(texto, find, replace);		
 			}					
 
