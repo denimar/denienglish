@@ -1,21 +1,22 @@
 <div class="text" layout="row" flex>
+
 	<div class="main-div" flex layout="column">
 
 		<md-content class="ng-hide" ng-show="ctrl.texts.length > 1">
-			<md-tabs md-selected="ctrl.selectedIndex" md-border-bottom>
+			<md-tabs md-selected="ctrl.selectedIndex" md-border-bottom flex>
 				<md-tab ng-repeat="text in ctrl.texts" label="{{text.dsTitulo}}">
 				</md-tab>
 			</md-tabs>
 	  	</md-content>
 
 
-	  	<div class="content" flex>
+	  	<div class="content" layout="column" layout="column" flex>
 
-		  	<div class="editor ng-hide" ng-show="ctrl.editing">
+		  	<div class="editor ng-hide" ng-show="ctrl.editing" flex>
 				<summernote id="summernote" config="ctrl.options" ng-model="ctrl.content"></summernote>		  		
 		  	</div>
 
-			<div class="text-content ng-hide" ng-show="!ctrl.editing">			
+			<div class="text-content ng-hide" ng-show="!ctrl.editing" layout="column" flex>			
 			</div>
 		</div>	
 
@@ -52,7 +53,7 @@
 		<div class="toolbar-separator ng-hide" ng-show="!ctrl.editing"></div>
 
 		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Listen" ng-click="ctrl.listenSelectedTextClick()">
-			<md-tooltip>Listen a selected text</md-tooltip>
+			<md-tooltip>Listen the selected text</md-tooltip>
 			<md-icon class="material-icons"> headset </md-icon>
 		</md-button>	
 

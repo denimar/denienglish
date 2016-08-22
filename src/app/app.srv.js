@@ -33,7 +33,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		hamburgerIconButtonImg.addClass("hamburger-button");
 		hamburgerIconButton.append(hamburgerIconButtonImg);
 
-		var mainToobar = $('#md-toolbar-tools-main');
+		var mainToobar = $('.md-toolbar-tools-main');
 
 		if (side === AppEnums.Side.LEFT) {
 			mainToobar.prepend(hamburgerIconButton);
@@ -88,21 +88,22 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		};
 
 	    return {
-	      toolbar: [
-		    // [groupName, [list of button]]	      
-			['saveOrCancelButtons', ['saveButton', 'cancelButton']],
-		    ['fontsize', ['fontname', 'fontsize', 'color']],
-		    ['style', ['bold', 'italic', 'underline', 'clear']],		    		    
-		    ['para', ['ul', 'ol', 'paragraph']],
-		    ['height', ['height']],
-            ['table', ['table']],
-            ['insert', ['link','picture','video','hr']],
-            ['view', ['fullscreen', 'codeview']],
-	      ],
-		  buttons: {
-		    saveButton: saveButton,
-		    cancelButton: cancelButton
-		  }
+			disableDragAndDrop : true,
+			toolbar: [
+				// [groupName, [list of button]]	      
+				['saveOrCancelButtons', ['saveButton', 'cancelButton']],
+				['fontsize', ['fontname', 'fontsize', 'color']],
+				['style', ['bold', 'italic', 'underline', 'clear']],		    		    
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['table', ['table']],
+				['insert', ['link','picture','video','hr']],
+				['view', ['fullscreen', 'codeview']],
+			],
+			buttons: {
+				saveButton: saveButton,
+				cancelButton: cancelButton
+			}
 	    };
 
 	};

@@ -5,6 +5,10 @@ $body-padding-left: 5px;
 $header-height: 64px;
 $footer-height: 12px;
 
+html {
+	overflow-y: hidden;	
+}
+
 body {
 	margin: 0;
 	padding-top: $body-padding-top;
@@ -15,26 +19,82 @@ body {
 }
 
 header {
-	#md-toolbar-tools-main {
-		height: $header-height;
-		background-color: #004466 !important;
+	min-height: $header-height;
+	height: $header-height;
+
+	.md-toolbar-tools.md-toolbar-tools-main {
+		max-height: 500px;
+    	min-height: 0px;	    		
+    	height: 50px;
+    	background-color: #004466 !important;
 
 		.hamburger-button {
 			width: 24px;
 			height: 24px;
 		}
+
+		.title {
+			color: white;		
+			font-size: 24px;
+		}
+
+		.sub-title {
+			color: #D5E7FC;	
+			font-size: 14px;	
+			margin: 8px 0px 0px 25px;
+		}
+
+		.md-button {
+
+			.material-icons.expand-toolbar {
+				font-size: 18px;
+				padding-top: 15px;
+				margin-right: 0px;
+
+				&:hover {
+					color: yellow;
+				}
+			}
+		}	
 	}
 
-	.title {
-		color: white;		
-		font-size: 24px;
+	/*
+	.restore-toolbar-container {
+		height: 20px;
+
+		.md-button {
+			float: right;		
+			.material-icons.restore-toolbar {
+				font-size: 18px;
+				padding-top: 15px;
+				margin-right: 0px;
+			    -ms-transform: rotate(180deg); // IE 9
+			    -webkit-transform: rotate(180deg); // Chrome, Safari, Opera
+			    transform: rotate(180deg);
+
+				&:hover {
+					color: yellow;
+				}
+			}
+		}	
+
+	}
+	*/
+
+	.progress-bar-loading {
+		height: 3px;
+		width: 100%;
+
+		md-progress-linear .md-container {
+		    background-color: white;
+			height: 3px;
+
+			.md-bar {
+			    background-color: chartreuse;
+			}			
+		}
 	}
 
-	.sub-title {
-		color: #D5E7FC;	
-		font-size: 14px;	
-		margin: 8px 0px 0px 25px;
-	}
 }
 
 .material-icons {
@@ -51,11 +111,11 @@ header {
 
 
 section {
-	height: calc(100% - #{$header-height} - #{$footer-height} - #{$body-padding-top});
+	//height: calc(100% - #{$header-height} - #{$footer-height} - #{$body-padding-top});
 	overflow: hidden;
 	
 	.page-view {
-		height: 100%;
+		//height: 100%;
 		position: relative;
 		padding-top: 0px;
 	}
@@ -63,31 +123,14 @@ section {
 }
 
 footer {
+	height: $footer-height;
 
 	div {
-		color: gray;
-		text-align: right;
-		height: footer-height;
-		padding: 0px;
+		color: #b3b3b3;
+		padding: 4px 8px 0px 0px;
 		font-size: 12px;
 	}
 	
-}
-
-.progress-bar-loading {
-	height: 3px;
-	width: 100%;
-	//border-width: 0;
-	//background-color: #004466;
-
-	md-progress-linear .md-container {
-	    background-color: white;
-		height: 3px;
-
-		.md-bar {
-		    background-color: chartreuse;
-		}			
-	}
 }
 
 md-input-container {

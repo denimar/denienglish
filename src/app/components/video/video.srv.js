@@ -1,6 +1,11 @@
-angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv) {
+angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv) {
 	
 	var vm = this;
+	vm.controller;
+
+	vm.setController = function(controller) {
+		vm.controller = controller;
+	}
 
 	var _selectSubtitleInTime = function(controller, time) {
 		var data = controller.gridSubtitlesOptions.data;
@@ -85,7 +90,6 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
                 }
             };			
 			*/
-
 		});
 
 		return deferred.promise;
@@ -159,11 +163,15 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 	};
 
     vm.importSubtitleFromLyrics = function() {
-    	alert('import subtitle from lyrics here');
+    	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+    	});
     };
 
     vm.importSubtitleFromSrtFile = function() {
-    	alert('import subtitle from srt file here');
+    	videoModalImportSubtitleSrtSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+    	});
     };
 
 

@@ -1,7 +1,9 @@
 
 angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv) {
 	var vm = this;
+	VideoSrv.setController(this);
 	vm.scope = $scope;
+
 
 	$scope.name = "VideoCtrl";
 	$scope.params = $routeParams;	

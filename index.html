@@ -9,30 +9,43 @@
         <link rel="stylesheet" href="src/assets/bower_components/ui-deni-modal/dist/ui-deni-modal.min.css">                
         <link rel="stylesheet" href="dist/app.css">
     </head>	
-<body ng-app="app" ng-controller="AppCtrl as ctrl" >
+<body ng-app="app" ng-controller="AppCtrl as ctrl" layout="column" ng-cloak>
 
-	<header>
-		<nav>
-			<md-toolbar>
-			  <div id="md-toolbar-tools-main" class="md-toolbar-tools" layout="row">
+	<header layout="column">
+
+		<nav layout="column" flex>
+			<md-toolbar layout="column" flex>
+			  <div class="md-toolbar-tools md-toolbar-tools-main" layout="row" flex>
 				<div class="title">English Study</div>
-				<div class="sub-title" ng-bind="$root.subTitle"></div>
+				<div class="sub-title" ng-bind="$root.subTitle" flex></div>
+				<!--
+				<md-button class="md-icon-button">
+					<md-icon class="material-icons expand-toolbar"> open_in_browser </md-icon>				
+				</md-button>	
+				-->
 			  </div>
 			</md-toolbar>
 		</nav>
+
+		<!--
+		<div class="restore-toolbar-container">	
+			<md-button class="md-icon-button">
+				<md-icon class="material-icons restore-toolbar"> open_in_browser </md-icon>				
+			</md-button>	
+		</div>	
+		-->
 
 		<div class="progress-bar-loading">	
 			<md-progress-linear class="ng-hide" md-mode="indeterminate" ng-show="$root.loading"></md-progress-linear>	
 		</div>	
 
-	</header>	
+	</header>
 
-	<section>
-		<div class="page-view" layout="row" ng-view>
-		</div>
+	<section layout="row" flex>
+		<div class="page-view" layout="row" flex ng-view></div>
 	</section>
 	
-	<footer>
+	<footer layout="row" layout-align="end center">
 		<div>Copyright 2016 Denimar de Moraes</div>
 	</footer>			
 	
@@ -68,6 +81,7 @@
   	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.7.3/summernote.min.js"></script>    
   	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-summernote/0.7.1/angular-summernote.min.js"></script>    
 
+	<script src="src/assets/bower_components/ng-file-upload/ng-file-upload.min.js"></script>
 
 	<script src="dist/app.js"></script>
 

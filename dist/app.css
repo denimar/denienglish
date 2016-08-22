@@ -1,3 +1,6 @@
+html {
+  overflow-y: hidden; }
+
 body {
   margin: 0;
   padding-top: 10px;
@@ -6,21 +9,60 @@ body {
   padding-left: 5px;
   overflow-y: hidden; }
 
-header #md-toolbar-tools-main {
+header {
+  min-height: 64px;
   height: 64px;
-  background-color: #004466 !important; }
-  header #md-toolbar-tools-main .hamburger-button {
-    width: 24px;
-    height: 24px; }
+  /*
+	.restore-toolbar-container {
+		height: 20px;
 
-header .title {
-  color: white;
-  font-size: 24px; }
+		.md-button {
+			float: right;		
+			.material-icons.restore-toolbar {
+				font-size: 18px;
+				padding-top: 15px;
+				margin-right: 0px;
+			    -ms-transform: rotate(180deg); // IE 9
+			    -webkit-transform: rotate(180deg); // Chrome, Safari, Opera
+			    transform: rotate(180deg);
 
-header .sub-title {
-  color: #D5E7FC;
-  font-size: 14px;
-  margin: 8px 0px 0px 25px; }
+				&:hover {
+					color: yellow;
+				}
+			}
+		}	
+
+	}
+	*/ }
+  header .md-toolbar-tools.md-toolbar-tools-main {
+    max-height: 500px;
+    min-height: 0px;
+    height: 50px;
+    background-color: #004466 !important; }
+    header .md-toolbar-tools.md-toolbar-tools-main .hamburger-button {
+      width: 24px;
+      height: 24px; }
+    header .md-toolbar-tools.md-toolbar-tools-main .title {
+      color: white;
+      font-size: 24px; }
+    header .md-toolbar-tools.md-toolbar-tools-main .sub-title {
+      color: #D5E7FC;
+      font-size: 14px;
+      margin: 8px 0px 0px 25px; }
+    header .md-toolbar-tools.md-toolbar-tools-main .md-button .material-icons.expand-toolbar {
+      font-size: 18px;
+      padding-top: 15px;
+      margin-right: 0px; }
+      header .md-toolbar-tools.md-toolbar-tools-main .md-button .material-icons.expand-toolbar:hover {
+        color: yellow; }
+  header .progress-bar-loading {
+    height: 3px;
+    width: 100%; }
+    header .progress-bar-loading md-progress-linear .md-container {
+      background-color: white;
+      height: 3px; }
+      header .progress-bar-loading md-progress-linear .md-container .md-bar {
+        background-color: chartreuse; }
 
 .material-icons {
   color: #a6a6a6; }
@@ -30,28 +72,17 @@ header .sub-title {
     color: #d9d9d9 !important; }
 
 section {
-  height: calc(100% - 64px - 12px - 10px);
   overflow: hidden; }
   section .page-view {
-    height: 100%;
     position: relative;
     padding-top: 0px; }
 
-footer div {
-  color: gray;
-  text-align: right;
-  height: footer-height;
-  padding: 0px;
-  font-size: 12px; }
-
-.progress-bar-loading {
-  height: 3px;
-  width: 100%; }
-  .progress-bar-loading md-progress-linear .md-container {
-    background-color: white;
-    height: 3px; }
-    .progress-bar-loading md-progress-linear .md-container .md-bar {
-      background-color: chartreuse; }
+footer {
+  height: 12px; }
+  footer div {
+    color: #b3b3b3;
+    padding: 4px 8px 0px 0px;
+    font-size: 12px; }
 
 md-input-container {
   padding: 0px;
@@ -169,8 +200,6 @@ label {
 
 .text .main-div {
   border: solid 1px #99bce8;
-  width: 100%;
-  height: 100%;
   box-sizing: border-box;
   border: solid 1px #99bce8; }
   .text .main-div md-content {
@@ -181,11 +210,9 @@ label {
       height: 50px; }
   .text .main-div .content {
     margin: 0px 0px 0px 8px;
-    height: calc(100% - 50px - 1px);
     box-sizing: border-box; }
     .text .main-div .content .editor {
-      box-sizing: border-box;
-      height: 100%; }
+      box-sizing: border-box; }
       .text .main-div .content .editor .note-editor {
         height: 100%;
         box-sizing: border-box;
@@ -202,7 +229,6 @@ label {
     .text .main-div .content .text-content {
       box-sizing: border-box;
       overflow-y: auto;
-      height: 100%;
       padding: 10px; }
 
 .text .toolbar-div {
@@ -279,6 +305,47 @@ label {
   .video .toolbar-div .toolbar-separator {
     border-bottom: solid 1px #e6e6e6;
     margin: 4px; }
+
+.video-modal-import-subtitle-lyrics {
+  width: 100%;
+  height: 100%;
+  padding: 10px; }
+  .video-modal-import-subtitle-lyrics textarea {
+    border-width: 0px; }
+    .video-modal-import-subtitle-lyrics textarea:focus {
+      outline: none; }
+
+.video-modal-import-subtitle-srt {
+  width: 100%;
+  height: 100%;
+  padding: 10px; }
+  .video-modal-import-subtitle-srt .drop-box {
+    background: #F8F8F8;
+    border: dashed 3px #DDD;
+    text-align: center;
+    margin-bottom: 10px; }
+    .video-modal-import-subtitle-srt .drop-box .info {
+      font-size: 22px; }
+    .video-modal-import-subtitle-srt .drop-box .filename {
+      font-size: 16px;
+      color: deeppink; }
+  .video-modal-import-subtitle-srt .dragover {
+    border-color: #0099e6; }
+  .video-modal-import-subtitle-srt .select-file-button {
+    float: left;
+    height: 30px; }
+    .video-modal-import-subtitle-srt .select-file-button .button {
+      text-transform: none;
+      margin: 5px;
+      width: 200px;
+      border: solid 1px #99bce8;
+      color: #33BBFF; }
+      .video-modal-import-subtitle-srt .select-file-button .button .material-icons {
+        color: inherit; }
+      .video-modal-import-subtitle-srt .select-file-button .button:hover {
+        color: #0099e6;
+        background-color: white;
+        border-color: #33BBFF; }
 
 .subtitle-modal-template {
   padding: 20px; }

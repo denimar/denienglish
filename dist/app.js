@@ -21,7 +21,8 @@ angular.module('app', [
 	//"com.2fdevs.videogular.plugins.poster",
 	//"com.2fdevs.videogular.plugins.buffering",	
 	
-	'summernote'
+	'summernote',
+	'ngFileUpload'
 ]);
 
 angular.module('app').config(function($compileProvider){
@@ -1926,9 +1927,14 @@ angular.module('app').service('VideoRestSrv', function(AppSrv) {
 
 
 });
-angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv) {
+angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv) {
 	
 	var vm = this;
+	vm.controller;
+
+	vm.setController = function(controller) {
+		vm.controller = controller;
+	}
 
 	var _selectSubtitleInTime = function(controller, time) {
 		var data = controller.gridSubtitlesOptions.data;
@@ -2013,7 +2019,6 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
                 }
             };			
 			*/
-
 		});
 
 		return deferred.promise;
@@ -2087,11 +2092,15 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 	};
 
     vm.importSubtitleFromLyrics = function() {
-    	alert('import subtitle from lyrics here');
+    	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+    	});
     };
 
     vm.importSubtitleFromSrtFile = function() {
-    	alert('import subtitle from srt file here');
+    	videoModalImportSubtitleSrtSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+    	});
     };
 
 
@@ -2128,6 +2137,136 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
 	}
 
+
+});
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+
+	var vm = this;
+  vm.cdItem;
+	vm.controller;
+
+	vm.setController = function(controller, scope) {
+		vm.controller = controller;
+    vm.controller.cdItem = vm.cdItem;
+	}
+
+	vm.showModal = function(cdItem) {
+      vm.cdItem = cdItem;
+      var deferred = $q.defer();
+
+      var wndImportSubtitle = uiDeniModalSrv.createWindow({
+            scope: $rootScope,
+            title: 'Importing Subtitle from a text (often lyrics of musics)',
+            width: '550px',         
+            height: '500px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
+            modal: true,
+            listeners: {
+
+            	onshow: function(objWindow) {
+            	}
+
+            }
+      });
+
+      wndImportSubtitle.show().then(function(modalResponse) {
+
+        if (modalResponse.button == 'ok') {
+          var successfullyMessage = {
+            title: 'Updating',
+            message: 'Item updated successfully!'
+          }
+
+          var textArea = $(wndImportSubtitle).find('textarea');
+          lyrics = textArea.val();
+
+          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+            deferred.resolve(serverReturn.data);
+          });   
+        }
+
+      });
+
+      return deferred.promise;
+	};
+
+});
+angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
+
+	var vm = this;
+  vm.cdItem;
+	vm.controller;
+
+	vm.setController = function(controller, scope) {
+		vm.controller = controller;
+    vm.controller.cdItem = vm.cdItem;
+
+    scope.$watch('ctrl.strFile', function (newValue, oldValue) {
+        vm.controller.strFile = newValue;
+    });
+	}
+
+	vm.showModal = function(cdItem) {
+      vm.cdItem = cdItem;
+      var deferred = $q.defer();
+
+      var wndImportSubtitle = uiDeniModalSrv.createWindow({
+            scope: $rootScope,
+            title: 'Importing Subtitle (.srt)',
+            width: '600px',         
+            height: '230px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-srt/video-modal-import-subtitle-srt.tpl.htm',
+            modal: true,
+            listeners: {
+
+            	onshow: function(objWindow) {
+            	}
+
+            }
+      });
+
+      wndImportSubtitle.show().then(function(modalResponse) {
+
+        if (modalResponse.button == 'ok') {
+          if ((vm.controller.strFile) && (!vm.controller.strFile.$error)) {
+
+            var fileInput = $(wndImportSubtitle).find('input[type=file]');
+             var fd = new FormData();
+             fd.append('cdItem', vm.cdItem);
+             fd.append('file', vm.controller.strFile);
+
+             $http.post(AppConsts.SERVER_URL + 'subtitle/importsrt', fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+             })
+          
+             .success(function(serverResponseAddSubtitle){
+                uiDeniModalSrv.ghost("Subtitles", "Subtitles imported successfully!");
+                deferred.resolve(serverResponseAddSubtitle.data);
+             })
+          
+             .error(function(reason){
+                deferred.reject(reason);
+             });
+
+          }
+        }
+        
+      });
+
+      return deferred.promise;
+	};
+
+  vm.uploaderOnAfterAddingFile = function(fileItem) {
+    vm.controller.file = fileItem.file; 
+    //var spanFileName = $('.video-modal-import-subtitle-srt .select-file-drag-and-drop .filename');
+    //spanFileName.html(fileItem.file.name);
+  };
+	
 
 });
 angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
@@ -2332,7 +2471,9 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
 
 angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv) {
 	var vm = this;
+	VideoSrv.setController(this);
 	vm.scope = $scope;
+
 
 	$scope.name = "VideoCtrl";
 	$scope.params = $routeParams;	
@@ -2424,6 +2565,16 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
     vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
 
 });
+angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
+
+	videoModalImportSubtitleLyricsSrv.setController(this);    
+
+});
+angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
+
+	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
+
+});
 //CONSTANTS
 angular.module('app').constant('AppConsts', {
 	SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
@@ -2505,7 +2656,7 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		hamburgerIconButtonImg.addClass("hamburger-button");
 		hamburgerIconButton.append(hamburgerIconButtonImg);
 
-		var mainToobar = $('#md-toolbar-tools-main');
+		var mainToobar = $('.md-toolbar-tools-main');
 
 		if (side === AppEnums.Side.LEFT) {
 			mainToobar.prepend(hamburgerIconButton);
@@ -2560,21 +2711,22 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 		};
 
 	    return {
-	      toolbar: [
-		    // [groupName, [list of button]]	      
-			['saveOrCancelButtons', ['saveButton', 'cancelButton']],
-		    ['fontsize', ['fontname', 'fontsize', 'color']],
-		    ['style', ['bold', 'italic', 'underline', 'clear']],		    		    
-		    ['para', ['ul', 'ol', 'paragraph']],
-		    ['height', ['height']],
-            ['table', ['table']],
-            ['insert', ['link','picture','video','hr']],
-            ['view', ['fullscreen', 'codeview']],
-	      ],
-		  buttons: {
-		    saveButton: saveButton,
-		    cancelButton: cancelButton
-		  }
+			disableDragAndDrop : true,
+			toolbar: [
+				// [groupName, [list of button]]	      
+				['saveOrCancelButtons', ['saveButton', 'cancelButton']],
+				['fontsize', ['fontname', 'fontsize', 'color']],
+				['style', ['bold', 'italic', 'underline', 'clear']],		    		    
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['table', ['table']],
+				['insert', ['link','picture','video','hr']],
+				['view', ['fullscreen', 'codeview']],
+			],
+			buttons: {
+				saveButton: saveButton,
+				cancelButton: cancelButton
+			}
 	    };
 
 	};

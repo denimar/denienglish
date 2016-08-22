@@ -19,7 +19,8 @@ angular.module('app', [
 	//"com.2fdevs.videogular.plugins.poster",
 	//"com.2fdevs.videogular.plugins.buffering",	
 	
-	'summernote'
+	'summernote',
+	'ngFileUpload'
 ]);
 
 angular.module('app').config(function($compileProvider){
