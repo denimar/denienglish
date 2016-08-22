@@ -939,7 +939,7 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 				var functionExec = null;
 				var classLink = null;
 				if (item.cd_dicionario) {
-					functionExec = 'openDictionary(' + item.cd_dicionario + ', \'' + item.ds_expressao + '\');';
+					functionExec = 'openDictionary(' + item.cd_dicionario + ', \'' + item.texto + '\');';
 					classLink = 'dictionary-link';
 				} else {
 					functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					

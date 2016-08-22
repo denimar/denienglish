@@ -198,53 +198,6 @@ label {
         .home.items #mainGrid .cell-template .material-icons.favorite.selected {
           color: orange; }
 
-.text .main-div {
-  border: solid 1px #99bce8;
-  box-sizing: border-box;
-  border: solid 1px #99bce8; }
-  .text .main-div md-content {
-    overflow: hidden;
-    height: 50px;
-    box-sizing: border-box; }
-    .text .main-div md-content md-tabs {
-      height: 50px; }
-  .text .main-div .content {
-    margin: 0px 0px 0px 8px;
-    box-sizing: border-box; }
-    .text .main-div .content .editor {
-      box-sizing: border-box; }
-      .text .main-div .content .editor .note-editor {
-        height: 100%;
-        box-sizing: border-box;
-        border-width: 0px; }
-        .text .main-div .content .editor .note-editor .note-editing-area {
-          box-sizing: border-box;
-          height: calc(100% - 41px);
-          overflow-y: auto; }
-          .text .main-div .content .editor .note-editor .note-editing-area .panel-body {
-            box-sizing: border-box;
-            height: 100%; }
-        .text .main-div .content .editor .note-editor .note-statusbar {
-          display: none; }
-    .text .main-div .content .text-content {
-      box-sizing: border-box;
-      overflow-y: auto;
-      padding: 10px; }
-
-.text .toolbar-div {
-  width: 50px;
-  border: solid 1px #99bce8;
-  margin-left: 2px; }
-  .text .toolbar-div .md-icon-button {
-    color: gray; }
-    .text .toolbar-div .md-icon-button:hover {
-      color: #04408C; }
-    .text .toolbar-div .md-icon-button .material-icons {
-      color: inherit; }
-  .text .toolbar-div .toolbar-separator {
-    border-bottom: solid 1px #e6e6e6;
-    margin: 4px; }
-
 .video .main-div {
   box-sizing: border-box; }
   .video .main-div .video-container-and-subtitles .video-container {
@@ -306,14 +259,52 @@ label {
     border-bottom: solid 1px #e6e6e6;
     margin: 4px; }
 
-.video-modal-import-subtitle-lyrics {
-  width: 100%;
-  height: 100%;
-  padding: 10px; }
-  .video-modal-import-subtitle-lyrics textarea {
-    border-width: 0px; }
-    .video-modal-import-subtitle-lyrics textarea:focus {
-      outline: none; }
+.text .main-div {
+  border: solid 1px #99bce8;
+  box-sizing: border-box;
+  border: solid 1px #99bce8; }
+  .text .main-div md-content {
+    overflow: hidden;
+    height: 50px;
+    box-sizing: border-box; }
+    .text .main-div md-content md-tabs {
+      height: 50px; }
+  .text .main-div .content {
+    margin: 0px 0px 0px 8px;
+    box-sizing: border-box; }
+    .text .main-div .content .editor {
+      box-sizing: border-box; }
+      .text .main-div .content .editor .note-editor {
+        height: 100%;
+        box-sizing: border-box;
+        border-width: 0px; }
+        .text .main-div .content .editor .note-editor .note-editing-area {
+          box-sizing: border-box;
+          height: calc(100% - 41px);
+          overflow-y: auto; }
+          .text .main-div .content .editor .note-editor .note-editing-area .panel-body {
+            box-sizing: border-box;
+            height: 100%; }
+        .text .main-div .content .editor .note-editor .note-statusbar {
+          display: none; }
+    .text .main-div .content .text-content {
+      box-sizing: border-box;
+      overflow-y: auto;
+      padding: 10px; }
+
+.text .toolbar-div {
+  width: 50px;
+  border: solid 1px #99bce8;
+  margin-left: 2px; }
+  .text .toolbar-div .md-icon-button {
+    color: gray; }
+    .text .toolbar-div .md-icon-button:hover {
+      color: #04408C; }
+    .text .toolbar-div .md-icon-button .material-icons {
+      color: inherit; }
+  .text .toolbar-div .toolbar-separator {
+    border-bottom: solid 1px #e6e6e6;
+    margin: 4px; }
 
 .video-modal-import-subtitle-srt {
   width: 100%;
@@ -346,6 +337,15 @@ label {
         color: #0099e6;
         background-color: white;
         border-color: #33BBFF; }
+
+.video-modal-import-subtitle-lyrics {
+  width: 100%;
+  height: 100%;
+  padding: 10px; }
+  .video-modal-import-subtitle-lyrics textarea {
+    border-width: 0px; }
+    .video-modal-import-subtitle-lyrics textarea:focus {
+      outline: none; }
 
 .subtitle-modal-template {
   padding: 20px; }
