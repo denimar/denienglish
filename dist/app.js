@@ -2293,6 +2293,10 @@ angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalS
 			if (record) {
 				controller.subtitleModalData.start = StringSrv.doubleToStrTime(record.nrStart + 1);
 				controller.subtitleModalData.end = StringSrv.doubleToStrTime(record.nrStart + 2);
+			} else {
+				//initial value (fake value)
+				controller.subtitleModalData.start = StringSrv.doubleToStrTime(1);
+				controller.subtitleModalData.end = StringSrv.doubleToStrTime(10);
 			}
 		}
 
@@ -2389,7 +2393,7 @@ angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $route
 });
 'use strict';
 
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
+angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, ItemRestSrv) {
      
     var vm = this;
 
@@ -2400,7 +2404,13 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.contentStored = ''; //used by cancel button to rescue the previous value
     vm.content = '';
     vm.formatedContent = '';     
+    vm.t05itm = null;
     vm.t07txt = null;
+
+    ItemRestSrv.get(vm.params.cdItem).then(function(serverResponse) {
+        vm.t05itm = serverResponse.data.data[0];
+        $rootScope.subTitle = vm.t05itm.dsItem;
+    });
 
     TextRestSrv.list(vm.params.cdItem).then(function(serverResponse) {
     	vm.texts = serverResponse.data.data;
@@ -2459,6 +2469,10 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
         }
     };
 
+    vm.spacedRevisionClick = function() {
+        spacedRevisionModalSrv.showModal($scope, vm.params.cdItem);
+    }
+
     $scope.openDictionary = function(cdDicionario, dsExpressao) {
         dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
     };    
@@ -2468,8 +2482,9 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     };     
 
 });
+'use strict';
 
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv) {
+angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, ItemRestSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
 	var vm = this;
 	VideoSrv.setController(this);
 	vm.scope = $scope;
@@ -2477,9 +2492,15 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 
 	$scope.name = "VideoCtrl";
 	$scope.params = $routeParams;	
+	vm.t05itm = null;
 	vm.cdItem = $scope.params.cdItem;
 	vm.commentaries = '';
 	vm.initialCommentaries = '';
+
+	ItemRestSrv.get($scope.params.cdItem).then(function(serverResponse) {
+		vm.t05itm = serverResponse.data.data[0];
+		$rootScope.subTitle = vm.t05itm.dsItem;
+	});
 
     VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
 		vm.t08vdo = t08vdo;
@@ -2533,7 +2554,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		record.nrStart = record.nrStart + increment;
 		record.nrEnd = record.nrEnd + increment;		
 
-		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(responseServer) {
+		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
 			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
 			vm.gridSubtitlesOptions.api.repaint();
 			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});
@@ -2552,6 +2573,10 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
 		pronunciationSrv.listenExpression(record.dsTexto);
 	}
+
+    vm.spacedRevisionClick = function() {
+        spacedRevisionModalSrv.showModal($scope, vm.cdItem);
+    }
 
     $scope.openDictionary = function(cdDicionario, dsExpressao) {
         dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);

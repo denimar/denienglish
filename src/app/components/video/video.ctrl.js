@@ -1,5 +1,6 @@
+'use strict';
 
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv) {
+angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, ItemRestSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
 	var vm = this;
 	VideoSrv.setController(this);
 	vm.scope = $scope;
@@ -7,9 +8,15 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 
 	$scope.name = "VideoCtrl";
 	$scope.params = $routeParams;	
+	vm.t05itm = null;
 	vm.cdItem = $scope.params.cdItem;
 	vm.commentaries = '';
 	vm.initialCommentaries = '';
+
+	ItemRestSrv.get($scope.params.cdItem).then(function(serverResponse) {
+		vm.t05itm = serverResponse.data.data[0];
+		$rootScope.subTitle = vm.t05itm.dsItem;
+	});
 
     VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
 		vm.t08vdo = t08vdo;
@@ -63,7 +70,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		record.nrStart = record.nrStart + increment;
 		record.nrEnd = record.nrEnd + increment;		
 
-		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(responseServer) {
+		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
 			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
 			vm.gridSubtitlesOptions.api.repaint();
 			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});
@@ -82,6 +89,10 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
 		pronunciationSrv.listenExpression(record.dsTexto);
 	}
+
+    vm.spacedRevisionClick = function() {
+        spacedRevisionModalSrv.showModal($scope, vm.cdItem);
+    }
 
     $scope.openDictionary = function(cdDicionario, dsExpressao) {
         dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);

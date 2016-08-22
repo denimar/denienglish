@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv) {
+angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, ItemRestSrv) {
      
     var vm = this;
 
@@ -11,7 +11,13 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.contentStored = ''; //used by cancel button to rescue the previous value
     vm.content = '';
     vm.formatedContent = '';     
+    vm.t05itm = null;
     vm.t07txt = null;
+
+    ItemRestSrv.get(vm.params.cdItem).then(function(serverResponse) {
+        vm.t05itm = serverResponse.data.data[0];
+        $rootScope.subTitle = vm.t05itm.dsItem;
+    });
 
     TextRestSrv.list(vm.params.cdItem).then(function(serverResponse) {
     	vm.texts = serverResponse.data.data;
@@ -69,6 +75,10 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
             pronunciationSrv.listenExpression(selection.toString().trim());
         }
     };
+
+    vm.spacedRevisionClick = function() {
+        spacedRevisionModalSrv.showModal($scope, vm.params.cdItem);
+    }
 
     $scope.openDictionary = function(cdDicionario, dsExpressao) {
         dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);

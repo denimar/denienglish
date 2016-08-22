@@ -62,6 +62,13 @@
 			<md-icon class="material-icons"> headset </md-icon>
 		</md-button>	
 
+		<div class="toolbar-separator ng-hide" ng-show="!ctrl.editing"></div>
+
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Spaced Revision" ng-click="ctrl.spacedRevisionClick()">
+			<md-tooltip>Spaced Revision</md-tooltip>
+			<md-icon class="material-icons"> restore </md-icon>
+		</md-button>	
+
 		<div class="toolbar-separator"></div>
 
 		<md-button class="md-icon-button" aria-label="playlist_add" ng-click="ctrl.addSubtitleButtonClick()">

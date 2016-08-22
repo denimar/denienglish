@@ -22,6 +22,10 @@ angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalS
 			if (record) {
 				controller.subtitleModalData.start = StringSrv.doubleToStrTime(record.nrStart + 1);
 				controller.subtitleModalData.end = StringSrv.doubleToStrTime(record.nrStart + 2);
+			} else {
+				//initial value (fake value)
+				controller.subtitleModalData.start = StringSrv.doubleToStrTime(1);
+				controller.subtitleModalData.end = StringSrv.doubleToStrTime(10);
 			}
 		}
 
