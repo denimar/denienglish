@@ -283,6 +283,19 @@ angular.module('app').service('ItemRestSrv', function(AppSrv) {
 
 	}	
 
+	vm.revision = {
+
+		set: function(cd_item, bl_fazer_revisao) {
+			return AppSrv.requestWithPromise('item/revision/set', {'cd_item': cd_item, 'bl_fazer_revisao': bl_fazer_revisao});
+		},
+
+		get: function(cd_item) {
+			return AppSrv.requestWithPromise('item/revision/get', {'cd_item': cd_item});			
+		}
+
+	}	
+
+
 });
 angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, AppSrv, uiDeniModalSrv, newVideoItemModalSrv, AppEnums, VideoRestSrv, AppConsts) {
 
@@ -406,6 +419,32 @@ angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, A
 
 	}
 
+	/**
+	 *
+	 */
+	vm.revision = {
+
+		set: function(cd_item, bl_fazer_revisao) {
+			var deferred = $q.defer();
+			ItemRestSrv.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
+				deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
+			}, function(reason) {
+				deferred.reject(reason);
+			});
+			return deferred.promise;
+		},
+
+		get: function(cd_item) {
+			var deferred = $q.defer();
+			ItemRestSrv.revision.get(cd_item).then(function(serverReturn) {
+				deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
+			}, function(reason) {
+				deferred.reject(reason);
+			});
+			return deferred.promise;
+		}
+
+	}
 
 });
 angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
@@ -1763,8 +1802,13 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 						}
 						var time = new Date();
 						var miliseconds = time.getMilliseconds();
+						
 						var favorite = record.blFavorite ? 'star' : 'star_border';
-						var selected = record.blFavorite ? 'selected' : '';
+						var favoriteSelected = record.blFavorite ? 'selected' : '';						
+
+						var revise = record.blFazerRevisao ? 'check_box' : 'check_box_outline_blank';						
+						var reviseSelected = record.blFazerRevisao ? 'selected' : '';
+
 	  					var cellTemplate = '<div class="cell-template">\n' +
 										   '    <img class="item-image"\n' +
 										   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
@@ -1772,9 +1816,10 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 										   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
 										   '    <div>{4}</div>\n' +									   
 										   '    <md-icon class="material-icons favorite {6}"> {7} </md-icon>\n' +
+										   '    <md-icon class="material-icons revise {8}"> {9} </md-icon>\n' +										   
 										   '<div>';
 
-	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, selected, favorite);
+	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, favoriteSelected, favorite, reviseSelected, revise);
 	        		}
 	        	},
 	        	{
@@ -1841,11 +1886,20 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 					$timeout(function() {
 						elementRow.find('.material-icons.favorite').click(function(event) {
 							var record = controller.gridOptions.api.getSelectedRow();
-							itemSrv.favorite.set(record.cdItem, !record.blFavorite).then(function(blFavorite) {
-								record.blFavorite = blFavorite;						
-								controller.gridOptions.api.repaintSelectedRow();						
+							record.blFavorite = !record.blFavorite;
+							controller.gridOptions.api.repaintSelectedRow();													
+							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
 							});
 						});
+
+						elementRow.find('.material-icons.revise').click(function(event) {
+							var record = controller.gridOptions.api.getSelectedRow();
+							record.blFazerRevisao = !record.blFazerRevisao;
+							controller.gridOptions.api.repaintSelectedRow();
+							itemSrv.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
+							});
+						});
+
 					}, 500);
 	            },
 

@@ -138,16 +138,32 @@ $category-buttons-height: 36px;
 					box-sizing: border-box;    
 				}
 
-				.material-icons.favorite {
+				.material-icons {
 					cursor: pointer;
 
-					&:hover {
-						color: orange;						
-					}
+					&.favorite {
+						&:hover {
+							color: orange;						
+						}
 
-					&.selected {
-						color: orange;	
-					}
+						&.selected {
+							color: orange;	
+						}
+					}	
+
+					&.revise {
+						font-size: 22px;
+						margin-top: 2px;
+
+						&:hover {
+							color: #00b33c;
+						}
+
+						&.selected {
+							color: #00b33c;
+							opacity: 0.8;
+						}
+					}	
 				}
 				
 			}   

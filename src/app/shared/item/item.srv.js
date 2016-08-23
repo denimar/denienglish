@@ -120,5 +120,31 @@ angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, A
 
 	}
 
+	/**
+	 *
+	 */
+	vm.revision = {
+
+		set: function(cd_item, bl_fazer_revisao) {
+			var deferred = $q.defer();
+			ItemRestSrv.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
+				deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
+			}, function(reason) {
+				deferred.reject(reason);
+			});
+			return deferred.promise;
+		},
+
+		get: function(cd_item) {
+			var deferred = $q.defer();
+			ItemRestSrv.revision.get(cd_item).then(function(serverReturn) {
+				deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
+			}, function(reason) {
+				deferred.reject(reason);
+			});
+			return deferred.promise;
+		}
+
+	}
 
 });

@@ -46,4 +46,17 @@ angular.module('app').service('ItemRestSrv', function(AppSrv) {
 
 	}	
 
+	vm.revision = {
+
+		set: function(cd_item, bl_fazer_revisao) {
+			return AppSrv.requestWithPromise('item/revision/set', {'cd_item': cd_item, 'bl_fazer_revisao': bl_fazer_revisao});
+		},
+
+		get: function(cd_item) {
+			return AppSrv.requestWithPromise('item/revision/get', {'cd_item': cd_item});			
+		}
+
+	}	
+
+
 });
