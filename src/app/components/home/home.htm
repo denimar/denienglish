@@ -1,6 +1,7 @@
 <div class="home category" flex="30" flex-gt-xs="30" show-gt-xs hide-xs>
 
-	<div id="categoryPanel">
+	<div id="categoryPanel" layout="column">
+
 		<div id="categoryButtons">
 			<md-button class="md-icon-button" ng-click="ctrl.addCategoryClick()" aria-label="" ng-disabled="ctrl.currentCategoryNode == null">
 				<md-tooltip md-direction="down">
@@ -22,7 +23,10 @@
 			</md-button>					
 		</div>            		
 	
-		<div id="categoryTreeview"></div>
+		<div class="category-treeview-container" flex layout="column">
+			<div id="categoryTreeview" flex></div>
+		</div>
+
 	</div>
 
 </div>

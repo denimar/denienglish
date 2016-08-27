@@ -30,17 +30,11 @@ angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppCo
 		spacedRevisionModalSrv.showResult(vm);
 	}
 
-	vm.changeLearnedRate = function() {
-		revisionSrv.setLevelOfLearning(vm.currentExpression.cdDicionario, vm.currentExpression.cdPronuncia, vm.model.expression.learnedRate);
-		vm.currentExpression.nrLevelOfLearning = vm.model.expression.learnedRate;
-		spacedRevisionModalSrv.updateLearnedPercentage(vm);
-	}
-
 	vm.markAsReviewed = function(cd_item) {
 		spacedRevisionModalSrv.markAsReviewed(cd_item);
-		console.log('TODO: FAZER UMA ROTINA NA uiDeniModal para fechar a janela ativa...');
-		console.log('TODO: VERIFICAR TAMBÉM O UI-DENI-MODAL... PASSAGEM DO Scope...');		
 	}
+
+	vm.selectExpressions = spacedRevisionModalSrv.selectExpressions;
 
 	/*
 	if (vm.cdItem) {

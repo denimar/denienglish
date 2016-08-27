@@ -184,12 +184,12 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 						}
 						var time = new Date();
 						var miliseconds = time.getMilliseconds();
-						
-						var favorite = record.blFavorite ? 'star' : 'star_border';
-						var favoriteSelected = record.blFavorite ? 'selected' : '';						
 
 						var revise = record.blFazerRevisao ? 'check_box' : 'check_box_outline_blank';						
 						var reviseSelected = record.blFazerRevisao ? 'selected' : '';
+						
+						var favorite = record.blFavorite ? 'star' : 'star_border';
+						var favoriteSelected = record.blFavorite ? 'selected' : '';						
 
 	  					var cellTemplate = '<div class="cell-template">\n' +
 										   '    <img class="item-image"\n' +
@@ -197,11 +197,11 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 										   '    />\n' +                                  
 										   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
 										   '    <div>{4}</div>\n' +									   
-										   '    <md-icon class="material-icons favorite {6}"> {7} </md-icon>\n' +
-										   '    <md-icon class="material-icons revise {8}"> {9} </md-icon>\n' +										   
+										   '    <md-icon class="material-icons revise {6}"> {7} </md-icon>\n' +										   										   
+										   '    <md-icon class="material-icons favorite {8}"> {9} </md-icon>\n' +
 										   '<div>';
 
-	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, favoriteSelected, favorite, reviseSelected, revise);
+	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, reviseSelected, revise, favoriteSelected, favorite);
 	        		}
 	        	},
 	        	{
@@ -266,21 +266,43 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 
 	            onafterrepaintrow: function(rowIndex, elementRow) {
 					$timeout(function() {
-						elementRow.find('.material-icons.favorite').click(function(event) {
-							var record = controller.gridOptions.api.getSelectedRow();
-							record.blFavorite = !record.blFavorite;
-							controller.gridOptions.api.repaintSelectedRow();													
-							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
-							});
-						});
 
 						elementRow.find('.material-icons.revise').click(function(event) {
 							var record = controller.gridOptions.api.getSelectedRow();
 							record.blFazerRevisao = !record.blFazerRevisao;
-							controller.gridOptions.api.repaintSelectedRow();
+
+							var revisionIcon = $(event.currentTarget);
+							if (revisionIcon.is('.selected')) {
+								revisionIcon.html('check_box_outline_blank');
+								revisionIcon.removeClass('selected');
+							} else {
+								revisionIcon.html('check_box');
+								revisionIcon.addClass('selected');
+							}	
+
 							itemSrv.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
+								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
 							});
 						});
+
+						elementRow.find('.material-icons.favorite').click(function(event) {
+							var record = controller.gridOptions.api.getSelectedRow();
+							record.blFavorite = !record.blFavorite;
+
+							var favoriteIcon = $(event.currentTarget);
+							if (favoriteIcon.is('.selected')) {
+								favoriteIcon.html('star_border');
+								favoriteIcon.removeClass('selected');
+							} else {
+								favoriteIcon.html('star');
+								favoriteIcon.addClass('selected');
+							}	
+
+							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
+								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
+							});
+						});
+
 
 					}, 500);
 	            },

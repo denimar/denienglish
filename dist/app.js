@@ -541,12 +541,16 @@ angular.module('app').service('RevisionRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
 	}
 
-	vm.getExpressions = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item});
+	vm.getExpressions = function(cd_item, onlyVisible) {
+		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
 	}
 
-	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
-		return AppSrv.requestWithPromise('revision/expressions/levelOfLearning/set', {'cd_dicionario': cd_dicionario, 'cd_pronuncia': cd_pronuncia, "nr_level_of_learning": nrLevelOfLearning});	
+	vm.updExpressions = function(cd_item, expressions) {
+		var successfullyMessage = {
+			title: 'Spaced Revision',
+			message: 'expressions updated succesfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
 	}
 
 	vm.markAsReviewed = function(cd_item) {
@@ -572,10 +576,10 @@ angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
 		return deferred.promise;
 	}
 
-	vm.getExpressions = function(cd_item) {
+	vm.getExpressions = function(cd_item, onlyVisible) {
 		var deferred = $q.defer();
 
-		RevisionRestSrv.getExpressions(cd_item).then(function(serverResponse) {
+		RevisionRestSrv.getExpressions(cd_item, onlyVisible).then(function(serverResponse) {
 			var expressions = serverResponse.data.data;
 			deferred.resolve(expressions);
 		}, function(reason) {
@@ -584,209 +588,6 @@ angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
 
 		return deferred.promise;
 	}
-
-	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.setLevelOfLearning(cd_dicionario, cd_pronuncia, nrLevelOfLearning).then(function(serverResponse) {
-			var result = serverResponse.data.data[0];
-			deferred.resolve(result);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-
-});
-'use strict';
-
-angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
-
-	var vm = this;
-      vm.controller;      
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      };
-
-	vm.showModal = function(scope) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Dictionary',
-                  width: '700px',         
-                  height: '580px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
-                  urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(objWindow) {
-                  	}
-
-                  }
-            }).show().then(function() {
-                  AppSrv.allExpressions = AppSrv.pronunciationExpressions.concat(vm.controller.gridDictionaryOptions.alldata);
-                  deferred.resolve(vm.controller.gridDictionaryOptions.alldata);
-            });
-
-            return deferred.promise;
-	};	
-
-      var _editExpression = function(record) {
-            dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
-                  record.dsExpressao = modelAdded.dsExpression;
-                  record.dsTags = modelAdded.dsTags;   
-                  var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
-                  vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
-                  vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
-            });
-      }
-
-      vm.getGridDictionaryOptions = function() {
-
-            return {
-                  keyField: 'cdDicionario',
-                  rowHeight: '25px',
-                  data: AppSrv.dictionaryExpressions,
-                  hideHeaders: true,
-                  columns: [
-                        {
-                              name: 'dsExpressao',
-                              width: '40%'
-                        },
-                        {
-                              name: 'dsTags',
-                              width: '40%'
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'edit',
-                                    tooltip: 'Edit the current expression',
-                                    fn: function(record, column, imgActionColumn) {
-                                          _editExpression(record);
-                                    }
-                              }                 
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'delete_forever',
-                                    tooltip: 'Remove a expression from dictionary',
-                                    fn: function(record, column, imgActionColumn) {
-                                          DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
-
-                                                var deleteItemFn = function(data) {
-                                                      for (var i = data.length - 1; i >= 0; i--) {
-                                                            if (data[i].cdDicionario == record.cdDicionario) {
-                                                                  data.splice(i, 1);
-                                                                  break;
-                                                            }
-                                                      }
-                                                }
-
-                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
-                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
-                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
-
-                                          });
-                                    }
-                              }                 
-                        }
-                  ],
-                  listeners: {
-                        onselectionchange: function(ctrl, element, rowIndex, record) {
-                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
-                              var element = angular.element(dictionaryDefinitionView);
-                              var scope = element.scope();
-                              scope.$$childTail.ctrl.cdDicionario = record.cdDicionario;
-                              if (!scope.$$phase) {
-                                    scope.$apply();
-                              }                              
-                        },
-
-                        onbeforeload: function() {
-                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
-                              var element = angular.element(dictionaryDefinitionView);
-                              var scope = element.scope();
-                              scope.$$childTail.ctrl.cdDicionario = null;
-                        },
-
-                        onrowdblclick: function(record, rowElement, rowIndex) {
-                              _editExpression(record);
-                        }
-                  }   
-            }
-
-      };
-
-      vm.searchInputChange = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHING;
-      };
-
-      vm.searchInputKeydown = function() {
-            if (event.keyCode == 13) {  //Return Key
-
-                  //Find a Record
-                  if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) {
-                        vm.searchButtonClick(vm.controller);
-
-                  //Add a Record    
-                  } else if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED) {
-                        vm.searchButtonAddClick()
-                  }     
-            }
-      };
-
-      vm.showSearchButton = function(button) {
-            return (
-                        (button == 'search' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) ||
-                        (button == 'add' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED)
-                   );
-      };
-
-      vm.searchButtonClick = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHED;            
-            var searchInput = $('.dictionary-modal .search-input');            
-            vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
-      };
-
-      vm.searchButtonAddClick = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
-            var searchInput = $('.dictionary-modal .search-input');            
-            var expressionAdd = searchInput.val();
-            
-            DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  var itemToAdd = serverResponse.data.data[0];
-
-                  var insertItemFn = function(data) {
-                        var indexAdd = data.length;
-                        for (var i = data.length - 1; i >= 0; i--) {
-                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
-                                    indexAdd = i;
-                                    break;
-                              }
-                        }
-                        data.splice(indexAdd, 0, itemToAdd);                        
-                  }
-
-                  insertItemFn(vm.controller.gridDictionaryOptions.data);
-                  insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
-                  vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
-
-                  vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
-            });
-      };
-
-      vm.showLoading = function() {
-            return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
-      };
-
 
 });
 'use strict';
@@ -994,6 +795,195 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 	};
 
 });
+'use strict';
+
+angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
+
+	var vm = this;
+      vm.controller;      
+      
+      vm.setController = function(controller) {
+            vm.controller = controller;
+      };
+
+	vm.showModal = function(scope) {
+            var deferred = $q.defer();
+
+            uiDeniModalSrv.createWindow({
+                  scope: scope,
+                  title: 'Dictionary',
+                  width: '700px',         
+                  height: '580px',
+                  position: uiDeniModalSrv.POSITION.CENTER,
+                  buttons: [uiDeniModalSrv.BUTTON.OK],
+                  urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
+                  modal: true,
+                  listeners: {
+
+                  	onshow: function(objWindow) {
+                  	}
+
+                  }
+            }).show().then(function() {
+                  AppSrv.allExpressions = AppSrv.pronunciationExpressions.concat(vm.controller.gridDictionaryOptions.alldata);
+                  deferred.resolve(vm.controller.gridDictionaryOptions.alldata);
+            });
+
+            return deferred.promise;
+	};	
+
+      var _editExpression = function(record) {
+            dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
+                  record.dsExpressao = modelAdded.dsExpression;
+                  record.dsTags = modelAdded.dsTags;   
+                  var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
+                  vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
+                  vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
+            });
+      }
+
+      vm.getGridDictionaryOptions = function() {
+
+            return {
+                  keyField: 'cdDicionario',
+                  rowHeight: '25px',
+                  data: AppSrv.dictionaryExpressions,
+                  hideHeaders: true,
+                  columns: [
+                        {
+                              name: 'dsExpressao',
+                              width: '40%'
+                        },
+                        {
+                              name: 'dsTags',
+                              width: '40%'
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'edit',
+                                    tooltip: 'Edit the current expression',
+                                    fn: function(record, column, imgActionColumn) {
+                                          _editExpression(record);
+                                    }
+                              }                 
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'delete_forever',
+                                    tooltip: 'Remove a expression from dictionary',
+                                    fn: function(record, column, imgActionColumn) {
+                                          DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdDicionario == record.cdDicionario) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
+                                          });
+                                    }
+                              }                 
+                        }
+                  ],
+                  listeners: {
+                        onselectionchange: function(ctrl, element, rowIndex, record) {
+                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
+                              var element = angular.element(dictionaryDefinitionView);
+                              var scope = element.scope();
+                              scope.$$childTail.ctrl.cdDicionario = record.cdDicionario;
+                              if (!scope.$$phase) {
+                                    scope.$apply();
+                              }                              
+                        },
+
+                        onbeforeload: function() {
+                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
+                              var element = angular.element(dictionaryDefinitionView);
+                              var scope = element.scope();
+                              scope.$$childTail.ctrl.cdDicionario = null;
+                        },
+
+                        onrowdblclick: function(record, rowElement, rowIndex) {
+                              _editExpression(record);
+                        }
+                  }   
+            }
+
+      };
+
+      vm.searchInputChange = function() {
+            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHING;
+      };
+
+      vm.searchInputKeydown = function() {
+            if (event.keyCode == 13) {  //Return Key
+
+                  //Find a Record
+                  if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) {
+                        vm.searchButtonClick(vm.controller);
+
+                  //Add a Record    
+                  } else if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED) {
+                        vm.searchButtonAddClick()
+                  }     
+            }
+      };
+
+      vm.showSearchButton = function(button) {
+            return (
+                        (button == 'search' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) ||
+                        (button == 'add' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED)
+                   );
+      };
+
+      vm.searchButtonClick = function() {
+            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHED;            
+            var searchInput = $('.dictionary-modal .search-input');            
+            vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
+      };
+
+      vm.searchButtonAddClick = function() {
+            vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
+            var searchInput = $('.dictionary-modal .search-input');            
+            var expressionAdd = searchInput.val();
+            
+            DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+                  var itemToAdd = serverResponse.data.data[0];
+
+                  var insertItemFn = function(data) {
+                        var indexAdd = data.length;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                                    indexAdd = i;
+                                    break;
+                              }
+                        }
+                        data.splice(indexAdd, 0, itemToAdd);                        
+                  }
+
+                  insertItemFn(vm.controller.gridDictionaryOptions.data);
+                  insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                  vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
+                  vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
+            });
+      };
+
+      vm.showLoading = function() {
+            return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
+      };
+
+
+});
 angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSrv) {
 
 	var vm = this;
@@ -1184,7 +1174,7 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
 
 
 });
-angular.module('app').service('spacedRevisionModalSrv', function($rootScope, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv) {
+angular.module('app').service('spacedRevisionModalSrv', function($rootScope, $filter, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv, spacedRevisionSelectExpressionsModal) {
 
 	var vm = this;
 	vm.controller;
@@ -1198,26 +1188,31 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 		if (vm.controller.expressions.length > 0) {
 			vm.controller.currentExpressionIndex = index;
 			vm.controller.currentExpression = vm.controller.expressions[index];
-			vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.dsExpressao;
-			vm.controller.model.expression.type = vm.controller.currentExpression.cdDicionario != 0 ? 'Dictionary' : 'Pronuciation';		
-			vm.controller.model.expression.resultType = vm.controller.currentExpression.cdDicionario != 0 ? 'menu' : 'volume_up';				
-			vm.controller.model.expression.learnedRate	= vm.controller.currentExpression.nrLevelOfLearning;
+			if (vm.controller.currentExpression.t50dci) {
+				vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t50dci.dsExpressao;
+				vm.controller.model.expression.type = 'Dictionary';		
+				vm.controller.model.expression.resultType = 'menu';				
+			} else {
+				vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t51prn.dsExpressao;
+				vm.controller.model.expression.type = 'Pronuciation';		
+				vm.controller.model.expression.resultType = 'volume_up';				
+			}
 			vm.controller.model.expression.definition = '';
 		}	
 	}
 
 	vm.showResult = function(controller) {
 		//dictionary Result
-		if (controller.currentExpression.cdDicionario != 0) {
+		if (controller.currentExpression.t50dci) {
 			//
 			if (event.ctrlKey) {
-				pronunciationSrv.listenExpression(controller.model.expression.dsExpressao);
+				pronunciationSrv.listenExpression(controller.currentExpression.t50dci.dsExpressao);
 			}	
 
 			var dictionaryDefinitionView = $('.spaced-revision-modal .definition-detail-content-content dictionary-definition-view');
 			var element = angular.element(dictionaryDefinitionView);
 			var scope = element.scope();
-			scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.cdDicionario;
+			scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.t50dci.cdDicionario;
 			if (!scope.$$phase) {
 				scope.$apply();
 			}
@@ -1225,25 +1220,10 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 			vm.controller.showDefinitionContent = true;                              
 
 		//pronunciation Result
-		} else if (angular.isDefined(controller.currentExpression.cdPronuncia)) {
-			pronunciationSrv.listenExpression(controller.model.expression.dsExpressao);
+		} else if (angular.isDefined(controller.currentExpression.t51prn.cdPronuncia)) {
+			pronunciationSrv.listenExpression(controller.currentExpression.t51prn.dsExpressao);
 		}
 
-	}
-
-	vm.updateLearnedPercentage = function() {
-		var progressBar = vm.controller.element.find('.item-detail-data-progress-bar');
-		var progressBarWidth = progressBar.width();
-
-		var sum = 0;
-		for (var index = 0 ; index < vm.controller.expressions.length ; index++) {
-			sum += vm.controller.expressions[index].nrLevelOfLearning;
-		}
-
-		var percentage = sum / vm.controller.expressions.length;
-		vm.controller.model.learnedPercentage = percentage.toFixed(2);;
-		var progress = vm.controller.element.find('.item-detail-data-progress');
-		progress.width(progressBarWidth * percentage / 100);
 	}
 
 	vm.markAsReviewed = function(cd_item) {
@@ -1252,11 +1232,19 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 		});
 	}
 
+	vm.selectExpressions = function() {
+		spacedRevisionSelectExpressionsModal.showModal($rootScope.selectedCdItem).then(function(expressions) {
+			vm.controller.expressions = $filter('filter')(expressions, function(record, index, array) {
+				return record.blMostrar;
+			});
+		});
+	}	
+
 	vm.showModal = function(scope, cdItem) {
 		$rootScope.selectedCdItem = cdItem;
 		$rootScope.loading = true;
 	
-		revisionSrv.getExpressions(cdItem).then(function(response) {
+		revisionSrv.getExpressions(cdItem, true).then(function(response) {
 			$rootScope.loading = false;
 
 	        uiDeniModalSrv.createWindow({
@@ -1265,7 +1253,7 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 	            width: '900px',         
 	            height: '600px',
 	            position: uiDeniModalSrv.POSITION.CENTER,
-	            buttons: [uiDeniModalSrv.BUTTON.OK],
+	            buttons: [uiDeniModalSrv.BUTTON.CLOSE],
 	            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-modal/spaced-revision-modal.tpl.htm',
 	            modal: true,
 	            listeners: {
@@ -1276,8 +1264,7 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 							vm.controller.expressions = response;
 							vm.selectExpression(0);
 							vm.controller.element = $(objWindow);
-							vm.updateLearnedPercentage(vm.controller.expressions);
-
+							
 							vm.controller.cdItem = cdItem;
 							vm.controller.itemImage = StringSrv.format('{0}item/image/get?cd_item={1}&time={2}', AppConsts.SERVER_URL, cdItem, (new Date()).getMilliseconds());
 						
@@ -1293,6 +1280,104 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 
 	}
 	
+});
+'use strict'
+
+angular.module('app').service('spacedRevisionSelectExpressionsModal', function($rootScope, $timeout, $filter, $q, revisionSrv, RevisionRestSrv, uiDeniModalSrv) {
+
+	var vm = this;
+	vm.controller;
+	vm.expressions;
+
+	vm.setController = function(controller) {
+		vm.controller = controller;
+	}
+
+	vm.showModal = function(cdItem) {
+		var deferred = $q.defer();
+
+		$rootScope.loading = true;
+	
+		revisionSrv.getExpressions(cdItem, false).then(function(expressions) {
+			$rootScope.loading = false;
+
+			vm.expressions = expressions;			
+
+	        var modal = uiDeniModalSrv.createWindow({
+	            scope: $rootScope,
+	            title: 'Spaced Revision - Selecting Expressions',
+	            width: '750px',         
+	            height: '600px',
+	            position: uiDeniModalSrv.POSITION.CENTER,
+	            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+	            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.tpl.htm',
+	            modal: true,
+	            listeners: {
+
+	            	onshow: function(objWindow) {
+	            	}
+
+	            }
+	        });
+
+			modal.show().then(function(modalResponse) {
+				if (modalResponse.button == 'ok') {
+					RevisionRestSrv.updExpressions(cdItem, vm.controller.expressions).then(function() {
+						deferred.resolve(vm.controller.expressions);
+					});
+
+				} else {
+					deferred.reject();
+				}
+			});
+
+		});			
+
+
+		return deferred.promise;
+	}
+
+	vm.getExpressions = function() {
+		return vm.expressions;
+	}
+
+	vm.filterExpressionsDicionary = function(expression) {
+		return expression.t50dci;
+	}
+
+	vm.filterExpressionsPronunciation = function(expression) {
+		return expression.t51prn;
+	}
+
+	/*
+	vm.addWords = function() {
+
+		vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
+			return record.t50dci;
+		});
+
+		vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
+			return record.t51prn;
+		});
+
+
+	}
+
+	/*
+	vm.getNgModelExpression = function(expression) {
+		var ngModel;
+		if (expression.t50dci) {
+			ngModel = 'd' + expression.t50dci.cdDicionario;
+		} else {
+			ngModel = 'p' + expression.t51prn.cdPronuncia;
+		}
+
+		vm.controller.selectedExpressions[ngModel] = true;
+
+		return 'ctrl.selectedExpressions.' + ngModel;
+	}
+	*/
+
 });
 'use strict';
 
@@ -1546,17 +1631,11 @@ angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppCo
 		spacedRevisionModalSrv.showResult(vm);
 	}
 
-	vm.changeLearnedRate = function() {
-		revisionSrv.setLevelOfLearning(vm.currentExpression.cdDicionario, vm.currentExpression.cdPronuncia, vm.model.expression.learnedRate);
-		vm.currentExpression.nrLevelOfLearning = vm.model.expression.learnedRate;
-		spacedRevisionModalSrv.updateLearnedPercentage(vm);
-	}
-
 	vm.markAsReviewed = function(cd_item) {
 		spacedRevisionModalSrv.markAsReviewed(cd_item);
-		console.log('TODO: FAZER UMA ROTINA NA uiDeniModal para fechar a janela ativa...');
-		console.log('TODO: VERIFICAR TAMBÉM O UI-DENI-MODAL... PASSAGEM DO Scope...');		
 	}
+
+	vm.selectExpressions = spacedRevisionModalSrv.selectExpressions;
 
 	/*
 	if (vm.cdItem) {
@@ -1571,6 +1650,20 @@ angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppCo
 		new Error('Attributes passed in a wrong way!')
 	}
 	*/
+
+});
+'use strict'
+
+angular.module('app').controller('SpacedRevisionSelectExpressionsModalCtrl', function(spacedRevisionSelectExpressionsModal) {
+
+	this.selectedExpressions = {};
+
+	spacedRevisionSelectExpressionsModal.setController(this);
+	
+	this.expressions = spacedRevisionSelectExpressionsModal.getExpressions();
+
+	this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModal.filterExpressionsDicionary;
+	this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModal.filterExpressionsPronunciation;
 
 });
 angular.module('app').controller('DictionaryModalEditCtrl', function(dictionaryModalEditSrv) {
@@ -1614,305 +1707,6 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 			scope.ctrl.element = $(element);	    
 		}	
 	}
-
-});
-'use strict';
-
-angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
-
-	var vm = this;
-	var jsTreeInstance = null;
-
-	/**
-	 *
-	 *
-	 */
-	vm.addCategoryClick = function(scope, currentCategoryId) {
-		categorySrv.add(scope, currentCategoryId).then(function(addedCategory) {
-			var newNode = { 
-				state: "open", 
-				id: addedCategory.cdCategoria,				
-				text: addedCategory.dsCategoria,
-				data: addedCategory
-			};
-
-			jsTreeInstance.create_node(currentCategoryId, newNode, 'last', function(addedNode) {
-				jsTreeInstance.deselect_all();
-				jsTreeInstance.select_node(addedNode);
-			});		
-		});
-	};	
-
-
-	/**
-	 *
-	 *
-	 */
-	vm.editCategoryClick = function(scope, currentCategoryNode) {
-		categorySrv.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
-			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
-		});
-	};
-
-	/**
-	 *
-	 *
-	 */
-	vm.delCategoryClick = function(currentCategoryNode) {
-		categorySrv.del(currentCategoryNode.id).then(function(serverResponse) {
-			var parentNode = jsTreeInstance.get_node(currentCategoryNode.parent);
-			jsTreeInstance.delete_node([currentCategoryNode]);
-			jsTreeInstance.select_node(parentNode);
-		});
-	};
-
-	/**
-	 *
-	 *
-	 */
-	var _getTopParentNode = function(controller) {
-		if (controller.currentCategoryNode.parent == '#') {
-			return controller.currentCategoryNode.id;
-		} else {
-			return controller.currentCategoryNode.parents[controller.currentCategoryNode.parents.length - 2];
-		}	
-	};
-
-
-	/**
-	 *
-	 *
-	 */
-    vm.addNewItemButtonClick = function(controller, scope, event) {
-    	var topParentNode = _getTopParentNode(controller);
-    	var fnNewItem;
-
-		itemSrv.add(scope, topParentNode).then(function(addedItem) {
-			controller.gridOptions.api.reload().then(function(responseData) {
-				var objAdded = addedItem.data[0];
-				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
-		        controller.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
-			});
-		});
-    };
-
-
-	/**
-	 *
-	 *
-	 */
-    var _setCurrentCategory = function(controller, nodeData) {
-    	controller.currentCategoryNode = nodeData.node;
-		AppSrv.currentCategory = controller.currentCategoryNode.id;
-
-    	var path = '<span class="categoryPathTitle">' + controller.currentCategoryNode.text + '</span>';
-
-    	var parentId = controller.currentCategoryNode.parent;
-    	while (parentId != '#') { //# means root node
-    		var parentObj = nodeData.instance.get_node(parentId);
-    		path = parentObj.text + " / " + path;
-
-    		var parentId = parentObj.parent;
-    	}
-
-		controller.categoryPath = path;
-    };	
-
-	/**
-	 *
-	 *
-	 */
-    vm.reloadDataGrid = function(controller) {
-
-		if (controller.currentCategoryNode) {
-	 		//Items
-	    	if (controller.currentNavItem == 'pageItems') {
-				controller.gridOptions.url = AppConsts.SERVER_URL + 'item/list?cd_categoria=' + controller.currentCategoryNode.id;
-	    	//Revisions
-	    	} else if (controller.currentNavItem == 'pageRevisions') {
-				controller.gridOptions.url = AppConsts.SERVER_URL + 'revision/list?pendente=true&days=5&cd_categoria=' + controller.currentCategoryNode.id;
-	    	//Favorites
-	    	} else {
-				controller.gridOptions.url = AppConsts.SERVER_URL + 'item/favorite/get?cd_categoria=' + controller.currentCategoryNode.id;
-	    	}
-					
-			controller.gridOptions.api.reload();
-		}	
-
-    };
-
-	/**
-	 *
-	 *
-	 */
-	vm.configureTreeView = function(controller, currentCategory) {
-
-	  	$('#categoryTreeview')
-			.on('loaded.jstree', function (e, data) {
-				jsTreeInstance = data.instance;
-				if (currentCategory) {
-					jsTreeInstance.select_node(currentCategory);
-				}	
-			})
-			.on('changed.jstree', function (e, data) {
-			  if (data.node) {
-					_setCurrentCategory(controller, data);
-					vm.reloadDataGrid(controller);			  
-			  }  
-			})
-			.jstree({
-				'core' : {
-					check_callback: true,
-					'data' : {
-						"url" : AppConsts.SERVER_URL + 'category/category/tree/list',				
-						//"url" : "//www.jstree.com/fiddle/",
-						"dataType" : "json" // needed only if you do not supply JSON headers
-					},
-				},
-				plugins : [
-					"wholerow"
-				],
-			});
-
-	};
-
-	/**
-	 *
-	 *
-	 */
-	vm.configureGridItems = function(controller, scope) {
-	    controller.gridOptions = {
-	    	hideHeaders: true,
-			colLines: false,
-	    	keyField: 'cdItem',
-	        rowHeight: '100px', //22px is default
-	        columns: [
-	        	{
-	        		header: 'Item',
-	        		name: 'cdItem',
-	        		width: 'calc(100% - 96px)',
-	        		renderer: function(value, record) {
-						var linkViewItem = null;
-						var topParentNode = _getTopParentNode(controller);
-						
-						if (topParentNode == AppEnums.CategoryType.TEXT) {
-							linkViewItem = '/text';
-						} else {
-							linkViewItem = '/video';						
-						}
-						var time = new Date();
-						var miliseconds = time.getMilliseconds();
-						
-						var favorite = record.blFavorite ? 'star' : 'star_border';
-						var favoriteSelected = record.blFavorite ? 'selected' : '';						
-
-						var revise = record.blFazerRevisao ? 'check_box' : 'check_box_outline_blank';						
-						var reviseSelected = record.blFazerRevisao ? 'selected' : '';
-
-	  					var cellTemplate = '<div class="cell-template">\n' +
-										   '    <img class="item-image"\n' +
-										   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
-										   '    />\n' +                                  
-										   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
-										   '    <div>{4}</div>\n' +									   
-										   '    <md-icon class="material-icons favorite {6}"> {7} </md-icon>\n' +
-										   '    <md-icon class="material-icons revise {8}"> {9} </md-icon>\n' +										   
-										   '<div>';
-
-	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, favoriteSelected, favorite, reviseSelected, revise);
-	        		}
-	        	},
-	        	{
-	        		width: '32px',
-		            action: {
-		                mdIcon: 'restore',
-		                tooltip: '',
-		                fn: function(record, column, imgActionColumn) {
-							spacedRevisionModalSrv.showModal(scope, record.cdItem);
-		                }
-		            }        		
-	        	},
-	        	{
-	        		width: '32px',
-		            action: {
-		                mdIcon: 'edit',
-		                tooltip: '',
-		                fn: function(record, column, imgActionColumn) {
-							var rowEl = $(imgActionColumn).closest('.ui-row');
-							var imgEl = rowEl.find('.item-image');
-
-							var config = {
-								description: record.dsItem,
-								imgSrc: imgEl.attr('src')
-							};
-
-							var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
-							wndDescriptionMorImage.show().then(function(response) {
-								if (response.button == 'ok') {								
-									var uriImage = AppSrv.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
-									ItemRestSrv.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
-										controller.gridOptions.api.reload().then(function(responseData) {
-											imgEl.attr('src', response.data.image);								
-
-											var cdItemUpdated = responseUpd.data[0].cdItem;
-									        controller.gridOptions.api.findKey(cdItemUpdated, {inLine: true});						
-										});
-									});				
-								}
-							});
-		                }
-		            }        		
-	        	},
-	        	{
-	        		width: '32px',
-		            action: {
-		                mdIcon: 'delete_forever',
-		                tooltip: '',
-		                fn: function(record, column, imgActionColumn) {
-							itemSrv.del(record.cdItem).then(function() {
-								controller.gridOptions.api.reload();
-							});	                	
-		                }
-		            }        		
-	        	}
-
-	        ],
-	        listeners: {
-				onbeforeload: function(data, options) {
-					$rootScope.subTitle = '';
-				},
-
-	            onafterrepaintrow: function(rowIndex, elementRow) {
-					$timeout(function() {
-						elementRow.find('.material-icons.favorite').click(function(event) {
-							var record = controller.gridOptions.api.getSelectedRow();
-							record.blFavorite = !record.blFavorite;
-							controller.gridOptions.api.repaintSelectedRow();													
-							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
-							});
-						});
-
-						elementRow.find('.material-icons.revise').click(function(event) {
-							var record = controller.gridOptions.api.getSelectedRow();
-							record.blFazerRevisao = !record.blFazerRevisao;
-							controller.gridOptions.api.repaintSelectedRow();
-							itemSrv.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
-							});
-						});
-
-					}, 500);
-	            },
-
-	            onselectionchange: function(ctrl, element, rowIndex, record) {
-					$rootScope.subTitle = record.dsItem;
-					if (!scope.$$phase) {
-						scope.$apply();
-					}
-	            }
-			}			
-	    };		
-
-	};
 
 });
 angular.module('app').service('TextRestSrv', function(AppSrv) {
@@ -2159,6 +1953,327 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 
 
 });
+'use strict';
+
+angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
+
+	var vm = this;
+	var jsTreeInstance = null;
+
+	/**
+	 *
+	 *
+	 */
+	vm.addCategoryClick = function(scope, currentCategoryId) {
+		categorySrv.add(scope, currentCategoryId).then(function(addedCategory) {
+			var newNode = { 
+				state: "open", 
+				id: addedCategory.cdCategoria,				
+				text: addedCategory.dsCategoria,
+				data: addedCategory
+			};
+
+			jsTreeInstance.create_node(currentCategoryId, newNode, 'last', function(addedNode) {
+				jsTreeInstance.deselect_all();
+				jsTreeInstance.select_node(addedNode);
+			});		
+		});
+	};	
+
+
+	/**
+	 *
+	 *
+	 */
+	vm.editCategoryClick = function(scope, currentCategoryNode) {
+		categorySrv.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
+			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
+		});
+	};
+
+	/**
+	 *
+	 *
+	 */
+	vm.delCategoryClick = function(currentCategoryNode) {
+		categorySrv.del(currentCategoryNode.id).then(function(serverResponse) {
+			var parentNode = jsTreeInstance.get_node(currentCategoryNode.parent);
+			jsTreeInstance.delete_node([currentCategoryNode]);
+			jsTreeInstance.select_node(parentNode);
+		});
+	};
+
+	/**
+	 *
+	 *
+	 */
+	var _getTopParentNode = function(controller) {
+		if (controller.currentCategoryNode.parent == '#') {
+			return controller.currentCategoryNode.id;
+		} else {
+			return controller.currentCategoryNode.parents[controller.currentCategoryNode.parents.length - 2];
+		}	
+	};
+
+
+	/**
+	 *
+	 *
+	 */
+    vm.addNewItemButtonClick = function(controller, scope, event) {
+    	var topParentNode = _getTopParentNode(controller);
+    	var fnNewItem;
+
+		itemSrv.add(scope, topParentNode).then(function(addedItem) {
+			controller.gridOptions.api.reload().then(function(responseData) {
+				var objAdded = addedItem.data[0];
+				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
+		        controller.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
+			});
+		});
+    };
+
+
+	/**
+	 *
+	 *
+	 */
+    var _setCurrentCategory = function(controller, nodeData) {
+    	controller.currentCategoryNode = nodeData.node;
+		AppSrv.currentCategory = controller.currentCategoryNode.id;
+
+    	var path = '<span class="categoryPathTitle">' + controller.currentCategoryNode.text + '</span>';
+
+    	var parentId = controller.currentCategoryNode.parent;
+    	while (parentId != '#') { //# means root node
+    		var parentObj = nodeData.instance.get_node(parentId);
+    		path = parentObj.text + " / " + path;
+
+    		var parentId = parentObj.parent;
+    	}
+
+		controller.categoryPath = path;
+    };	
+
+	/**
+	 *
+	 *
+	 */
+    vm.reloadDataGrid = function(controller) {
+
+		if (controller.currentCategoryNode) {
+	 		//Items
+	    	if (controller.currentNavItem == 'pageItems') {
+				controller.gridOptions.url = AppConsts.SERVER_URL + 'item/list?cd_categoria=' + controller.currentCategoryNode.id;
+	    	//Revisions
+	    	} else if (controller.currentNavItem == 'pageRevisions') {
+				controller.gridOptions.url = AppConsts.SERVER_URL + 'revision/list?pendente=true&days=5&cd_categoria=' + controller.currentCategoryNode.id;
+	    	//Favorites
+	    	} else {
+				controller.gridOptions.url = AppConsts.SERVER_URL + 'item/favorite/get?cd_categoria=' + controller.currentCategoryNode.id;
+	    	}
+					
+			controller.gridOptions.api.reload();
+		}	
+
+    };
+
+	/**
+	 *
+	 *
+	 */
+	vm.configureTreeView = function(controller, currentCategory) {
+
+	  	$('#categoryTreeview')
+			.on('loaded.jstree', function (e, data) {
+				jsTreeInstance = data.instance;
+				if (currentCategory) {
+					jsTreeInstance.select_node(currentCategory);
+				}	
+			})
+			.on('changed.jstree', function (e, data) {
+			  if (data.node) {
+					_setCurrentCategory(controller, data);
+					vm.reloadDataGrid(controller);			  
+			  }  
+			})
+			.jstree({
+				'core' : {
+					check_callback: true,
+					'data' : {
+						"url" : AppConsts.SERVER_URL + 'category/category/tree/list',				
+						//"url" : "//www.jstree.com/fiddle/",
+						"dataType" : "json" // needed only if you do not supply JSON headers
+					},
+				},
+				plugins : [
+					"wholerow"
+				],
+			});
+
+	};
+
+	/**
+	 *
+	 *
+	 */
+	vm.configureGridItems = function(controller, scope) {
+	    controller.gridOptions = {
+	    	hideHeaders: true,
+			colLines: false,
+	    	keyField: 'cdItem',
+	        rowHeight: '100px', //22px is default
+	        columns: [
+	        	{
+	        		header: 'Item',
+	        		name: 'cdItem',
+	        		width: 'calc(100% - 96px)',
+	        		renderer: function(value, record) {
+						var linkViewItem = null;
+						var topParentNode = _getTopParentNode(controller);
+						
+						if (topParentNode == AppEnums.CategoryType.TEXT) {
+							linkViewItem = '/text';
+						} else {
+							linkViewItem = '/video';						
+						}
+						var time = new Date();
+						var miliseconds = time.getMilliseconds();
+
+						var revise = record.blFazerRevisao ? 'check_box' : 'check_box_outline_blank';						
+						var reviseSelected = record.blFazerRevisao ? 'selected' : '';
+						
+						var favorite = record.blFavorite ? 'star' : 'star_border';
+						var favoriteSelected = record.blFavorite ? 'selected' : '';						
+
+	  					var cellTemplate = '<div class="cell-template">\n' +
+										   '    <img class="item-image"\n' +
+										   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
+										   '    />\n' +                                  
+										   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
+										   '    <div>{4}</div>\n' +									   
+										   '    <md-icon class="material-icons revise {6}"> {7} </md-icon>\n' +										   										   
+										   '    <md-icon class="material-icons favorite {8}"> {9} </md-icon>\n' +
+										   '<div>';
+
+	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, reviseSelected, revise, favoriteSelected, favorite);
+	        		}
+	        	},
+	        	{
+	        		width: '32px',
+		            action: {
+		                mdIcon: 'restore',
+		                tooltip: '',
+		                fn: function(record, column, imgActionColumn) {
+							spacedRevisionModalSrv.showModal(scope, record.cdItem);
+		                }
+		            }        		
+	        	},
+	        	{
+	        		width: '32px',
+		            action: {
+		                mdIcon: 'edit',
+		                tooltip: '',
+		                fn: function(record, column, imgActionColumn) {
+							var rowEl = $(imgActionColumn).closest('.ui-row');
+							var imgEl = rowEl.find('.item-image');
+
+							var config = {
+								description: record.dsItem,
+								imgSrc: imgEl.attr('src')
+							};
+
+							var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
+							wndDescriptionMorImage.show().then(function(response) {
+								if (response.button == 'ok') {								
+									var uriImage = AppSrv.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
+									ItemRestSrv.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
+										controller.gridOptions.api.reload().then(function(responseData) {
+											imgEl.attr('src', response.data.image);								
+
+											var cdItemUpdated = responseUpd.data[0].cdItem;
+									        controller.gridOptions.api.findKey(cdItemUpdated, {inLine: true});						
+										});
+									});				
+								}
+							});
+		                }
+		            }        		
+	        	},
+	        	{
+	        		width: '32px',
+		            action: {
+		                mdIcon: 'delete_forever',
+		                tooltip: '',
+		                fn: function(record, column, imgActionColumn) {
+							itemSrv.del(record.cdItem).then(function() {
+								controller.gridOptions.api.reload();
+							});	                	
+		                }
+		            }        		
+	        	}
+
+	        ],
+	        listeners: {
+				onbeforeload: function(data, options) {
+					$rootScope.subTitle = '';
+				},
+
+	            onafterrepaintrow: function(rowIndex, elementRow) {
+					$timeout(function() {
+
+						elementRow.find('.material-icons.revise').click(function(event) {
+							var record = controller.gridOptions.api.getSelectedRow();
+							record.blFazerRevisao = !record.blFazerRevisao;
+
+							var revisionIcon = $(event.currentTarget);
+							if (revisionIcon.is('.selected')) {
+								revisionIcon.html('check_box_outline_blank');
+								revisionIcon.removeClass('selected');
+							} else {
+								revisionIcon.html('check_box');
+								revisionIcon.addClass('selected');
+							}	
+
+							itemSrv.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
+								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
+							});
+						});
+
+						elementRow.find('.material-icons.favorite').click(function(event) {
+							var record = controller.gridOptions.api.getSelectedRow();
+							record.blFavorite = !record.blFavorite;
+
+							var favoriteIcon = $(event.currentTarget);
+							if (favoriteIcon.is('.selected')) {
+								favoriteIcon.html('star_border');
+								favoriteIcon.removeClass('selected');
+							} else {
+								favoriteIcon.html('star');
+								favoriteIcon.addClass('selected');
+							}	
+
+							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
+								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
+							});
+						});
+
+
+					}, 500);
+	            },
+
+	            onselectionchange: function(ctrl, element, rowIndex, record) {
+					$rootScope.subTitle = record.dsItem;
+					if (!scope.$$phase) {
+						scope.$apply();
+					}
+	            }
+			}			
+	    };		
+
+	};
+
+});
 angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -2191,60 +2306,6 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
 	}
 
-
-});
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
-
-	var vm = this;
-  vm.cdItem;
-	vm.controller;
-
-	vm.setController = function(controller, scope) {
-		vm.controller = controller;
-    vm.controller.cdItem = vm.cdItem;
-	}
-
-	vm.showModal = function(cdItem) {
-      vm.cdItem = cdItem;
-      var deferred = $q.defer();
-
-      var wndImportSubtitle = uiDeniModalSrv.createWindow({
-            scope: $rootScope,
-            title: 'Importing Subtitle from a text (often lyrics of musics)',
-            width: '550px',         
-            height: '500px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
-            modal: true,
-            listeners: {
-
-            	onshow: function(objWindow) {
-            	}
-
-            }
-      });
-
-      wndImportSubtitle.show().then(function(modalResponse) {
-
-        if (modalResponse.button == 'ok') {
-          var successfullyMessage = {
-            title: 'Updating',
-            message: 'Item updated successfully!'
-          }
-
-          var textArea = $(wndImportSubtitle).find('textarea');
-          lyrics = textArea.val();
-
-          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
-            deferred.resolve(serverReturn.data);
-          });   
-        }
-
-      });
-
-      return deferred.promise;
-	};
 
 });
 angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
@@ -2321,6 +2382,60 @@ angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $ht
     //spanFileName.html(fileItem.file.name);
   };
 	
+
+});
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+
+	var vm = this;
+  vm.cdItem;
+	vm.controller;
+
+	vm.setController = function(controller, scope) {
+		vm.controller = controller;
+    vm.controller.cdItem = vm.cdItem;
+	}
+
+	vm.showModal = function(cdItem) {
+      vm.cdItem = cdItem;
+      var deferred = $q.defer();
+
+      var wndImportSubtitle = uiDeniModalSrv.createWindow({
+            scope: $rootScope,
+            title: 'Importing Subtitle from a text (often lyrics of musics)',
+            width: '550px',         
+            height: '500px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
+            modal: true,
+            listeners: {
+
+            	onshow: function(objWindow) {
+            	}
+
+            }
+      });
+
+      wndImportSubtitle.show().then(function(modalResponse) {
+
+        if (modalResponse.button == 'ok') {
+          var successfullyMessage = {
+            title: 'Updating',
+            message: 'Item updated successfully!'
+          }
+
+          var textArea = $(wndImportSubtitle).find('textarea');
+          lyrics = textArea.val();
+
+          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+            deferred.resolve(serverReturn.data);
+          });   
+        }
+
+      });
+
+      return deferred.promise;
+	};
 
 });
 angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
@@ -2403,46 +2518,6 @@ angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalS
 	vm.edit = function(scope, controller) {
 		return _getSubtitleModal(scope, controller, EnumOperation.EDITING);
 	}
-
-});
-angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
-	
-	var vm = this;
-	vm.categoryPath = null;		
-
-	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
-
-	vm.currentNavItem = "pageItems";
-	vm.currentCategoryNode = null; //Category Node
-	
-	$.jstree.defaults.core.themes.variant = "large";	
-
-	vm.addCategoryClick = function() {
-		homeSrv.addCategoryClick($scope, vm.currentCategoryNode.id);
-	}	
-
-	vm.editCategoryClick = function() {
-		homeSrv.editCategoryClick($scope, vm.currentCategoryNode);
-	}	
-
-	vm.delCategoryClick = function() {
-		homeSrv.delCategoryClick(vm.currentCategoryNode);
-	}
-
-    vm.addNewItemButtonClick = function(event) {
-    	homeSrv.addNewItemButtonClick(vm, $scope, event);
-    }	
-
-	homeSrv.configureTreeView(vm, AppSrv.currentCategory || $routeParams.cdCategoria);
-
-	homeSrv.configureGridItems(vm, $scope);
-		
-    $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
-    	vm.currentNavItem = newCurrentNavItem;
-    	if (newCurrentNavItem) {
-    		homeSrv.reloadDataGrid(vm);
-    	}
-    });
 
 });
 'use strict';
@@ -2644,9 +2719,44 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
     vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
 
 });
-angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
+angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
+	
+	var vm = this;
+	vm.categoryPath = null;		
 
-	videoModalImportSubtitleLyricsSrv.setController(this);    
+	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
+
+	vm.currentNavItem = "pageItems";
+	vm.currentCategoryNode = null; //Category Node
+	
+	$.jstree.defaults.core.themes.variant = "large";	
+
+	vm.addCategoryClick = function() {
+		homeSrv.addCategoryClick($scope, vm.currentCategoryNode.id);
+	}	
+
+	vm.editCategoryClick = function() {
+		homeSrv.editCategoryClick($scope, vm.currentCategoryNode);
+	}	
+
+	vm.delCategoryClick = function() {
+		homeSrv.delCategoryClick(vm.currentCategoryNode);
+	}
+
+    vm.addNewItemButtonClick = function(event) {
+    	homeSrv.addNewItemButtonClick(vm, $scope, event);
+    }	
+
+	homeSrv.configureTreeView(vm, AppSrv.currentCategory || $routeParams.cdCategoria);
+
+	homeSrv.configureGridItems(vm, $scope);
+		
+    $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
+    	vm.currentNavItem = newCurrentNavItem;
+    	if (newCurrentNavItem) {
+    		homeSrv.reloadDataGrid(vm);
+    	}
+    });
 
 });
 angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
@@ -2654,10 +2764,15 @@ angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($sc
 	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
 
 });
+angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
+
+	videoModalImportSubtitleLyricsSrv.setController(this);    
+
+});
 //CONSTANTS
 angular.module('app').constant('AppConsts', {
-	SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
-	//SERVER_URL: 'http://localhost:8087/denienglish/', //Local
+	//SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
+	SERVER_URL: 'http://localhost:8087/denienglish/', //Local
 });
 //ENUMERATIONS
 angular.module('app').constant('AppEnums', {

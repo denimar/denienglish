@@ -1,0 +1,33 @@
+.spaced-revision-select-expressions-modal {
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+
+
+	.expressions {
+		
+		&.expressions-dictionary {
+		}
+
+		&.expressions-pronunciation {
+			margin-left: 10px;
+		}
+
+		.legend {
+			font-size: 22px;
+			color: black;
+			border-bottom: solid 1px #f2f2f2;
+
+			height: 30px;
+			min-height: 30px;
+			max-height: 30px;
+		}
+
+		.checkboxes {
+			padding: 10px;
+			overflow-y: auto;
+		}
+
+	}
+
+}

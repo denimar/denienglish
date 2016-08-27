@@ -1,4 +1,4 @@
-angular.module('app').service('spacedRevisionModalSrv', function($rootScope, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv) {
+angular.module('app').service('spacedRevisionModalSrv', function($rootScope, $filter, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv, spacedRevisionSelectExpressionsModal) {
 
 	var vm = this;
 	vm.controller;
@@ -12,26 +12,31 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 		if (vm.controller.expressions.length > 0) {
 			vm.controller.currentExpressionIndex = index;
 			vm.controller.currentExpression = vm.controller.expressions[index];
-			vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.dsExpressao;
-			vm.controller.model.expression.type = vm.controller.currentExpression.cdDicionario != 0 ? 'Dictionary' : 'Pronuciation';		
-			vm.controller.model.expression.resultType = vm.controller.currentExpression.cdDicionario != 0 ? 'menu' : 'volume_up';				
-			vm.controller.model.expression.learnedRate	= vm.controller.currentExpression.nrLevelOfLearning;
+			if (vm.controller.currentExpression.t50dci) {
+				vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t50dci.dsExpressao;
+				vm.controller.model.expression.type = 'Dictionary';		
+				vm.controller.model.expression.resultType = 'menu';				
+			} else {
+				vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t51prn.dsExpressao;
+				vm.controller.model.expression.type = 'Pronuciation';		
+				vm.controller.model.expression.resultType = 'volume_up';				
+			}
 			vm.controller.model.expression.definition = '';
 		}	
 	}
 
 	vm.showResult = function(controller) {
 		//dictionary Result
-		if (controller.currentExpression.cdDicionario != 0) {
+		if (controller.currentExpression.t50dci) {
 			//
 			if (event.ctrlKey) {
-				pronunciationSrv.listenExpression(controller.model.expression.dsExpressao);
+				pronunciationSrv.listenExpression(controller.currentExpression.t50dci.dsExpressao);
 			}	
 
 			var dictionaryDefinitionView = $('.spaced-revision-modal .definition-detail-content-content dictionary-definition-view');
 			var element = angular.element(dictionaryDefinitionView);
 			var scope = element.scope();
-			scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.cdDicionario;
+			scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.t50dci.cdDicionario;
 			if (!scope.$$phase) {
 				scope.$apply();
 			}
@@ -39,25 +44,10 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 			vm.controller.showDefinitionContent = true;                              
 
 		//pronunciation Result
-		} else if (angular.isDefined(controller.currentExpression.cdPronuncia)) {
-			pronunciationSrv.listenExpression(controller.model.expression.dsExpressao);
+		} else if (angular.isDefined(controller.currentExpression.t51prn.cdPronuncia)) {
+			pronunciationSrv.listenExpression(controller.currentExpression.t51prn.dsExpressao);
 		}
 
-	}
-
-	vm.updateLearnedPercentage = function() {
-		var progressBar = vm.controller.element.find('.item-detail-data-progress-bar');
-		var progressBarWidth = progressBar.width();
-
-		var sum = 0;
-		for (var index = 0 ; index < vm.controller.expressions.length ; index++) {
-			sum += vm.controller.expressions[index].nrLevelOfLearning;
-		}
-
-		var percentage = sum / vm.controller.expressions.length;
-		vm.controller.model.learnedPercentage = percentage.toFixed(2);;
-		var progress = vm.controller.element.find('.item-detail-data-progress');
-		progress.width(progressBarWidth * percentage / 100);
 	}
 
 	vm.markAsReviewed = function(cd_item) {
@@ -66,11 +56,19 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 		});
 	}
 
+	vm.selectExpressions = function() {
+		spacedRevisionSelectExpressionsModal.showModal($rootScope.selectedCdItem).then(function(expressions) {
+			vm.controller.expressions = $filter('filter')(expressions, function(record, index, array) {
+				return record.blMostrar;
+			});
+		});
+	}	
+
 	vm.showModal = function(scope, cdItem) {
 		$rootScope.selectedCdItem = cdItem;
 		$rootScope.loading = true;
 	
-		revisionSrv.getExpressions(cdItem).then(function(response) {
+		revisionSrv.getExpressions(cdItem, true).then(function(response) {
 			$rootScope.loading = false;
 
 	        uiDeniModalSrv.createWindow({
@@ -79,7 +77,7 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 	            width: '900px',         
 	            height: '600px',
 	            position: uiDeniModalSrv.POSITION.CENTER,
-	            buttons: [uiDeniModalSrv.BUTTON.OK],
+	            buttons: [uiDeniModalSrv.BUTTON.CLOSE],
 	            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-modal/spaced-revision-modal.tpl.htm',
 	            modal: true,
 	            listeners: {
@@ -90,8 +88,7 @@ angular.module('app').service('spacedRevisionModalSrv', function($rootScope, Str
 							vm.controller.expressions = response;
 							vm.selectExpression(0);
 							vm.controller.element = $(objWindow);
-							vm.updateLearnedPercentage(vm.controller.expressions);
-
+							
 							vm.controller.cdItem = cdItem;
 							vm.controller.itemImage = StringSrv.format('{0}item/image/get?cd_item={1}&time={2}', AppConsts.SERVER_URL, cdItem, (new Date()).getMilliseconds());
 						

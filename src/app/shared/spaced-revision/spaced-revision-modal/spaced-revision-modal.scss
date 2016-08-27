@@ -62,35 +62,10 @@
 					margin-top: -2px;
 				}
 
-				.item-detail-data-number-expressions {
-					color: silver;
-					font-size: 12px;					
-				}
-
-				.item-detail-data-progress-bar {
-					width: 350px;
-					height: 20px;
-					opacity: 0.5;
-					border: solid 1px silver;
-
-					.item-detail-data-progress {
-						background: linear-gradient(to right, white , green);					
-						width: 150px;
-						height: 100%;
-					}
-				}
-
 				.btn-mark-as-revied {
 					text-transform: none;
-					color: gray;
-
-					&:hover {
-						color: #0080ff;
-					}
-
-					.material-icons {
-						color: inherit;
-					}
+					margin: 6px 0px;
+					opacity: 0.7;
 				}
 
 			}
@@ -118,8 +93,7 @@
 				color: crimson;
 				font-size: 20px;
 				align-items: top;
-				height: 24px;
-				background-color: #f2f2f2;				
+				height: 24px;				
 			}
 			
 			.definition-detail-navigator {
@@ -190,28 +164,8 @@
 				}
 
 				.definition-detail-content-content {
-					border: dotted 1px silver;
+					border-top: dotted 2px #DCE0F3;
 					height: 330px;
-				}
-				
-				.definition-detail-content-toolbar {
-					float: right;
-					
-					.md-button {
-						color: silver;
-						
-						&:hover {
-							color: #004d99;
-						}
-
-						.material-icons {
-							color: inherit;
-						}
-					}					
-
-					md-slider-container {
-						background-color: white;
-					}
 				}
 				
 			}

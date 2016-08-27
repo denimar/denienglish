@@ -15,10 +15,10 @@ angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
 		return deferred.promise;
 	}
 
-	vm.getExpressions = function(cd_item) {
+	vm.getExpressions = function(cd_item, onlyVisible) {
 		var deferred = $q.defer();
 
-		RevisionRestSrv.getExpressions(cd_item).then(function(serverResponse) {
+		RevisionRestSrv.getExpressions(cd_item, onlyVisible).then(function(serverResponse) {
 			var expressions = serverResponse.data.data;
 			deferred.resolve(expressions);
 		}, function(reason) {
@@ -27,19 +27,5 @@ angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
 
 		return deferred.promise;
 	}
-
-	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.setLevelOfLearning(cd_dicionario, cd_pronuncia, nrLevelOfLearning).then(function(serverResponse) {
-			var result = serverResponse.data.data[0];
-			deferred.resolve(result);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
 
 });

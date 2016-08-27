@@ -112,7 +112,6 @@ label {
     position: relative;
     height: 100%;
     float: left;
-    overflow-y: auto;
     box-sizing: border-box; }
     .home.category #categoryPanel #categoryButtons {
       float: right;
@@ -121,6 +120,18 @@ label {
       text-align: right;
       height: 36px;
       box-sizing: border-box; }
+    .home.category #categoryPanel .category-treeview-container {
+      overflow-y: auto; }
+      .home.category #categoryPanel .category-treeview-container::-webkit-scrollbar {
+        width: 8px; }
+      .home.category #categoryPanel .category-treeview-container::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px; }
+      .home.category #categoryPanel .category-treeview-container::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2); }
+      .home.category #categoryPanel .category-treeview-container #categoryTreeview {
+        box-sizing: border-box; }
   .home.category .jstree-default .jstree-wholerow-clicked {
     background: -webkit-linear-gradient(top, #DAEAFC 0, #B7D5FB 100%) !important;
     background: linear-gradient(to bottom, #DAEAFC 0, #B7D5FB 100%);
@@ -193,13 +204,15 @@ label {
         box-sizing: border-box; }
       .home.items #mainGrid .cell-template .material-icons {
         cursor: pointer; }
-        .home.items #mainGrid .cell-template .material-icons.favorite:hover {
-          color: orange; }
-        .home.items #mainGrid .cell-template .material-icons.favorite.selected {
-          color: orange; }
+        .home.items #mainGrid .cell-template .material-icons.favorite {
+          padding-top: 10px; }
+          .home.items #mainGrid .cell-template .material-icons.favorite:hover {
+            color: orange; }
+          .home.items #mainGrid .cell-template .material-icons.favorite.selected {
+            color: orange; }
         .home.items #mainGrid .cell-template .material-icons.revise {
           font-size: 22px;
-          margin-top: 2px; }
+          padding-top: 12px; }
           .home.items #mainGrid .cell-template .material-icons.revise:hover {
             color: #00b33c; }
           .home.items #mainGrid .cell-template .material-icons.revise.selected {
@@ -415,34 +428,6 @@ label {
     width: 120px;
     height: 100px; }
 
-.pronunciation-modal {
-  height: 100%;
-  width: 100%;
-  padding: 2px;
-  box-sizing: border-box; }
-  .pronunciation-modal .search-input-container {
-    border: solid 1px #99bce8;
-    height: 30px;
-    box-sizing: border-box; }
-    .pronunciation-modal .search-input-container .search-input {
-      border-width: 0px;
-      font-size: 16px;
-      padding-left: 4px;
-      box-sizing: border-box; }
-      .pronunciation-modal .search-input-container .search-input:focus {
-        outline: none; }
-    .pronunciation-modal .search-input-container .material-icons {
-      color: #03698C;
-      opacity: 0.4;
-      cursor: pointer; }
-  .pronunciation-modal .grid-container {
-    margin-bottom: 2px;
-    height: 350px; }
-    .pronunciation-modal .grid-container .gridDictionary {
-      color: black; }
-      .pronunciation-modal .grid-container .gridDictionary .material-icons:hover {
-        color: red !important; }
-
 .spaced-revision-modal {
   box-sizing: border-box;
   font-family: arial;
@@ -486,25 +471,10 @@ label {
           font-weight: bold;
           font-size: 18px;
           margin-top: -2px; }
-        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-number-expressions {
-          color: silver;
-          font-size: 12px; }
-        .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-progress-bar {
-          width: 350px;
-          height: 20px;
-          opacity: 0.5;
-          border: solid 1px silver; }
-          .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .item-detail-data-progress-bar .item-detail-data-progress {
-            background: linear-gradient(to right, white, green);
-            width: 150px;
-            height: 100%; }
         .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied {
           text-transform: none;
-          color: gray; }
-          .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied:hover {
-            color: #0080ff; }
-          .spaced-revision-modal .spaced-revision-container .item-detail .item-detail-data .btn-mark-as-revied .material-icons {
-            color: inherit; }
+          margin: 6px 0px;
+          opacity: 0.7; }
     .spaced-revision-modal .spaced-revision-container .definition-detail {
       box-sizing: border-box; }
       .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-type {
@@ -524,8 +494,7 @@ label {
         color: crimson;
         font-size: 20px;
         align-items: top;
-        height: 24px;
-        background-color: #f2f2f2; }
+        height: 24px; }
       .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-navigator {
         height: 36px;
         min-height: 36px;
@@ -570,18 +539,53 @@ label {
             font-size: 32px;
             color: silver; }
         .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-content {
-          border: dotted 1px silver;
+          border-top: dotted 2px #DCE0F3;
           height: 330px; }
-        .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar {
-          float: right; }
-          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button {
-            color: silver; }
-            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button:hover {
-              color: #004d99; }
-            .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar .md-button .material-icons {
-              color: inherit; }
-          .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-toolbar md-slider-container {
-            background-color: white; }
+
+.spaced-revision-select-expressions-modal {
+  width: 100%;
+  height: 100%;
+  padding: 10px; }
+  .spaced-revision-select-expressions-modal .expressions.expressions-pronunciation {
+    margin-left: 10px; }
+  .spaced-revision-select-expressions-modal .expressions .legend {
+    font-size: 22px;
+    color: black;
+    border-bottom: solid 1px #f2f2f2;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px; }
+  .spaced-revision-select-expressions-modal .expressions .checkboxes {
+    padding: 10px;
+    overflow-y: auto; }
+
+.pronunciation-modal {
+  height: 100%;
+  width: 100%;
+  padding: 2px;
+  box-sizing: border-box; }
+  .pronunciation-modal .search-input-container {
+    border: solid 1px #99bce8;
+    height: 30px;
+    box-sizing: border-box; }
+    .pronunciation-modal .search-input-container .search-input {
+      border-width: 0px;
+      font-size: 16px;
+      padding-left: 4px;
+      box-sizing: border-box; }
+      .pronunciation-modal .search-input-container .search-input:focus {
+        outline: none; }
+    .pronunciation-modal .search-input-container .material-icons {
+      color: #03698C;
+      opacity: 0.4;
+      cursor: pointer; }
+  .pronunciation-modal .grid-container {
+    margin-bottom: 2px;
+    height: 350px; }
+    .pronunciation-modal .grid-container .gridDictionary {
+      color: black; }
+      .pronunciation-modal .grid-container .gridDictionary .material-icons:hover {
+        color: red !important; }
 
 .dictionary-modal-edit {
   padding: 30px 10px 4px 10px; }

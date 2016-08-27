@@ -6,12 +6,16 @@ angular.module('app').service('RevisionRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
 	}
 
-	vm.getExpressions = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item});
+	vm.getExpressions = function(cd_item, onlyVisible) {
+		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
 	}
 
-	vm.setLevelOfLearning = function(cd_dicionario, cd_pronuncia, nrLevelOfLearning) {
-		return AppSrv.requestWithPromise('revision/expressions/levelOfLearning/set', {'cd_dicionario': cd_dicionario, 'cd_pronuncia': cd_pronuncia, "nr_level_of_learning": nrLevelOfLearning});	
+	vm.updExpressions = function(cd_item, expressions) {
+		var successfullyMessage = {
+			title: 'Spaced Revision',
+			message: 'expressions updated succesfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
 	}
 
 	vm.markAsReviewed = function(cd_item) {
