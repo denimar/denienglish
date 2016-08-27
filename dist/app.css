@@ -428,6 +428,34 @@ label {
     width: 120px;
     height: 100px; }
 
+.pronunciation-modal {
+  height: 100%;
+  width: 100%;
+  padding: 2px;
+  box-sizing: border-box; }
+  .pronunciation-modal .search-input-container {
+    border: solid 1px #99bce8;
+    height: 30px;
+    box-sizing: border-box; }
+    .pronunciation-modal .search-input-container .search-input {
+      border-width: 0px;
+      font-size: 16px;
+      padding-left: 4px;
+      box-sizing: border-box; }
+      .pronunciation-modal .search-input-container .search-input:focus {
+        outline: none; }
+    .pronunciation-modal .search-input-container .material-icons {
+      color: #03698C;
+      opacity: 0.4;
+      cursor: pointer; }
+  .pronunciation-modal .grid-container {
+    margin-bottom: 2px;
+    height: 350px; }
+    .pronunciation-modal .grid-container .gridDictionary {
+      color: black; }
+      .pronunciation-modal .grid-container .gridDictionary .material-icons:hover {
+        color: red !important; }
+
 .spaced-revision-modal {
   box-sizing: border-box;
   font-family: arial;
@@ -559,37 +587,6 @@ label {
     padding: 10px;
     overflow-y: auto; }
 
-.pronunciation-modal {
-  height: 100%;
-  width: 100%;
-  padding: 2px;
-  box-sizing: border-box; }
-  .pronunciation-modal .search-input-container {
-    border: solid 1px #99bce8;
-    height: 30px;
-    box-sizing: border-box; }
-    .pronunciation-modal .search-input-container .search-input {
-      border-width: 0px;
-      font-size: 16px;
-      padding-left: 4px;
-      box-sizing: border-box; }
-      .pronunciation-modal .search-input-container .search-input:focus {
-        outline: none; }
-    .pronunciation-modal .search-input-container .material-icons {
-      color: #03698C;
-      opacity: 0.4;
-      cursor: pointer; }
-  .pronunciation-modal .grid-container {
-    margin-bottom: 2px;
-    height: 350px; }
-    .pronunciation-modal .grid-container .gridDictionary {
-      color: black; }
-      .pronunciation-modal .grid-container .gridDictionary .material-icons:hover {
-        color: red !important; }
-
-.dictionary-modal-edit {
-  padding: 30px 10px 4px 10px; }
-
 .dictionary-definition-view-container {
   height: 100%;
   width: 100%;
@@ -625,3 +622,6 @@ label {
     margin: 2px; }
     .dictionary-definition-view-container .definition-toolbar .definition-toolbar-buttons .material-icons {
       cursor: pointer; }
+
+.dictionary-modal-edit {
+  padding: 30px 10px 4px 10px; }

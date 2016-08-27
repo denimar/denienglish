@@ -592,6 +592,195 @@ angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
 });
 'use strict';
 
+angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
+
+	var vm = this;
+      vm.controller;      
+      
+      vm.setController = function(controller) {
+            vm.controller = controller;
+      };
+
+	vm.showModal = function(scope) {
+            var deferred = $q.defer();
+
+            uiDeniModalSrv.createWindow({
+                  scope: scope,
+                  title: 'Dictionary',
+                  width: '700px',         
+                  height: '580px',
+                  position: uiDeniModalSrv.POSITION.CENTER,
+                  buttons: [uiDeniModalSrv.BUTTON.OK],
+                  urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
+                  modal: true,
+                  listeners: {
+
+                  	onshow: function(objWindow) {
+                  	}
+
+                  }
+            }).show().then(function() {
+                  AppSrv.allExpressions = AppSrv.pronunciationExpressions.concat(vm.controller.gridDictionaryOptions.alldata);
+                  deferred.resolve(vm.controller.gridDictionaryOptions.alldata);
+            });
+
+            return deferred.promise;
+	};	
+
+      var _editExpression = function(record) {
+            dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
+                  record.dsExpressao = modelAdded.dsExpression;
+                  record.dsTags = modelAdded.dsTags;   
+                  var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
+                  vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
+                  vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
+            });
+      }
+
+      vm.getGridDictionaryOptions = function() {
+
+            return {
+                  keyField: 'cdDicionario',
+                  rowHeight: '25px',
+                  data: AppSrv.dictionaryExpressions,
+                  hideHeaders: true,
+                  columns: [
+                        {
+                              name: 'dsExpressao',
+                              width: '40%'
+                        },
+                        {
+                              name: 'dsTags',
+                              width: '40%'
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'edit',
+                                    tooltip: 'Edit the current expression',
+                                    fn: function(record, column, imgActionColumn) {
+                                          _editExpression(record);
+                                    }
+                              }                 
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'delete_forever',
+                                    tooltip: 'Remove a expression from dictionary',
+                                    fn: function(record, column, imgActionColumn) {
+                                          DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdDicionario == record.cdDicionario) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
+                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
+                                          });
+                                    }
+                              }                 
+                        }
+                  ],
+                  listeners: {
+                        onselectionchange: function(ctrl, element, rowIndex, record) {
+                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
+                              var element = angular.element(dictionaryDefinitionView);
+                              var scope = element.scope();
+                              scope.$$childTail.ctrl.cdDicionario = record.cdDicionario;
+                              if (!scope.$$phase) {
+                                    scope.$apply();
+                              }                              
+                        },
+
+                        onbeforeload: function() {
+                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
+                              var element = angular.element(dictionaryDefinitionView);
+                              var scope = element.scope();
+                              scope.$$childTail.ctrl.cdDicionario = null;
+                        },
+
+                        onrowdblclick: function(record, rowElement, rowIndex) {
+                              _editExpression(record);
+                        }
+                  }   
+            }
+
+      };
+
+      vm.searchInputChange = function() {
+            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHING;
+      };
+
+      vm.searchInputKeydown = function() {
+            if (event.keyCode == 13) {  //Return Key
+
+                  //Find a Record
+                  if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) {
+                        vm.searchButtonClick(vm.controller);
+
+                  //Add a Record    
+                  } else if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED) {
+                        vm.searchButtonAddClick()
+                  }     
+            }
+      };
+
+      vm.showSearchButton = function(button) {
+            return (
+                        (button == 'search' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) ||
+                        (button == 'add' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED)
+                   );
+      };
+
+      vm.searchButtonClick = function() {
+            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHED;            
+            var searchInput = $('.dictionary-modal .search-input');            
+            vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
+      };
+
+      vm.searchButtonAddClick = function() {
+            vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
+            var searchInput = $('.dictionary-modal .search-input');            
+            var expressionAdd = searchInput.val();
+            
+            DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+                  var itemToAdd = serverResponse.data.data[0];
+
+                  var insertItemFn = function(data) {
+                        var indexAdd = data.length;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                                    indexAdd = i;
+                                    break;
+                              }
+                        }
+                        data.splice(indexAdd, 0, itemToAdd);                        
+                  }
+
+                  insertItemFn(vm.controller.gridDictionaryOptions.data);
+                  insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                  vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
+                  vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
+            });
+      };
+
+      vm.showLoading = function() {
+            return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
+      };
+
+
+});
+'use strict';
+
 angular.module('app').service('DatabaseSrv', function() {
 
 	var me = this;
@@ -793,195 +982,6 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 			return texto;
 		}	
 	};
-
-});
-'use strict';
-
-angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
-
-	var vm = this;
-      vm.controller;      
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      };
-
-	vm.showModal = function(scope) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Dictionary',
-                  width: '700px',         
-                  height: '580px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
-                  urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(objWindow) {
-                  	}
-
-                  }
-            }).show().then(function() {
-                  AppSrv.allExpressions = AppSrv.pronunciationExpressions.concat(vm.controller.gridDictionaryOptions.alldata);
-                  deferred.resolve(vm.controller.gridDictionaryOptions.alldata);
-            });
-
-            return deferred.promise;
-	};	
-
-      var _editExpression = function(record) {
-            dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
-                  record.dsExpressao = modelAdded.dsExpression;
-                  record.dsTags = modelAdded.dsTags;   
-                  var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
-                  vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
-                  vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
-            });
-      }
-
-      vm.getGridDictionaryOptions = function() {
-
-            return {
-                  keyField: 'cdDicionario',
-                  rowHeight: '25px',
-                  data: AppSrv.dictionaryExpressions,
-                  hideHeaders: true,
-                  columns: [
-                        {
-                              name: 'dsExpressao',
-                              width: '40%'
-                        },
-                        {
-                              name: 'dsTags',
-                              width: '40%'
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'edit',
-                                    tooltip: 'Edit the current expression',
-                                    fn: function(record, column, imgActionColumn) {
-                                          _editExpression(record);
-                                    }
-                              }                 
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'delete_forever',
-                                    tooltip: 'Remove a expression from dictionary',
-                                    fn: function(record, column, imgActionColumn) {
-                                          DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
-
-                                                var deleteItemFn = function(data) {
-                                                      for (var i = data.length - 1; i >= 0; i--) {
-                                                            if (data[i].cdDicionario == record.cdDicionario) {
-                                                                  data.splice(i, 1);
-                                                                  break;
-                                                            }
-                                                      }
-                                                }
-
-                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
-                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
-                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
-
-                                          });
-                                    }
-                              }                 
-                        }
-                  ],
-                  listeners: {
-                        onselectionchange: function(ctrl, element, rowIndex, record) {
-                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
-                              var element = angular.element(dictionaryDefinitionView);
-                              var scope = element.scope();
-                              scope.$$childTail.ctrl.cdDicionario = record.cdDicionario;
-                              if (!scope.$$phase) {
-                                    scope.$apply();
-                              }                              
-                        },
-
-                        onbeforeload: function() {
-                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
-                              var element = angular.element(dictionaryDefinitionView);
-                              var scope = element.scope();
-                              scope.$$childTail.ctrl.cdDicionario = null;
-                        },
-
-                        onrowdblclick: function(record, rowElement, rowIndex) {
-                              _editExpression(record);
-                        }
-                  }   
-            }
-
-      };
-
-      vm.searchInputChange = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHING;
-      };
-
-      vm.searchInputKeydown = function() {
-            if (event.keyCode == 13) {  //Return Key
-
-                  //Find a Record
-                  if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) {
-                        vm.searchButtonClick(vm.controller);
-
-                  //Add a Record    
-                  } else if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED) {
-                        vm.searchButtonAddClick()
-                  }     
-            }
-      };
-
-      vm.showSearchButton = function(button) {
-            return (
-                        (button == 'search' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) ||
-                        (button == 'add' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED)
-                   );
-      };
-
-      vm.searchButtonClick = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHED;            
-            var searchInput = $('.dictionary-modal .search-input');            
-            vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
-      };
-
-      vm.searchButtonAddClick = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
-            var searchInput = $('.dictionary-modal .search-input');            
-            var expressionAdd = searchInput.val();
-            
-            DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  var itemToAdd = serverResponse.data.data[0];
-
-                  var insertItemFn = function(data) {
-                        var indexAdd = data.length;
-                        for (var i = data.length - 1; i >= 0; i--) {
-                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
-                                    indexAdd = i;
-                                    break;
-                              }
-                        }
-                        data.splice(indexAdd, 0, itemToAdd);                        
-                  }
-
-                  insertItemFn(vm.controller.gridDictionaryOptions.data);
-                  insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
-                  vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
-
-                  vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
-            });
-      };
-
-      vm.showLoading = function() {
-            return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
-      };
-
 
 });
 angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSrv) {
@@ -1745,214 +1745,6 @@ angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, Strin
 
 
 });
-angular.module('app').service('VideoRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.add = function(cd_categoria, tp_video, id_video, ds_item) {
-		var successfullyMessage = {
-			title: 'Videos',
-			message: 'Video added successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
-	}
-
-	vm.get = function(cd_item) {
-		return AppSrv.requestWithPromise('video/get', {'cd_item': cd_item});
-	}
-
-	vm.commentaries = {
-
-		set: function(cd_video, commentary) {
-			var successfullyMessage = {
-				title: 'Videos',
-				message: 'commentary updated successfully!'
-			}
-			return AppSrv.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
-		}
-
-	}
-
-
-});
-angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv) {
-	
-	var vm = this;
-	vm.controller;
-
-	vm.setController = function(controller) {
-		vm.controller = controller;
-	}
-
-	var _selectSubtitleInTime = function(controller, time) {
-		var data = controller.gridSubtitlesOptions.data;
-		for (var index = 0 ; index < data.length ; index++) {
-			var record = data[index];
-			if ((time >= record.nrStart) && (time <= record.nrEnd)) {
-				if (index != controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
-					controller.gridSubtitlesOptions.api.selectRow(index, true, false);
-				}	
-				break;
-			}
-		}
-	}
-
-	var selectingSubtitle = false;
-	vm.configElementVideo = function(controller, cdItem) {
-		var deferred = $q.defer();
-
-		controller.onPlayerReady = function(API) {
-			controller.videoAPI = API;
-			controller.videoAPI.autoPlay = false;
-
-			var intervalPromise = $interval(function() {
-		        //controller.videoAPI.play();
-		        //controller.videoAPI.currentState = 'play';
-
-				if (angular.isDefined(controller.currentTime)) {
-					$interval.cancel(intervalPromise);
-				}
-
-	    	}, 1000);
-		};
-
-		controller.onUpdateTime = function(currentTime, totalTime) {
-			controller.currentTime = currentTime * 1000;
-			controller.totalTime = totalTime * 1000;
-			controller.timeLeft = controller.totalTime - controller.currentTime;
-			if (!selectingSubtitle) {
-				_selectSubtitleInTime(controller, currentTime);
-			}	
-		};		
-
-		VideoRestSrv.get(cdItem).then(function(serverReturn) {
-			var t08vdo = serverReturn.data.data[0];
-			deferred.resolve(t08vdo);
-
-			var videoUrl;
-			if (t08vdo.tpVideo == 'YOUTUBE') {
-				urlImage = "https://www.youtube.com/watch?v=" + t08vdo.idVideo;
-			} else {
-				urlImage = "https://googledrive.com/host/" + t08vdo.idVideo;
-			}
-
-			controller.videoConfig = {
-				//preload: "auto",
-				autoPlay: false,
-				sources: [
-					//{src: t08vdo.dsUrl},
-					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
-				],
-				theme: {
-					url: "dist/videogular/videogular.css"
-				},
-				plugins: {
-					controls: {
-						autoHide: true,
-						autoHideTime: 5000
-					},
-					//poster: AppConsts.SERVER_URL + "item/image/get?cd_item=" + t08vdo.t05itm.cdItem + '&time=452'
-				}
-			};	
-			
-			/*
-            controller.videoConfig = {
-                preload: "auto",
-                "autoplay": true,
-                sources: [
-                    {src: $sce.trustAsResourceUrl(t08vdo.dsUrl), type: "video/mp4"},
-                ],
-                theme: {
-                    url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
-                }
-            };			
-			*/
-		});
-
-		return deferred.promise;
-	}	
-
-	vm.configGridSubtitles = function(controller, cdItem) {	
-
-		controller.gridSubtitlesOptions = {
-			keyField: 'cdItemSubtitle',
-			rowHeight: '37px',
-			url: AppConsts.SERVER_URL + '/subtitle/list?cd_item=' + cdItem,
-			hideHeaders: true,
-	        columns: [
-	        	{
-	            	name: 'nrStart',
-	            	width: '15%',
-	            	align: 'center',	            	
-	            	renderer: function(value, record) {
-	            		return StringSrv.doubleToStrTime(value);
-	            	}	
-	        	},
-	        	{
-	            	name: 'nrEnd',
-	            	width: '15%',
-	            	align: 'center',
-	            	renderer: function(value, record) {
-	            		return StringSrv.doubleToStrTime(value);
-	            	}	
-	        	},
-	        	{
-	            	name: 'dsTexto',
-	            	width: '80%',
-	            	renderer: function(value, record) {
-						var $div = $('<div>' + StringSrv.addLinksDictionaryAndPronunciation(value) + '</div>');
-						$compile($div)(controller.scope);
-	            		return $div;
-	            	}	
-	        	}
-	        ],
-	        listeners: {				
-				onselectionchange: function(ctrl, element, rowIndex, record) {
-					selectingSubtitle = true;
-					try {
-						controller.videoAPI.seekTime(record.nrStart);
-					} finally {	
-						//controller.videoAPI.pause();						
-						$timeout(function() {
-							selectingSubtitle = false;
-						}, 1500)
-					}	
-				}
-	        }
-	    };
-
-
-	};
-
-	vm.configWYSIWYG = function(controller, cdItem) {
-
-		var fnExecSaveButton = function() {
-			VideoRestSrv.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
-		}
-
-		var fnExecCancelButton = function() {
-	    	VideoRestSrv.get(cdItem).then(function(serverResponse) {
-	    		controller.t08vdo = serverResponse.data.data[0];
-	    	});
-		}
-
-		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
-	};
-
-    vm.importSubtitleFromLyrics = function() {
-    	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
-    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
-    	});
-    };
-
-    vm.importSubtitleFromSrtFile = function() {
-    	videoModalImportSubtitleSrtSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
-    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
-    	});
-    };
-
-
-});
 'use strict';
 
 angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
@@ -2274,6 +2066,214 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	};
 
 });
+angular.module('app').service('VideoRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.add = function(cd_categoria, tp_video, id_video, ds_item) {
+		var successfullyMessage = {
+			title: 'Videos',
+			message: 'Video added successfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
+	}
+
+	vm.get = function(cd_item) {
+		return AppSrv.requestWithPromise('video/get', {'cd_item': cd_item});
+	}
+
+	vm.commentaries = {
+
+		set: function(cd_video, commentary) {
+			var successfullyMessage = {
+				title: 'Videos',
+				message: 'commentary updated successfully!'
+			}
+			return AppSrv.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
+		}
+
+	}
+
+
+});
+angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv) {
+	
+	var vm = this;
+	vm.controller;
+
+	vm.setController = function(controller) {
+		vm.controller = controller;
+	}
+
+	var _selectSubtitleInTime = function(controller, time) {
+		var data = controller.gridSubtitlesOptions.data;
+		for (var index = 0 ; index < data.length ; index++) {
+			var record = data[index];
+			if ((time >= record.nrStart) && (time <= record.nrEnd)) {
+				if (index != controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
+					controller.gridSubtitlesOptions.api.selectRow(index, true, false);
+				}	
+				break;
+			}
+		}
+	}
+
+	var selectingSubtitle = false;
+	vm.configElementVideo = function(controller, cdItem) {
+		var deferred = $q.defer();
+
+		controller.onPlayerReady = function(API) {
+			controller.videoAPI = API;
+			controller.videoAPI.autoPlay = false;
+
+			var intervalPromise = $interval(function() {
+		        //controller.videoAPI.play();
+		        //controller.videoAPI.currentState = 'play';
+
+				if (angular.isDefined(controller.currentTime)) {
+					$interval.cancel(intervalPromise);
+				}
+
+	    	}, 1000);
+		};
+
+		controller.onUpdateTime = function(currentTime, totalTime) {
+			controller.currentTime = currentTime * 1000;
+			controller.totalTime = totalTime * 1000;
+			controller.timeLeft = controller.totalTime - controller.currentTime;
+			if (!selectingSubtitle) {
+				_selectSubtitleInTime(controller, currentTime);
+			}	
+		};		
+
+		VideoRestSrv.get(cdItem).then(function(serverReturn) {
+			var t08vdo = serverReturn.data.data[0];
+			deferred.resolve(t08vdo);
+
+			var videoUrl;
+			if (t08vdo.tpVideo == 'YOUTUBE') {
+				urlImage = "https://www.youtube.com/watch?v=" + t08vdo.idVideo;
+			} else {
+				urlImage = "https://googledrive.com/host/" + t08vdo.idVideo;
+			}
+
+			controller.videoConfig = {
+				//preload: "auto",
+				autoPlay: false,
+				sources: [
+					//{src: t08vdo.dsUrl},
+					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
+				],
+				theme: {
+					url: "dist/videogular/videogular.css"
+				},
+				plugins: {
+					controls: {
+						autoHide: true,
+						autoHideTime: 5000
+					},
+					//poster: AppConsts.SERVER_URL + "item/image/get?cd_item=" + t08vdo.t05itm.cdItem + '&time=452'
+				}
+			};	
+			
+			/*
+            controller.videoConfig = {
+                preload: "auto",
+                "autoplay": true,
+                sources: [
+                    {src: $sce.trustAsResourceUrl(t08vdo.dsUrl), type: "video/mp4"},
+                ],
+                theme: {
+                    url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
+                }
+            };			
+			*/
+		});
+
+		return deferred.promise;
+	}	
+
+	vm.configGridSubtitles = function(controller, cdItem) {	
+
+		controller.gridSubtitlesOptions = {
+			keyField: 'cdItemSubtitle',
+			rowHeight: '37px',
+			url: AppConsts.SERVER_URL + '/subtitle/list?cd_item=' + cdItem,
+			hideHeaders: true,
+	        columns: [
+	        	{
+	            	name: 'nrStart',
+	            	width: '15%',
+	            	align: 'center',	            	
+	            	renderer: function(value, record) {
+	            		return StringSrv.doubleToStrTime(value);
+	            	}	
+	        	},
+	        	{
+	            	name: 'nrEnd',
+	            	width: '15%',
+	            	align: 'center',
+	            	renderer: function(value, record) {
+	            		return StringSrv.doubleToStrTime(value);
+	            	}	
+	        	},
+	        	{
+	            	name: 'dsTexto',
+	            	width: '80%',
+	            	renderer: function(value, record) {
+						var $div = $('<div>' + StringSrv.addLinksDictionaryAndPronunciation(value) + '</div>');
+						$compile($div)(controller.scope);
+	            		return $div;
+	            	}	
+	        	}
+	        ],
+	        listeners: {				
+				onselectionchange: function(ctrl, element, rowIndex, record) {
+					selectingSubtitle = true;
+					try {
+						controller.videoAPI.seekTime(record.nrStart);
+					} finally {	
+						//controller.videoAPI.pause();						
+						$timeout(function() {
+							selectingSubtitle = false;
+						}, 1500)
+					}	
+				}
+	        }
+	    };
+
+
+	};
+
+	vm.configWYSIWYG = function(controller, cdItem) {
+
+		var fnExecSaveButton = function() {
+			VideoRestSrv.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
+		}
+
+		var fnExecCancelButton = function() {
+	    	VideoRestSrv.get(cdItem).then(function(serverResponse) {
+	    		controller.t08vdo = serverResponse.data.data[0];
+	    	});
+		}
+
+		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
+	};
+
+    vm.importSubtitleFromLyrics = function() {
+    	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+    	});
+    };
+
+    vm.importSubtitleFromSrtFile = function() {
+    	videoModalImportSubtitleSrtSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+    	});
+    };
+
+
+});
 angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -2306,6 +2306,60 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
 	}
 
+
+});
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+
+	var vm = this;
+  vm.cdItem;
+	vm.controller;
+
+	vm.setController = function(controller, scope) {
+		vm.controller = controller;
+    vm.controller.cdItem = vm.cdItem;
+	}
+
+	vm.showModal = function(cdItem) {
+      vm.cdItem = cdItem;
+      var deferred = $q.defer();
+
+      var wndImportSubtitle = uiDeniModalSrv.createWindow({
+            scope: $rootScope,
+            title: 'Importing Subtitle from a text (often lyrics of musics)',
+            width: '550px',         
+            height: '500px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
+            modal: true,
+            listeners: {
+
+            	onshow: function(objWindow) {
+            	}
+
+            }
+      });
+
+      wndImportSubtitle.show().then(function(modalResponse) {
+
+        if (modalResponse.button == 'ok') {
+          var successfullyMessage = {
+            title: 'Updating',
+            message: 'Item updated successfully!'
+          }
+
+          var textArea = $(wndImportSubtitle).find('textarea');
+          lyrics = textArea.val();
+
+          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+            deferred.resolve(serverReturn.data);
+          });   
+        }
+
+      });
+
+      return deferred.promise;
+	};
 
 });
 angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
@@ -2382,60 +2436,6 @@ angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $ht
     //spanFileName.html(fileItem.file.name);
   };
 	
-
-});
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
-
-	var vm = this;
-  vm.cdItem;
-	vm.controller;
-
-	vm.setController = function(controller, scope) {
-		vm.controller = controller;
-    vm.controller.cdItem = vm.cdItem;
-	}
-
-	vm.showModal = function(cdItem) {
-      vm.cdItem = cdItem;
-      var deferred = $q.defer();
-
-      var wndImportSubtitle = uiDeniModalSrv.createWindow({
-            scope: $rootScope,
-            title: 'Importing Subtitle from a text (often lyrics of musics)',
-            width: '550px',         
-            height: '500px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
-            modal: true,
-            listeners: {
-
-            	onshow: function(objWindow) {
-            	}
-
-            }
-      });
-
-      wndImportSubtitle.show().then(function(modalResponse) {
-
-        if (modalResponse.button == 'ok') {
-          var successfullyMessage = {
-            title: 'Updating',
-            message: 'Item updated successfully!'
-          }
-
-          var textArea = $(wndImportSubtitle).find('textarea');
-          lyrics = textArea.val();
-
-          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
-            deferred.resolve(serverReturn.data);
-          });   
-        }
-
-      });
-
-      return deferred.promise;
-	};
 
 });
 angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
@@ -2611,6 +2611,46 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     };     
 
 });
+angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
+	
+	var vm = this;
+	vm.categoryPath = null;		
+
+	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
+
+	vm.currentNavItem = "pageItems";
+	vm.currentCategoryNode = null; //Category Node
+	
+	$.jstree.defaults.core.themes.variant = "large";	
+
+	vm.addCategoryClick = function() {
+		homeSrv.addCategoryClick($scope, vm.currentCategoryNode.id);
+	}	
+
+	vm.editCategoryClick = function() {
+		homeSrv.editCategoryClick($scope, vm.currentCategoryNode);
+	}	
+
+	vm.delCategoryClick = function() {
+		homeSrv.delCategoryClick(vm.currentCategoryNode);
+	}
+
+    vm.addNewItemButtonClick = function(event) {
+    	homeSrv.addNewItemButtonClick(vm, $scope, event);
+    }	
+
+	homeSrv.configureTreeView(vm, AppSrv.currentCategory || $routeParams.cdCategoria);
+
+	homeSrv.configureGridItems(vm, $scope);
+		
+    $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
+    	vm.currentNavItem = newCurrentNavItem;
+    	if (newCurrentNavItem) {
+    		homeSrv.reloadDataGrid(vm);
+    	}
+    });
+
+});
 'use strict';
 
 angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, ItemRestSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
@@ -2719,44 +2759,9 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
     vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
 
 });
-angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
-	
-	var vm = this;
-	vm.categoryPath = null;		
+angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
 
-	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
-
-	vm.currentNavItem = "pageItems";
-	vm.currentCategoryNode = null; //Category Node
-	
-	$.jstree.defaults.core.themes.variant = "large";	
-
-	vm.addCategoryClick = function() {
-		homeSrv.addCategoryClick($scope, vm.currentCategoryNode.id);
-	}	
-
-	vm.editCategoryClick = function() {
-		homeSrv.editCategoryClick($scope, vm.currentCategoryNode);
-	}	
-
-	vm.delCategoryClick = function() {
-		homeSrv.delCategoryClick(vm.currentCategoryNode);
-	}
-
-    vm.addNewItemButtonClick = function(event) {
-    	homeSrv.addNewItemButtonClick(vm, $scope, event);
-    }	
-
-	homeSrv.configureTreeView(vm, AppSrv.currentCategory || $routeParams.cdCategoria);
-
-	homeSrv.configureGridItems(vm, $scope);
-		
-    $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
-    	vm.currentNavItem = newCurrentNavItem;
-    	if (newCurrentNavItem) {
-    		homeSrv.reloadDataGrid(vm);
-    	}
-    });
+	videoModalImportSubtitleLyricsSrv.setController(this);    
 
 });
 angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
@@ -2764,15 +2769,10 @@ angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($sc
 	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
 
 });
-angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
-
-	videoModalImportSubtitleLyricsSrv.setController(this);    
-
-});
 //CONSTANTS
 angular.module('app').constant('AppConsts', {
-	//SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
-	SERVER_URL: 'http://localhost:8087/denienglish/', //Local
+	SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
+	//SERVER_URL: 'http://localhost:8087/denienglish/', //Local
 });
 //ENUMERATIONS
 angular.module('app').constant('AppEnums', {
