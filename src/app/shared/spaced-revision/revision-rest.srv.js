@@ -18,6 +18,14 @@ angular.module('app').service('RevisionRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
 	}
 
+	vm.updText = function(cd_item, returnOnlyVisible) {
+		var successfullyMessage = {
+			title: 'Spaced Revision',
+			message: 'expressions updated succesfully!'
+		}
+		return AppSrv.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
+	}
+
 	vm.markAsReviewed = function(cd_item) {
 		return AppSrv.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
 	}

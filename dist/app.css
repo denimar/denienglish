@@ -95,14 +95,18 @@ label {
 .dictionary-link {
   color: #15498B;
   cursor: pointer;
-  text-decoration: underline;
-  outline: 0; }
+  /*text-decoration: underline;*/
+  outline: 0;
+  border-bottom-style: dashed;
+  border-bottom-width: 1px; }
 
 .pronunciation-link {
   color: green;
   cursor: pointer;
-  text-decoration: underline;
-  outline: 0; }
+  /*text-decoration: underline;*/
+  outline: 0;
+  border-bottom-style: dashed;
+  border-bottom-width: 1px; }
 
 .home.category {
   border: solid 1px #99BCE8;
@@ -231,9 +235,12 @@ label {
       height: 50px; }
   .text .main-div .content {
     margin: 0px 0px 0px 8px;
-    box-sizing: border-box; }
+    height: 100%;
+    box-sizing: border-box;
+    margin-left: 0px; }
     .text .main-div .content .editor {
-      box-sizing: border-box; }
+      box-sizing: border-box;
+      height: 100%; }
       .text .main-div .content .editor .note-editor {
         height: 100%;
         box-sizing: border-box;
@@ -248,7 +255,6 @@ label {
         .text .main-div .content .editor .note-editor .note-statusbar {
           display: none; }
     .text .main-div .content .text-content {
-      box-sizing: border-box;
       overflow-y: auto;
       padding: 10px; }
 
@@ -587,6 +593,9 @@ label {
     padding: 10px;
     overflow-y: auto; }
 
+.dictionary-modal-edit {
+  padding: 30px 10px 4px 10px; }
+
 .dictionary-definition-view-container {
   height: 100%;
   width: 100%;
@@ -622,6 +631,3 @@ label {
     margin: 2px; }
     .dictionary-definition-view-container .definition-toolbar .definition-toolbar-buttons .material-icons {
       cursor: pointer; }
-
-.dictionary-modal-edit {
-  padding: 30px 10px 4px 10px; }
