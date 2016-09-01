@@ -64,7 +64,7 @@ angular.module('VideoMdl').service('VideoSrv', function($rootScope, $timeout, $s
 				autoPlay: false,
 				sources: [
 					//{src: t08vdo.dsUrl},
-					{src: $sce.trustAsResourceUrl(urlImage), type: "video/avi"},
+					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
 				],
 				theme: {
 					url: "dist/videogular/videogular.css"
