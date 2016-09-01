@@ -12,7 +12,7 @@ angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModal
 	this.searchInputKeydown = dictionaryModalSrv.searchInputKeydown;
 
 	this.searchButtonClick = dictionaryModalSrv.searchButtonClick;
-	this.searchButtonAddClick = dictionaryModalSrv.searchButtonClick;
+	this.searchButtonAddClick = dictionaryModalSrv.searchButtonAddClick;
 	this.showSearchButton = dictionaryModalSrv.showSearchButton;
 
 	this.showLoading = dictionaryModalSrv.showLoading;

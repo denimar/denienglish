@@ -49,6 +49,9 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		});
 	}
 
+	vm.editSubtitleButtonClick = VideoSrv.editSubtitleButtonClick;
+
+	/*
 	vm.editSubtitleButtonClick = function() {
 		subtitleModalSrv.edit($scope, vm).then(function(subtitleUpdated) {
 			vm.gridSubtitlesOptions.api.reload().then(function() {
@@ -56,6 +59,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 			});
 		});
 	}
+	*/
 
 	vm.delSubtitleButtonClick = function() {
 		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
@@ -65,12 +69,21 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 	}
 
 	var _incrementOneSecond = function(increment) {
+		$rootScope.loading = true;
 		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
 		var cdItemSubtitle = record.cdItemSubtitle;
 		record.nrStart = record.nrStart + increment;
 		record.nrEnd = record.nrEnd + increment;		
 
-		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
+		var fn;
+		if (increment > 0) {
+			fn = SubtitleRestSrv.incASecond;
+		} else {
+			fn = SubtitleRestSrv.decASecond;
+		}
+
+		fn(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
+			$rootScope.loading = false;
 			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
 			vm.gridSubtitlesOptions.api.repaint();
 			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});

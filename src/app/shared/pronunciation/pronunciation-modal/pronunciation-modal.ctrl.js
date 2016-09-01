@@ -12,7 +12,7 @@ angular.module('app').controller('PronunciationModalCtrl', function(pronunciatio
 	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
 
 	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
-	this.searchButtonAddClick = pronunciationModalSrv.searchButtonClick;
+	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
 	this.showSearchButton = pronunciationModalSrv.showSearchButton;
 
 	this.showLoading = pronunciationModalSrv.showLoading;

@@ -4,6 +4,8 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
 
 	var vm = this;
       vm.controller;      
+
+      var expressionAdded = null;
       
       vm.setController = function(controller) {
             vm.controller = controller;
@@ -18,7 +20,7 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                   width: '700px',         
                   height: '580px',
                   position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
+                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
                   urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
                   modal: true,
                   listeners: {
@@ -115,6 +117,13 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                               scope.$$childTail.ctrl.cdDicionario = null;
                         },
 
+                        onafterload: function(data, gridOptions) {
+                              if (expressionAdded) {
+                                    gridOptions.api.selectRow(expressionAdded);
+                                    expressionAdded = null;
+                              }
+                        },
+
                         onrowdblclick: function(record, rowElement, rowIndex) {
                               _editExpression(record);
                         }
@@ -160,17 +169,17 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
             var expressionAdd = searchInput.val();
             
             DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  var itemToAdd = serverResponse.data.data[0];
+                  expressionAdded = serverResponse.data.data[0];
 
                   var insertItemFn = function(data) {
                         var indexAdd = data.length;
                         for (var i = data.length - 1; i >= 0; i--) {
-                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
                                     indexAdd = i;
                                     break;
                               }
                         }
-                        data.splice(indexAdd, 0, itemToAdd);                        
+                        data.splice(indexAdd, 0, expressionAdded);                        
                   }
 
                   insertItemFn(vm.controller.gridDictionaryOptions.data);

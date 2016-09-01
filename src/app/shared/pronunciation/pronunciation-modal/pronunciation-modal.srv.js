@@ -2,6 +2,8 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
 
 	var vm = this;
       vm.controller;      
+
+      var expressionAdded = null;
       
       vm.setController = function(controller) {
             vm.controller = controller;
@@ -16,7 +18,7 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
                   width: '550px',         
                   height: '450px',
                   position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
+                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
                   urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
                   modal: true,
                   listeners: {
@@ -81,7 +83,15 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
                                     }
                               }                 
                         }
-                  ]
+                  ],
+                  listeners: {
+                        onafterload: function(data, gridOptions) {
+                              if (expressionAdded) {
+                                    gridOptions.api.selectRow(expressionAdded);
+                                    expressionAdded = null;
+                              }
+                        },
+                  }
             }
 
       }
@@ -123,17 +133,17 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
             var expressionAdd = searchInput.val();
             
             PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  var itemToAdd = serverResponse.data.data[0];
+                  expressionAdded = serverResponse.data.data[0];
 
                   var insertItemFn = function(data) {
                         var indexAdd = data.length;
                         for (var i = data.length - 1; i >= 0; i--) {
-                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
                                     indexAdd = i;
                                     break;
                               }
                         }
-                        data.splice(indexAdd, 0, itemToAdd);                        
+                        data.splice(indexAdd, 0, expressionAdded);                        
                   }
 
                   insertItemFn(vm.controller.gridPronunciationOptions.data);
