@@ -604,11 +604,8 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
 
 	var vm = this;
       vm.controller;      
-<<<<<<< HEAD
-=======
 
       var expressionAdded = null;
->>>>>>> master
       
       vm.setController = function(controller) {
             vm.controller = controller;
@@ -623,11 +620,7 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                   width: '700px',         
                   height: '580px',
                   position: uiDeniModalSrv.POSITION.CENTER,
-<<<<<<< HEAD
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
-=======
                   buttons: [uiDeniModalSrv.BUTTON.CLOSE],
->>>>>>> master
                   urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
                   modal: true,
                   listeners: {
@@ -724,8 +717,6 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                               scope.$$childTail.ctrl.cdDicionario = null;
                         },
 
-<<<<<<< HEAD
-=======
                         onafterload: function(data, gridOptions) {
                               if (expressionAdded) {
                                     gridOptions.api.selectRow(expressionAdded);
@@ -733,7 +724,6 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                               }
                         },
 
->>>>>>> master
                         onrowdblclick: function(record, rowElement, rowIndex) {
                               _editExpression(record);
                         }
@@ -779,29 +769,17 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
             var expressionAdd = searchInput.val();
             
             DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-<<<<<<< HEAD
-                  var itemToAdd = serverResponse.data.data[0];
-=======
                   expressionAdded = serverResponse.data.data[0];
->>>>>>> master
 
                   var insertItemFn = function(data) {
                         var indexAdd = data.length;
                         for (var i = data.length - 1; i >= 0; i--) {
-<<<<<<< HEAD
-                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
-=======
                               if (expressionAdded.dsExpressao > data[i].dsExpressao) {
->>>>>>> master
                                     indexAdd = i;
                                     break;
                               }
                         }
-<<<<<<< HEAD
-                        data.splice(indexAdd, 0, itemToAdd);                        
-=======
                         data.splice(indexAdd, 0, expressionAdded);                        
->>>>>>> master
                   }
 
                   insertItemFn(vm.controller.gridDictionaryOptions.data);
@@ -2392,6 +2370,60 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 
 
 });
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+
+	var vm = this;
+  vm.cdItem;
+	vm.controller;
+
+	vm.setController = function(controller, scope) {
+		vm.controller = controller;
+    vm.controller.cdItem = vm.cdItem;
+	}
+
+	vm.showModal = function(cdItem) {
+      vm.cdItem = cdItem;
+      var deferred = $q.defer();
+
+      var wndImportSubtitle = uiDeniModalSrv.createWindow({
+            scope: $rootScope,
+            title: 'Importing Subtitle from a text (often lyrics of musics)',
+            width: '550px',         
+            height: '500px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
+            modal: true,
+            listeners: {
+
+            	onshow: function(objWindow) {
+            	}
+
+            }
+      });
+
+      wndImportSubtitle.show().then(function(modalResponse) {
+
+        if (modalResponse.button == 'ok') {
+          var successfullyMessage = {
+            title: 'Updating',
+            message: 'Item updated successfully!'
+          }
+
+          var textArea = $(wndImportSubtitle).find('textarea');
+          lyrics = textArea.val();
+
+          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+            deferred.resolve(serverReturn.data);
+          });   
+        }
+
+      });
+
+      return deferred.promise;
+	};
+
+});
 angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
 
 	var vm = this;
@@ -2466,60 +2498,6 @@ angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $ht
     //spanFileName.html(fileItem.file.name);
   };
 	
-
-});
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
-
-	var vm = this;
-  vm.cdItem;
-	vm.controller;
-
-	vm.setController = function(controller, scope) {
-		vm.controller = controller;
-    vm.controller.cdItem = vm.cdItem;
-	}
-
-	vm.showModal = function(cdItem) {
-      vm.cdItem = cdItem;
-      var deferred = $q.defer();
-
-      var wndImportSubtitle = uiDeniModalSrv.createWindow({
-            scope: $rootScope,
-            title: 'Importing Subtitle from a text (often lyrics of musics)',
-            width: '550px',         
-            height: '500px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
-            modal: true,
-            listeners: {
-
-            	onshow: function(objWindow) {
-            	}
-
-            }
-      });
-
-      wndImportSubtitle.show().then(function(modalResponse) {
-
-        if (modalResponse.button == 'ok') {
-          var successfullyMessage = {
-            title: 'Updating',
-            message: 'Item updated successfully!'
-          }
-
-          var textArea = $(wndImportSubtitle).find('textarea');
-          lyrics = textArea.val();
-
-          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
-            deferred.resolve(serverReturn.data);
-          });   
-        }
-
-      });
-
-      return deferred.promise;
-	};
 
 });
 angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
@@ -2856,14 +2834,14 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
     vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
 
 });
-angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
-
-	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
-
-});
 angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
 
 	videoModalImportSubtitleLyricsSrv.setController(this);    
+
+});
+angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
+
+	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
 
 });
 //CONSTANTS
