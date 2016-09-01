@@ -1,4 +1,4 @@
-angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv) {
+angular.module('VideoMdl').service('VideoSrv', function($rootScope, $timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv, subtitleModalSrv) {
 	
 	var vm = this;
 	vm.controller;
@@ -64,7 +64,7 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 				autoPlay: false,
 				sources: [
 					//{src: t08vdo.dsUrl},
-					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
+					{src: $sce.trustAsResourceUrl(urlImage), type: "video/avi"},
 				],
 				theme: {
 					url: "dist/videogular/videogular.css"
@@ -140,6 +140,10 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 							selectingSubtitle = false;
 						}, 1500)
 					}	
+				},
+
+				onrowdblclick: function(recordDblClick, rowElementDblClick, rowIndexDblClick) {
+					vm.editSubtitleButtonClick();
 				}
 	        }
 	    };
@@ -161,6 +165,14 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 
 		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
 	};
+
+	vm.editSubtitleButtonClick = function() {
+		subtitleModalSrv.edit(vm.controller.scope, vm.controller).then(function(subtitleUpdated) {
+			vm.controller.gridSubtitlesOptions.api.reload().then(function() {
+				vm.controller.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
+			});
+		});
+	}
 
     vm.importSubtitleFromLyrics = function() {
     	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {

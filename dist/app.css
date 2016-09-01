@@ -55,14 +55,15 @@ header {
       margin-right: 0px; }
       header .md-toolbar-tools.md-toolbar-tools-main .md-button .material-icons.expand-toolbar:hover {
         color: yellow; }
-  header .progress-bar-loading {
-    height: 3px;
-    width: 100%; }
-    header .progress-bar-loading md-progress-linear .md-container {
-      background-color: white;
-      height: 3px; }
-      header .progress-bar-loading md-progress-linear .md-container .md-bar {
-        background-color: chartreuse; }
+
+.progress-bar-loading {
+  height: 3px;
+  width: 100%; }
+  .progress-bar-loading md-progress-linear .md-container {
+    background-color: white;
+    height: 3px; }
+    .progress-bar-loading md-progress-linear .md-container .md-bar {
+      background-color: chartreuse; }
 
 .material-icons {
   color: #a6a6a6; }

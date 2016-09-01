@@ -80,22 +80,22 @@ header {
 
 	}
 	*/
-
-	.progress-bar-loading {
-		height: 3px;
-		width: 100%;
-
-		md-progress-linear .md-container {
-		    background-color: white;
-			height: 3px;
-
-			.md-bar {
-			    background-color: chartreuse;
-			}			
-		}
-	}
-
 }
+
+.progress-bar-loading {
+	height: 3px;
+	width: 100%;
+
+	md-progress-linear .md-container {
+	    background-color: white;
+		height: 3px;
+
+		.md-bar {
+		    background-color: chartreuse;
+		}			
+	}
+}
+
 
 .material-icons {
 	color: #a6a6a6;

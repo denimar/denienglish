@@ -604,6 +604,11 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
 
 	var vm = this;
       vm.controller;      
+<<<<<<< HEAD
+=======
+
+      var expressionAdded = null;
+>>>>>>> master
       
       vm.setController = function(controller) {
             vm.controller = controller;
@@ -618,7 +623,11 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                   width: '700px',         
                   height: '580px',
                   position: uiDeniModalSrv.POSITION.CENTER,
+<<<<<<< HEAD
                   buttons: [uiDeniModalSrv.BUTTON.OK],
+=======
+                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
+>>>>>>> master
                   urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
                   modal: true,
                   listeners: {
@@ -715,6 +724,16 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
                               scope.$$childTail.ctrl.cdDicionario = null;
                         },
 
+<<<<<<< HEAD
+=======
+                        onafterload: function(data, gridOptions) {
+                              if (expressionAdded) {
+                                    gridOptions.api.selectRow(expressionAdded);
+                                    expressionAdded = null;
+                              }
+                        },
+
+>>>>>>> master
                         onrowdblclick: function(record, rowElement, rowIndex) {
                               _editExpression(record);
                         }
@@ -760,17 +779,29 @@ angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $ti
             var expressionAdd = searchInput.val();
             
             DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+<<<<<<< HEAD
                   var itemToAdd = serverResponse.data.data[0];
+=======
+                  expressionAdded = serverResponse.data.data[0];
+>>>>>>> master
 
                   var insertItemFn = function(data) {
                         var indexAdd = data.length;
                         for (var i = data.length - 1; i >= 0; i--) {
+<<<<<<< HEAD
                               if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+=======
+                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
+>>>>>>> master
                                     indexAdd = i;
                                     break;
                               }
                         }
+<<<<<<< HEAD
                         data.splice(indexAdd, 0, itemToAdd);                        
+=======
+                        data.splice(indexAdd, 0, expressionAdded);                        
+>>>>>>> master
                   }
 
                   insertItemFn(vm.controller.gridDictionaryOptions.data);
@@ -922,10 +953,17 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 	 *
 	 */
 	me.addLinksDictionaryAndPronunciation = function(text) {
-		var array = AppSrv.allExpressions;
-		if (array.length == 0) {
+		if (AppSrv.allExpressions.length == 0) {
 			return text;
 		} else {
+			//Order by Length of the Expressions
+			var array = AppSrv.allExpressions.sort(function(a, b){
+			  // ASC  -> a.length - b.length
+			  // DESC -> b.length - a.length
+			  return b.dsExpressao.length - a.dsExpressao.length;
+			});
+
+
 			var texto = me.replaceAll(text, '"', "'");
 			var textoLower = texto.toLowerCase();	
 			var matrizSubst = 'matrizsubst1-{0}-matrizsubst2';
@@ -1033,6 +1071,8 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
 
 	var vm = this;
       vm.controller;      
+
+      var expressionAdded = null;
       
       vm.setController = function(controller) {
             vm.controller = controller;
@@ -1047,7 +1087,7 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
                   width: '550px',         
                   height: '450px',
                   position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
+                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
                   urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
                   modal: true,
                   listeners: {
@@ -1112,7 +1152,15 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
                                     }
                               }                 
                         }
-                  ]
+                  ],
+                  listeners: {
+                        onafterload: function(data, gridOptions) {
+                              if (expressionAdded) {
+                                    gridOptions.api.selectRow(expressionAdded);
+                                    expressionAdded = null;
+                              }
+                        },
+                  }
             }
 
       }
@@ -1154,17 +1202,17 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
             var expressionAdd = searchInput.val();
             
             PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  var itemToAdd = serverResponse.data.data[0];
+                  expressionAdded = serverResponse.data.data[0];
 
                   var insertItemFn = function(data) {
                         var indexAdd = data.length;
                         for (var i = data.length - 1; i >= 0; i--) {
-                              if (itemToAdd.dsExpressao > data[i].dsExpressao) {
+                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
                                     indexAdd = i;
                                     break;
                               }
                         }
-                        data.splice(indexAdd, 0, itemToAdd);                        
+                        data.splice(indexAdd, 0, expressionAdded);                        
                   }
 
                   insertItemFn(vm.controller.gridPronunciationOptions.data);
@@ -1513,7 +1561,7 @@ angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModal
 	this.searchInputKeydown = dictionaryModalSrv.searchInputKeydown;
 
 	this.searchButtonClick = dictionaryModalSrv.searchButtonClick;
-	this.searchButtonAddClick = dictionaryModalSrv.searchButtonClick;
+	this.searchButtonAddClick = dictionaryModalSrv.searchButtonAddClick;
 	this.showSearchButton = dictionaryModalSrv.showSearchButton;
 
 	this.showLoading = dictionaryModalSrv.showLoading;
@@ -1600,7 +1648,7 @@ angular.module('app').controller('PronunciationModalCtrl', function(pronunciatio
 	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
 
 	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
-	this.searchButtonAddClick = pronunciationModalSrv.searchButtonClick;
+	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
 	this.showSearchButton = pronunciationModalSrv.showSearchButton;
 
 	this.showLoading = pronunciationModalSrv.showLoading;
@@ -2104,7 +2152,7 @@ angular.module('app').service('VideoRestSrv', function(AppSrv) {
 
 
 });
-angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv) {
+angular.module('VideoMdl').service('VideoSrv', function($rootScope, $timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv, subtitleModalSrv) {
 	
 	var vm = this;
 	vm.controller;
@@ -2170,7 +2218,7 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 				autoPlay: false,
 				sources: [
 					//{src: t08vdo.dsUrl},
-					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
+					{src: $sce.trustAsResourceUrl(urlImage), type: "video/avi"},
 				],
 				theme: {
 					url: "dist/videogular/videogular.css"
@@ -2246,6 +2294,10 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 							selectingSubtitle = false;
 						}, 1500)
 					}	
+				},
+
+				onrowdblclick: function(recordDblClick, rowElementDblClick, rowIndexDblClick) {
+					vm.editSubtitleButtonClick();
 				}
 	        }
 	    };
@@ -2267,6 +2319,14 @@ angular.module('VideoMdl').service('VideoSrv', function($timeout, $sce, $compile
 
 		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
 	};
+
+	vm.editSubtitleButtonClick = function() {
+		subtitleModalSrv.edit(vm.controller.scope, vm.controller).then(function(subtitleUpdated) {
+			vm.controller.gridSubtitlesOptions.api.reload().then(function() {
+				vm.controller.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
+			});
+		});
+	}
 
     vm.importSubtitleFromLyrics = function() {
     	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
@@ -2304,6 +2364,22 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 			message: 'Subtitle updated successfully!'
 		}
 		return AppSrv.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
+	}
+
+	vm.incASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
+	vm.decASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
 	}
 
 	vm.del = function(cd_item_subtitle) {
@@ -2710,6 +2786,9 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 		});
 	}
 
+	vm.editSubtitleButtonClick = VideoSrv.editSubtitleButtonClick;
+
+	/*
 	vm.editSubtitleButtonClick = function() {
 		subtitleModalSrv.edit($scope, vm).then(function(subtitleUpdated) {
 			vm.gridSubtitlesOptions.api.reload().then(function() {
@@ -2717,6 +2796,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 			});
 		});
 	}
+	*/
 
 	vm.delSubtitleButtonClick = function() {
 		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
@@ -2726,12 +2806,21 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 	}
 
 	var _incrementOneSecond = function(increment) {
+		$rootScope.loading = true;
 		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
 		var cdItemSubtitle = record.cdItemSubtitle;
 		record.nrStart = record.nrStart + increment;
 		record.nrEnd = record.nrEnd + increment;		
 
-		SubtitleRestSrv.upd(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
+		var fn;
+		if (increment > 0) {
+			fn = SubtitleRestSrv.incASecond;
+		} else {
+			fn = SubtitleRestSrv.decASecond;
+		}
+
+		fn(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
+			$rootScope.loading = false;
 			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
 			vm.gridSubtitlesOptions.api.repaint();
 			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});

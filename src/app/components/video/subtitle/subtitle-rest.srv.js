@@ -22,6 +22,22 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 		return AppSrv.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
 	}
 
+	vm.incASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
+	vm.decASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
 	vm.del = function(cd_item_subtitle) {
 		var successfullyMessage = {
 			title: 'Deleting',

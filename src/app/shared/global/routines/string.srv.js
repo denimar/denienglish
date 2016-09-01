@@ -74,10 +74,17 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 	 *
 	 */
 	me.addLinksDictionaryAndPronunciation = function(text) {
-		var array = AppSrv.allExpressions;
-		if (array.length == 0) {
+		if (AppSrv.allExpressions.length == 0) {
 			return text;
 		} else {
+			//Order by Length of the Expressions
+			var array = AppSrv.allExpressions.sort(function(a, b){
+			  // ASC  -> a.length - b.length
+			  // DESC -> b.length - a.length
+			  return b.dsExpressao.length - a.dsExpressao.length;
+			});
+
+
 			var texto = me.replaceAll(text, '"', "'");
 			var textoLower = texto.toLowerCase();	
 			var matrizSubst = 'matrizsubst1-{0}-matrizsubst2';
