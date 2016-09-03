@@ -1,0 +1,17 @@
+{
+  "name": "ui-deni-grid",
+  "description": "Data Table for Angular",
+  "homepage": "http://denimar-moraes.com/",
+  "authors": [
+    "Denimar de Moraes <denimar@gmail.com>"
+  ],
+  "_release": "e0a9c37805",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e0a9c37805ef2223950d4dd065b22aa76c093bc5"
+  },
+  "_source": "https://github.com/denimar/ui-deni-grid.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/denimar/ui-deni-grid.git"
+}

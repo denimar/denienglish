@@ -1,0 +1,128 @@
+<div class="video" layout="row" flex>
+	<div class="main-div" flex layout="column">
+		<div class="video-container-and-subtitles" flex layout="row">
+			<div class="video-container" flex layout="row">
+
+				<videogular vg-theme="ctrl.videoConfig.theme.url" vg-player-ready="ctrl.onPlayerReady($API)" vg-update-time="ctrl.onUpdateTime($currentTime, $duration)"  vg-auto-play="ctrl.videoConfig.autoPlay">
+					<vg-media vg-src="ctrl.videoConfig.sources" vg-youtube="rel=1;showinfo=1">
+					</vg-media>
+
+					<vg-controls vg-autohide="ctrl.videoConfig.plugins.controls.autoHide" vg-autohide-time="ctrl.videoConfig.plugins.controls.autoHideTime">
+						<vg-play-pause-button></vg-play-pause-button>
+						<vg-time-display>{{ ctrl.currentTime | date:'mm:ss':'+0000' }}</vg-time-display>
+						<vg-scrub-bar>
+							<vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+						</vg-scrub-bar>
+						<vg-time-display>{{ ctrl.timeLeft | date:'mm:ss':'+0000' }}</vg-time-display>
+						<vg-time-display>{{ ctrl.totalTime | date:'mm:ss':'+0000' }}</vg-time-display>
+						<vg-volume>
+							<vg-mute-button></vg-mute-button>
+							<vg-volume-bar></vg-volume-bar>
+						</vg-volume>
+						<vg-fullscreen-button></vg-fullscreen-button>
+					</vg-controls>
+				</videogular>
+
+				<!--
+			    <videogular vg-theme="ctrl.videoConfig.theme.url">
+			        <vg-media vg-src="ctrl.videoConfig.sources"
+			                  vg-native-controls="true">
+			        </vg-media>
+			    </videogular>	
+			    -->			
+
+			</div>
+			<div class="subtitles" flex="40">
+				<ui-deni-grid class="gridSubtitles" options="ctrl.gridSubtitlesOptions"></ui-deni-grid>
+			</div>
+
+			
+		</div>
+		<div class="comentaries">
+		  <summernote id="summernote" config="ctrl.options" ng-model="ctrl.t08vdo.txComentarios"></summernote>
+		</div>
+
+	</div>
+	
+	<div class="toolbar-div">
+
+		<md-button class="md-icon-button" aria-label="Dictionary" ng-click="ctrl.dictionaryModalClick()">
+			<md-tooltip>Open the Dictionary Window</md-tooltip>
+			<md-icon class="material-icons"> local_library </md-icon>
+		</md-button>	
+		<md-button class="md-icon-button" aria-label="Pronunciation" ng-click="ctrl.pronunciationModalClick()">
+			<md-tooltip>Open the Pronunciation Window</md-tooltip>
+			<md-icon class="material-icons"> hearing </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator"></div>
+
+		<md-button class="md-icon-button" aria-label="Listen" ng-click="ctrl.listenButtonClick()">
+			<md-tooltip>Listen a selected text</md-tooltip>
+			<md-icon class="material-icons"> headset </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator ng-hide" ng-show="!ctrl.editing"></div>
+
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Spaced Revision" ng-click="ctrl.spacedRevisionClick()">
+			<md-tooltip>Spaced Revision</md-tooltip>
+			<md-icon class="material-icons"> restore </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator"></div>
+
+		<md-button class="md-icon-button" aria-label="playlist_add" ng-click="ctrl.addSubtitleButtonClick()">
+			<md-tooltip>Add a new subtitle item</md-tooltip>
+			<md-icon class="material-icons"> playlist_add </md-icon>
+		</md-button>	
+		<md-button class="md-icon-button" aria-label="edit" ng-click="ctrl.editSubtitleButtonClick()">
+			<md-tooltip>Edit the selected subtitle item</md-tooltip>
+			<md-icon class="material-icons"> edit </md-icon>
+		</md-button>	
+		<md-button class="md-icon-button" aria-label="delete_sweep" ng-click="ctrl.delSubtitleButtonClick()">
+			<md-tooltip>Delete the selected subtitle item</md-tooltip>
+			<md-icon class="material-icons"> delete_sweep </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator"></div>
+
+		<md-button class="md-icon-button" aria-label="exposure_neg_1" ng-click="ctrl.decreaseOneSecondButtonClick()">
+			<md-tooltip>Decrease a second on the selected subtitle item</md-tooltip>
+			<md-icon class="material-icons"> exposure_neg_1 </md-icon>
+		</md-button>	
+		<md-button class="md-icon-button" aria-label="exposure_plus_1" ng-click="ctrl.incrementOneSecondButtonClick()">
+			<md-tooltip>Increment a second on the selected subtitle item</md-tooltip>
+			<md-icon class="material-icons"> exposure_plus_1 </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator"></div>
+
+		<md-menu class="connected-user-menu-button" md-position-mode="target-right target" layout="row">
+            <md-button class="drop-down" ng-click="$mdOpenMenu($event)">
+				<md-tooltip>Import Subtitles</md-tooltip>
+				<md-icon class="material-icons drop-down"> closed_caption </md-icon>
+				<span class="drop-down-menu"></span>
+            </md-button>
+            <md-menu-content width="3" >
+              <md-menu-item>
+                <md-button ng-click="ctrl.importSubtitleFromLyrics()">
+                    <div layout="row" flex>
+                      <p flex>from Lyrics</p>
+                      <md-icon md-menu-align-target class="material-icons"> queue_music </md-icon>
+                    </div>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="ctrl.importSubtitleFromSrtFile()">
+                    <div layout="row" flex>
+                      <p flex>from a .srt File</p>
+                      <md-icon md-menu-align-target class="material-icons"> closed_caption </md-icon>
+                    </div>
+                </md-button>
+              </md-menu-item>              
+            </md-menu-content>
+		</md-menu>  
+
+	</div>	
+
+</div>	

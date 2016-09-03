@@ -1,0 +1,30 @@
+<div class="subtitle-modal-template" layout="column">
+
+<form name="cityForm">
+
+  <md-content flex layout="column">
+
+  	<div layout="row">
+
+      <md-input-container class="start-edit">
+        <label>Start</label>
+        <input ng-model="ctrl.subtitleModalData.start" required>
+      </md-input-container>
+
+      <md-input-container class="end-edit">
+        <label>End</label>
+        <input ng-model="ctrl.subtitleModalData.end" required>
+      </md-input-container>
+
+	</div>
+
+  	<md-input-container class="text-edit" flex>
+    	<label>Text</label>
+    	<input ng-model="ctrl.subtitleModalData.text" required>
+  	</md-input-container>
+
+  </md-content>
+
+</form>
+
+</div>

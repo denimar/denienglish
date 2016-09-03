@@ -1,0 +1,168 @@
+$body-padding-top: 10px;
+$body-padding-right: 5px;
+$body-padding-bottom: 5px;
+$body-padding-left: 5px;
+$header-height: 64px;
+$footer-height: 12px;
+
+html {
+	overflow-y: hidden;	
+}
+
+body {
+	margin: 0;
+	padding-top: $body-padding-top;
+	padding-right: $body-padding-right;
+	padding-bottom: $body-padding-bottom;
+	padding-left: $body-padding-left;	
+	overflow-y: hidden;
+}
+
+header {
+	min-height: $header-height;
+	height: $header-height;
+
+	.md-toolbar-tools.md-toolbar-tools-main {
+		max-height: 500px;
+    	min-height: 0px;	    		
+    	height: 50px;
+    	background-color: #004466 !important;
+
+		.hamburger-button {
+			width: 24px;
+			height: 24px;
+		}
+
+		.title {
+			color: white;		
+			font-size: 24px;
+		}
+
+		.sub-title {
+			color: #D5E7FC;	
+			font-size: 14px;	
+			margin: 8px 0px 0px 25px;
+		}
+
+		.md-button {
+
+			.material-icons.expand-toolbar {
+				font-size: 18px;
+				padding-top: 15px;
+				margin-right: 0px;
+
+				&:hover {
+					color: yellow;
+				}
+			}
+		}	
+	}
+
+	/*
+	.restore-toolbar-container {
+		height: 20px;
+
+		.md-button {
+			float: right;		
+			.material-icons.restore-toolbar {
+				font-size: 18px;
+				padding-top: 15px;
+				margin-right: 0px;
+			    -ms-transform: rotate(180deg); // IE 9
+			    -webkit-transform: rotate(180deg); // Chrome, Safari, Opera
+			    transform: rotate(180deg);
+
+				&:hover {
+					color: yellow;
+				}
+			}
+		}	
+
+	}
+	*/
+
+	.progress-bar-loading {
+		height: 3px;
+		width: 100%;
+
+		md-progress-linear .md-container {
+		    background-color: white;
+			height: 3px;
+
+			.md-bar {
+			    background-color: chartreuse;
+			}			
+		}
+	}
+
+}
+
+.material-icons {
+	color: #a6a6a6;
+
+	&:hover {
+		color: #3764A0;
+	}
+
+	&.disabled {
+		color: #d9d9d9 !important;
+	}
+}
+
+
+section {
+	//height: calc(100% - #{$header-height} - #{$footer-height} - #{$body-padding-top});
+	overflow: hidden;
+	
+	.page-view {
+		//height: 100%;
+		position: relative;
+		padding-top: 0px;
+	}
+	
+}
+
+footer {
+	height: $footer-height;
+
+	div {
+		color: #b3b3b3;
+		padding: 4px 8px 0px 0px;
+		font-size: 12px;
+	}
+	
+}
+
+
+.modal-backdrop {  
+  z-index: -1 !important; /*It's necessary to works the modal inside summernote */
+}
+
+
+md-input-container {
+	padding: 0px;
+	margin: 0px;
+}
+
+/* It's necessary because the bootstrap had changed this */
+label {
+    font-weight: normal !important; 
+}
+
+.dictionary-link {
+	color: #15498B;
+	cursor: pointer;
+	/*text-decoration: underline;*/
+	outline: 0;
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;	
+}
+
+.pronunciation-link {
+	color: green;
+	cursor: pointer;	
+	/*text-decoration: underline;*/
+	outline: 0;
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;	
+}

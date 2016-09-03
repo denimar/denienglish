@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+
+<body>
+
+<p>
+<div class="generic_txt_heading2">
+<a id="pause_lnk" href="#">Pause and Capture image frame from video</a>
+</div>
+<div>
+
+
+<video id="myvideo" controls height="400" width="500">
+	<!--
+	<source src='https://googledrive.com/host/0B6WapjXIIlDGRU1xeTl5ODZmU28'>
+	Your browser doesn't support HTML5 video. Try a different browser instead.
+	-->
+	  <source src="video.mp4" type="video/mp4">
+	  <source src="video.webm" type="video/webm">
+
+	  <object width="400" height="500">
+	    <param name="movie" value="http://www.youtube.com/watch?v=d020hcWA_Wg"></param>
+	    <param name="allowFullScreen" value="true"></param>
+	    <param name="allowscriptaccess" value="always"></param>
+	    <embed src="http://www.youtube.com/watch?v=d020hcWA_Wg"
+	      type="application/x-shockwave-flash"
+	      allowscriptaccess="always"
+	      allowfullscreen="true"
+	      width="400"
+	      height="500">
+	    </embed>
+	  </object>
+
+</video>
+
+<canvas width="700" height="400" id="mycanvas" style="border:2px solid #000099;">Sorry, no canvas available</canvas>
+<p>
+</div>
+<p>
+</body>
+
+<script>
+var v=document.getElementById("myvideo");
+function pause_and_capture() {
+	var c = document.getElementById("mycanvas");
+    var ctx = c.getContext("2d");
+	ctx.drawImage(v,1,1);	
+}
+
+pause_lnk.addEventListener('click', pause_and_capture, false);
+</script>
+
+</html>

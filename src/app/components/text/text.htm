@@ -1,0 +1,69 @@
+<div class="text" layout="row" flex>
+
+	<div class="main-div" flex layout="column">
+
+		<md-content class="ng-hide" ng-show="ctrl.texts.length > 1">
+			<md-tabs md-selected="ctrl.selectedIndex" md-border-bottom flex>
+				<md-tab ng-repeat="text in ctrl.texts" label="{{text.dsTitulo}}">
+				</md-tab>
+			</md-tabs>
+	  	</md-content>
+
+
+	  	<div class="content" layout="column">
+
+		  	<div class="editor ng-hide" ng-show="ctrl.editing">
+				<summernote id="summernote" config="ctrl.options" ng-model="ctrl.content"></summernote>		  		
+		  	</div>
+
+			<div class="text-content ng-hide" ng-show="!ctrl.editing" layout="column" flex>			
+			</div>
+		</div>	
+
+	</div>
+	
+	<div class="toolbar-div">
+
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="edit" ng-click="ctrl.editClick()">
+			<md-tooltip>Edit the current text</md-tooltip>
+			<md-icon class="material-icons"> edit </md-icon>
+		</md-button>	
+
+		<md-button class="md-icon-button ng-hide" ng-show="ctrl.editing" aria-label="save" ng-click="ctrl.saveClick()">
+			<md-tooltip>Save current changings</md-tooltip>
+			<md-icon class="material-icons"> save </md-icon>
+		</md-button>	
+
+		<md-button class="md-icon-button ng-hide" ng-show="ctrl.editing" aria-label="cancel" ng-click="ctrl.cancelClick()">
+			<md-tooltip>Cancel current changings</md-tooltip>
+			<md-icon class="material-icons"> clear </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator ng-hide" ng-show="!ctrl.editing"></div>
+
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Dictionary" ng-click="ctrl.dictionaryModalClick()">
+			<md-tooltip>Open the Dictionary Window</md-tooltip>
+			<md-icon class="material-icons"> local_library </md-icon>
+		</md-button>	
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Pronunciation" ng-click="ctrl.pronunciationModalClick()">
+			<md-tooltip>Open the Pronunciation Window</md-tooltip>
+			<md-icon class="material-icons"> hearing </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator ng-hide" ng-show="!ctrl.editing"></div>
+
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Listen" ng-click="ctrl.listenSelectedTextClick()">
+			<md-tooltip>Listen the selected text</md-tooltip>
+			<md-icon class="material-icons"> headset </md-icon>
+		</md-button>	
+
+		<div class="toolbar-separator ng-hide" ng-show="!ctrl.editing"></div>
+
+		<md-button class="md-icon-button ng-hide" ng-show="!ctrl.editing" aria-label="Spaced Revision" ng-click="ctrl.spacedRevisionClick()">
+			<md-tooltip>Spaced Revision</md-tooltip>
+			<md-icon class="material-icons"> restore </md-icon>
+		</md-button>	
+
+	</div>	
+
+</div>	

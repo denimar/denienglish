@@ -1,0 +1,21 @@
+<div class="video-modal-import-subtitle-srt" layout="column" ng-controller="VideoModalImportSubtitleSrtCtrl as ctrl">
+
+    <div ngf-drop ngf-select ng-model="ctrl.strFile" class="drop-box" 
+        ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-allow-dir="true"
+        accept="text/*.srt" 
+        ngf-pattern="'text/*.srt'" flex layout="column" layout-align="center center">
+        
+		<div class="info">drop the .srt file here or use the button below</div>
+		<div class="filename" ng-bind='ctrl.strFile.name'></div>		
+
+    </div>
+    <div ngf-no-file-drop>drop the .srt file here or use the button below</div>
+
+	<div class="select-file-button" layout="row" layout-align="center center">
+		<md-button class="button" ngf-select ng-model="ctrl.strFile" ngf-multiple="false">
+			<md-icon class="material-icons"> cloud_upload </md-icon>
+			Choose a .srt file
+		</md-button>
+	</div>
+
+</div>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	* {
+		box-sizing: border-box;
+	}
+
+	#deniGrid {
+	    height: 350px;
+	    width: 700px;
+	}
+
+	.row-expand {
+		padding-left: 5px;
+		width:100%; 
+		color:gray;
+		height: 74px;
+		padding: 3px;
+	}	
+
+	.row-expand .imagem {
+		float: left;
+		width: 52px;
+		height: 64px;
+		margin-right: 4px;
+		border: solid 1px gray;
+	}	
+
+	.row-expand .description {
+		float: left;
+		width: 610px;
+		height: 65px;		
+		overflow-y: auto;
+	}	
+	
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="ExampleCtrl as ctrl">
+
+		<ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+
+	</section>	
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="https://code.angularjs.org/1.5.5/angular.min.js"></script>
+
+	<script src="../../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>

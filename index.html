@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	<link rel="icon" href="src/assets/images/usa.ico" type="image/x-icon" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Deni English</title>
+        <link rel="stylesheet" href="src/assets/bower_components/angular-material/angular-material.css">
+        <link rel="stylesheet" href="src/assets/bower_components/ui-deni-grid/dist/ui-deni-grid.min.css">        
+        <link rel="stylesheet" href="src/assets/bower_components/ui-deni-modal/dist/ui-deni-modal.min.css">                
+        <link rel="stylesheet" href="dist/app.css">
+    </head>	
+<body ng-app="app" ng-controller="AppCtrl as ctrl" layout="column" ng-cloak>
+
+	<header layout="column">
+
+		<nav layout="column" flex>
+			<md-toolbar layout="column" flex>
+			  <div class="md-toolbar-tools md-toolbar-tools-main" layout="row" flex>
+				<div class="title">English Study</div>
+				<div class="sub-title" ng-bind="$root.subTitle" flex></div>
+				<!--
+				<md-button class="md-icon-button">
+					<md-icon class="material-icons expand-toolbar"> open_in_browser </md-icon>				
+				</md-button>	
+				-->
+			  </div>
+			</md-toolbar>
+		</nav>
+
+		<!--
+		<div class="restore-toolbar-container">	
+			<md-button class="md-icon-button">
+				<md-icon class="material-icons restore-toolbar"> open_in_browser </md-icon>				
+			</md-button>	
+		</div>	
+		-->
+
+		<div class="progress-bar-loading">	
+			<md-progress-linear class="ng-hide" md-mode="indeterminate" ng-show="$root.loading"></md-progress-linear>	
+		</div>	
+
+	</header>
+
+	<section layout="row" flex>
+		<div class="page-view" layout="row" flex ng-view></div>
+	</section>
+	
+	<footer layout="row" layout-align="end center">
+		<div>Copyright 2016 Denimar de Moraes</div>
+	</footer>			
+	
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<script src="src/assets/bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="src/assets/bower_components/angular/angular.min.js"></script>
+	<script src="src/assets/bower_components/angular-route/angular-route.min.js"></script>	
+	<script src="src/assets/bower_components/angular-resource/angular-resource.min.js"></script>		
+	<script src="src/assets/bower_components/angular-aria/angular-aria.min.js"></script>
+	<script src="src/assets/bower_components/angular-animate/angular-animate.min.js"></script>
+	<script src="src/assets/bower_components/angular-sanitize/angular-sanitize.min.js"></script>        
+	<script src="src/assets/bower_components/angular-messages/angular-messages.min.js"></script>
+	<script src="src/assets/bower_components/svg-assets-cache/svg-assets-cache.js"></script>		
+	<script src="src/assets/bower_components/angular-material/angular-material.min.js"></script>
+	
+	<link rel="stylesheet" href="src/assets/bower_components/jstree/dist/themes/default/style.min.css" />
+	<script src="src/assets/bower_components/jstree/dist/jstree.js"></script>		
+
+	<script src="src/assets/bower_components/ui-deni-grid/dist/ui-deni-grid.js"></script>        
+	<script src="src/assets/bower_components/ui-deni-modal/dist/ui-deni-modal.js"></script>          
+
+
+	<script src="src/assets/bower_components/videogular/videogular.min.js"></script>
+	<script src="src/assets/bower_components/videogular-controls/vg-controls.js"></script>		
+	<script src="src/assets/bower_components/videogular-youtube/youtube.js"></script>	
+
+  	<link rel="stylesheet" href="src/assets/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">  
+  	<link rel="stylesheet" href="src/assets/bower_components/summernote/dist/summernote.css">  
+
+  	<script type="text/javascript" src="src/assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>  
+  	<script type="text/javascript" src="src/assets/bower_components/summernote/dist/summernote.min.js"></script>    
+  	<script type="text/javascript" src="src/assets/bower_components/angular-summernote/dist/angular-summernote.min.js"></script>    
+
+	<script src="src/assets/bower_components/ng-file-upload/ng-file-upload.min.js"></script>
+
+	<script src="dist/app.js"></script>
+
+	<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+	
+</body>
+</html>

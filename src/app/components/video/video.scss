@@ -1,0 +1,119 @@
+$tolbar-height: 64px;
+$navigator-height: 50px;
+$padding: 4px;
+$distance-between-divs: 2px;
+$default-color-border: #99bce8;
+
+.video {
+
+	.main-div {
+		box-sizing: border-box;
+
+		.video-container-and-subtitles {
+
+			.video-container {
+				border: solid 1px $default-color-border;
+				padding: 4px;
+
+				videogular {
+
+					iframe {
+						position: absolute;
+					}
+
+				}
+			}
+
+			.subtitles {
+				border: solid 1px $default-color-border;
+				margin-left: 2px;
+				padding: 4px;
+
+				.gridSubtitles {
+					height: 100%;
+					position: relative;
+				}
+			}
+		}
+		
+
+		.comentaries {
+			margin-top: 2px;
+			box-sizing: border-box;
+			border: solid 1px $default-color-border;
+			height: 250px;
+
+			.note-editor {
+			    height: 100%;
+			    box-sizing: border-box;
+			    border-width: 0px;
+
+				.note-editing-area {
+					box-sizing: border-box;
+					height: calc(100% - 41px);
+					overflow-y: auto;
+
+					.panel-body {
+						box-sizing: border-box;
+						height: 100%;
+					}
+				}
+
+				.note-statusbar {
+					display: none;
+				}
+			}
+			
+		}	
+	}
+	
+	.toolbar-div {
+		width: 50px;
+		border: solid 1px #99bce8;
+		margin-left: 2px;
+		padding: 0px;
+
+		.md-button {
+			color: gray;
+			padding: 0px;
+			margin: 0px;
+			min-height: 0px;
+    		min-width: 0px;
+
+			&.drop-down {
+				margin-left: 4px;
+			}
+
+			&:hover {
+				color: #04408C;
+			}
+
+			.material-icons {
+				color: inherit;
+
+				&.drop-down {
+					width: 32px;
+				}
+			}
+
+			.drop-down-menu {
+				margin-left: -8px;
+
+				&::after {
+					content: '\25BC';
+					font-size: 6px;
+				}	
+			}
+			
+		}
+
+		.toolbar-separator {
+			border-bottom: solid 1px #e6e6e6;
+			margin: 4px;
+		}
+
+	}	
+
+	
+
+}

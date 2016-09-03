@@ -1,0 +1,46 @@
+.pronunciation-modal {
+	$default-border-color: #99bce8;
+
+	height: 100%;
+	width: 100%;
+	padding: 2px;
+	box-sizing: border-box;
+	
+	.search-input-container { 
+		border: solid 1px $default-border-color;
+		height: 30px;
+		box-sizing: border-box;
+
+		.search-input {
+			border-width: 0px;
+			font-size: 16px;
+			padding-left: 4px;
+			box-sizing: border-box;
+
+			&:focus {
+				outline: none;
+			}
+		}
+
+		.material-icons {
+			color: #03698C;
+			opacity: 0.4;
+			cursor: pointer;
+		}
+
+	}
+
+	.grid-container {
+		margin-bottom: 2px;
+		height: 350px;
+		
+		.gridDictionary {
+			color: black;
+
+			.material-icons:hover {
+				color: red !important;
+			}			
+		}
+	}	
+
+}

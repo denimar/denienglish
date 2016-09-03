@@ -1,0 +1,22 @@
+<div class="pronunciation-modal" layout="column" ng-controller="PronunciationModalCtrl as ctrl">
+
+	<div class="search-input-container" layout="row">
+		
+		<input class="search-input" ng-model="ctrl.searchValue" ng-change="ctrl.searchInputChange()" ng-keydown="ctrl.searchInputKeydown()" flex></input>
+
+		<md-icon class="material-icons ng-hide" ng-show="ctrl.showSearchButton('search')" ng-click="ctrl.searchButtonClick()"> search </md-icon>		
+		<md-icon class="material-icons ng-hide" ng-show="ctrl.showSearchButton('add')"  ng-click="ctrl.searchButtonAddClick()"> add_box </md-icon>
+
+	</div>
+
+	<div class="progress-bar-loading">	
+		<md-progress-linear class="ng-hide" md-mode="indeterminate" ng-show="ctrl.showLoading()"></md-progress-linear>	
+	</div>	
+
+	<div class="grid-container" layout="row" flex>
+
+		<ui-deni-grid class="gridPronunciation" options="ctrl.gridPronunciationOptions" flex></ui-deni-grid>	
+		
+	</div>
+	
+</div>

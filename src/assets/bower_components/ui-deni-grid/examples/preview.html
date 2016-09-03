@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	
+		#example-preview {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			background-color: rgb(243,245,246);	
+			position: absolute;
+			box-sizing: border-box;			
+			padding: 4px;
+		}
+
+		#example-preview-title {
+			display: flex;
+			width: 100%;
+			color: #31709C;
+			background-color: #D9EDF7;
+			border: solid 1px #8bb9da;
+			height: 40px;
+			padding: 5px;
+			box-sizing: border-box;			
+			font-family: tahoma;
+			font-size: 12px;
+		}
+
+		#example-preview-iframe {
+			height: calc(100% - 40px);
+			position: relative;
+			width: 100%;
+			box-sizing: border-box;			
+		}	
+	</style>
+	
+	<script>
+		
+		function getQueryParams(qs) {
+			qs = qs.split('+').join(' ');
+
+			var params = {},
+				tokens,
+				re = /[?&]?([^=]+)=([^&]*)/g;
+
+			while (tokens = re.exec(qs)) {
+				params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+			}
+
+			return params;
+		}
+		
+		function onload() {
+			var query = getQueryParams(document.location.search);
+			var elemTitle = document.getElementById('example-preview-title');
+			elemTitle.innerHTML = '<span><b>' + query.title + ' </b></span><span style="margin-left: 5px;">' + query.description + '</span>';
+			var elemFrame = document.getElementById('example-preview-iframe');
+			elemFrame.src = 'http://jsfiddle.net/denimar/' + query.path + '/embedded/result,html,js,css,resources/';
+		}
+		
+	</script>
+</head>
+<body onload="onload()">
+
+	<section id="example-preview">
+	
+		<div id="example-preview-title"></div>
+		<iframe id="example-preview-iframe" src="" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+	
+	</section>
+
+</body>
+
+</html>
+	
+	

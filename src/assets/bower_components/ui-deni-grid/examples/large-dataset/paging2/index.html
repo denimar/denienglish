@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../dist/ui-deni-grid.min.css">
+</head>
+
+<style>
+	h5 {
+		font-family: tahoma;
+		color: gray;
+	}
+
+	#deniGrid {
+	  height: 450px;
+	  width: 800px;
+	}
+	
+	.img-news {
+		float: left;
+	  height: 48px;
+	  width: 48px;
+	  border: solid 1px #ccc;
+	  margin-right: 2px;	  
+	}
+	
+	.description-news {
+		float: left;	
+		height: 55px;		
+	}
+	
+	.title-news {
+		font-weight: bold;
+		display:block;		
+		height: 12px;
+	}
+	
+	.title-abstract {
+		color: gray;
+		float:left;
+		display:block;
+		width: 100%;
+		height: 44px;
+		position: relative;
+		white-space: normal;
+	}
+	
+	a:link {color: #0086c6; text-decoration:none;}
+	a:visited {color: #0086c6; text-decoration:none;}	
+	a:hover {color: #009de6; text-decoration: underline;}
+
+
+</style>
+
+<body ng-app="myApp">
+
+	<section ng-controller="ExampleCtrl as ctrl">
+	  <ui-deni-grid id="deniGrid" options="gridOptions"></ui-deni-grid>
+	</section>
+	<h5>*Thanks to New York Times for provides this data (<a href="http://developer.nytimes.com/" target="_blank">link</a>)</h5>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="https://code.angularjs.org/1.5.5/angular.min.js"></script>
+
+	<script src="../../../dist/ui-deni-grid.js"></script>			
+
+	<script src="script.js"></script>	
+</body>
+</html>
