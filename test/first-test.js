@@ -1,8 +1,8 @@
 
-describe('firstTest', function() {
+describe('true', function() {
 
-	it('The namve have to be denimar', function() {
-		expect ('denimar').toBe('denimar');
+	it('Should be true', function() {
+		expect(true).toBeTruthy()
 	});
 
 });
