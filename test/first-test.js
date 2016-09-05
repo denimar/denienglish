@@ -1,8 +1,8 @@
 
 descrive('first test', function() {
 
-	it('Should exists', function() {
-		expect ('denimar').tobe('ariani');
+	it('The namve have to be denimar', function() {
+		expect ('denimar').tobe('denimar');
 	});
 
 });
