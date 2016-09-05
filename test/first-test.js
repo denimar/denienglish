@@ -1,7 +1,7 @@
 
-describe('true', function() {
+describe('Teste1', function() {
 
-	it('Should be true', function() {
+	it('Deve ser verdadeiro', function() {
 		expect(true).toBeTruthy()
 	});
 
