@@ -24,6 +24,7 @@
     "gulp-jshint": "^2.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.7",
+    "jasmine": "^2.5.0",
     "jasmine-core": "^2.5.0",
     "jshint": "^2.9.2",
     "karma": "^1.2.0",
@@ -32,7 +33,7 @@
     "karma-jasmine": "^1.0.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
