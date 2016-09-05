@@ -34,6 +34,14 @@ angular.module('routinesMdl').service('restSrv', function($q, $http, uiDeniModal
 				});
 		};
 
+		try { 
+			angular.module("ngRoute") 
+		} catch(err) {
+			//Enter here only when it is testing, because in this case there no need to show messages
+			successMessage = null;
+			confirmMessage = null;
+		}
+
 		if (confirmMessage) {
 			uiDeniModalSrv.confirm(confirmMessage)
 				.then(function (response) { 

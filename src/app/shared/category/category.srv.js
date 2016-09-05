@@ -4,10 +4,6 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 
 	var vm = this;
 
-	vm.getMessage = function() {
-		return 'message test';
-	};
-
 	vm.add = function(scope, cd_categoria_pai) {
 		var deferred = $q.defer();
 

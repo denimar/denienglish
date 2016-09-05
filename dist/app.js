@@ -4,7 +4,6 @@ angular.module('categoryMdl', [
 	'uiDeniModalMdl'
 ]);
 angular.module('routinesMdl', []);
-angular.module('apagarDepois', []);
 angular.module('TextMdl', []);
 angular.module('VideoMdl', []);
 'use strict';
@@ -100,10 +99,6 @@ angular.module('categoryMdl').service('categoryRestSrv', function(restSrv) {
 angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
 	var vm = this;
-
-	vm.getMessage = function() {
-		return 'message test';
-	};
 
 	vm.add = function(scope, cd_categoria_pai) {
 		var deferred = $q.defer();
@@ -461,6 +456,71 @@ angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, A
 	}
 
 });
+angular.module('app').service('RevisionRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.getItemInfo = function(cd_item) {
+		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
+	}
+
+	vm.getExpressions = function(cd_item, onlyVisible) {
+		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
+	}
+
+	vm.updExpressions = function(cd_item, expressions) {
+		var successfullyMessage = {
+			title: 'Spaced Revision',
+			message: 'expressions updated succesfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
+	}
+
+	vm.updText = function(cd_item, returnOnlyVisible) {
+		var successfullyMessage = {
+			title: 'Spaced Revision',
+			message: 'expressions updated succesfully!'
+		}
+		return AppSrv.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
+	}
+
+	vm.markAsReviewed = function(cd_item) {
+		return AppSrv.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
+	}
+	
+
+});
+angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
+
+	var vm = this;
+
+	vm.getItemInfo = function(cd_item) {
+		var deferred = $q.defer();
+
+		RevisionRestSrv.getItemInfo(cd_item).then(function(serverResponse) {
+			var informations = serverResponse.data.data[0];
+			deferred.resolve(informations);
+		}, function(reason) {
+			deferred.reject(reason);
+		});
+
+		return deferred.promise;
+	}
+
+	vm.getExpressions = function(cd_item, onlyVisible) {
+		var deferred = $q.defer();
+
+		RevisionRestSrv.getExpressions(cd_item, onlyVisible).then(function(serverResponse) {
+			var expressions = serverResponse.data.data;
+			deferred.resolve(expressions);
+		}, function(reason) {
+			deferred.reject(reason);
+		});
+
+		return deferred.promise;
+	}
+
+});
 angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -545,71 +605,6 @@ angular.module('app').service('pronunciationSrv', function($q, $window) {
 		return deferred.promise;
 	}
 
-
-});
-angular.module('app').service('RevisionRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.getItemInfo = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
-	}
-
-	vm.getExpressions = function(cd_item, onlyVisible) {
-		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
-	}
-
-	vm.updExpressions = function(cd_item, expressions) {
-		var successfullyMessage = {
-			title: 'Spaced Revision',
-			message: 'expressions updated succesfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
-	}
-
-	vm.updText = function(cd_item, returnOnlyVisible) {
-		var successfullyMessage = {
-			title: 'Spaced Revision',
-			message: 'expressions updated succesfully!'
-		}
-		return AppSrv.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
-	}
-
-	vm.markAsReviewed = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
-	}
-	
-
-});
-angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
-
-	var vm = this;
-
-	vm.getItemInfo = function(cd_item) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.getItemInfo(cd_item).then(function(serverResponse) {
-			var informations = serverResponse.data.data[0];
-			deferred.resolve(informations);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-	vm.getExpressions = function(cd_item, onlyVisible) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.getExpressions(cd_item, onlyVisible).then(function(serverResponse) {
-			var expressions = serverResponse.data.data;
-			deferred.resolve(expressions);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
 
 });
 'use strict';
@@ -905,6 +900,14 @@ angular.module('routinesMdl').service('restSrv', function($q, $http, uiDeniModal
 				});
 		};
 
+		try { 
+			angular.module("ngRoute") 
+		} catch(err) {
+			//Enter here only when it is testing, because in this case there no need to show messages
+			successMessage = null;
+			confirmMessage = null;
+		}
+
 		if (confirmMessage) {
 			uiDeniModalSrv.confirm(confirmMessage)
 				.then(function (response) { 
@@ -1109,169 +1112,6 @@ angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSr
 
 		return deferred.promise;
 	}
-
-});
-angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
-
-	var vm = this;
-      vm.controller;      
-
-      var expressionAdded = null;
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      }
-
-	vm.showModal = function(scope) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Pronunciation',
-                  width: '550px',         
-                  height: '450px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
-                  urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(objWindow) {
-      					
-                  	}
-
-                  }
-            }).show().then(function() {
-                  AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
-                  deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
-            });
-
-            return deferred.promise;
-	}	
-
-      vm.getGridPronunciationOptions = function() {
-
-            return {
-                  keyField: 'cdPronuncia',
-                  rowHeight: '25px',
-                  data: AppSrv.pronunciationExpressions,
-                  hideHeaders: true,
-                  columns: [
-                        {
-                              name: 'dsExpressao',
-                              width: '80%'
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'headset',
-                                    tooltip: 'Listen the selected expression',
-                                    fn: function(record, column, imgActionColumn) {
-                                          pronunciationSrv.listenExpression(record.dsExpressao);                 
-                                    }
-                              }                 
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'delete_forever',
-                                    tooltip: 'Remove a expression from pronunciation',
-                                    fn: function(record, column, imgActionColumn) {
-                                          PronunciationRestSrv.del(record.cdPronuncia).then(function(serverResponse) {
-
-                                                var deleteItemFn = function(data) {
-                                                      for (var i = data.length - 1; i >= 0; i--) {
-                                                            if (data[i].cdPronuncia == record.cdPronuncia) {
-                                                                  data.splice(i, 1);
-                                                                  break;
-                                                            }
-                                                      }
-                                                }
-
-                                                deleteItemFn(vm.controller.gridPronunciationOptions.data);
-                                                deleteItemFn(vm.controller.gridPronunciationOptions.alldata);                  
-                                                vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
-
-                                          });
-                                    }
-                              }                 
-                        }
-                  ],
-                  listeners: {
-                        onafterload: function(data, gridOptions) {
-                              if (expressionAdded) {
-                                    gridOptions.api.selectRow(expressionAdded);
-                                    expressionAdded = null;
-                              }
-                        },
-                  }
-            }
-
-      }
-
-      vm.searchInputChange = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHING;
-      }
-
-      vm.searchInputKeydown = function() {
-            if (event.keyCode == 13) {  //Return Key
-
-                  //Find a Record
-                  if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) {
-                        vm.searchButtonClick(vm.controller);
-
-                  //Add a Record    
-                  } else if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED) {
-                        vm.searchButtonAddClick()
-                  }     
-            }
-      }
-
-      vm.showSearchButton = function(button) {
-            return (
-                        (button == 'search' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) ||
-                        (button == 'add' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED)
-                   );
-      }
-
-      vm.searchButtonClick = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHED;            
-            var searchInput = $('.pronunciation-modal .search-input');            
-            vm.controller.gridPronunciationOptions.api.filter(searchInput.val());            
-      }
-
-      vm.searchButtonAddClick = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.ADDED;            
-            var searchInput = $('.pronunciation-modal .search-input');            
-            var expressionAdd = searchInput.val();
-            
-            PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  expressionAdded = serverResponse.data.data[0];
-
-                  var insertItemFn = function(data) {
-                        var indexAdd = data.length;
-                        for (var i = data.length - 1; i >= 0; i--) {
-                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
-                                    indexAdd = i;
-                                    break;
-                              }
-                        }
-                        data.splice(indexAdd, 0, expressionAdded);                        
-                  }
-
-                  insertItemFn(vm.controller.gridPronunciationOptions.data);
-                  insertItemFn(vm.controller.gridPronunciationOptions.alldata);                  
-                  vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
-
-                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;
-            });
-      }
-
-
-      vm.showLoading = function() {
-            return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;
-      }
-
 
 });
 angular.module('app').service('spacedRevisionModalSrv', function($rootScope, $filter, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv, spacedRevisionSelectExpressionsModal) {
@@ -1479,6 +1319,169 @@ angular.module('app').service('spacedRevisionSelectExpressionsModal', function($
 	*/
 
 });
+angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
+
+	var vm = this;
+      vm.controller;      
+
+      var expressionAdded = null;
+      
+      vm.setController = function(controller) {
+            vm.controller = controller;
+      }
+
+	vm.showModal = function(scope) {
+            var deferred = $q.defer();
+
+            uiDeniModalSrv.createWindow({
+                  scope: scope,
+                  title: 'Pronunciation',
+                  width: '550px',         
+                  height: '450px',
+                  position: uiDeniModalSrv.POSITION.CENTER,
+                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
+                  urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
+                  modal: true,
+                  listeners: {
+
+                  	onshow: function(objWindow) {
+      					
+                  	}
+
+                  }
+            }).show().then(function() {
+                  AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
+                  deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
+            });
+
+            return deferred.promise;
+	}	
+
+      vm.getGridPronunciationOptions = function() {
+
+            return {
+                  keyField: 'cdPronuncia',
+                  rowHeight: '25px',
+                  data: AppSrv.pronunciationExpressions,
+                  hideHeaders: true,
+                  columns: [
+                        {
+                              name: 'dsExpressao',
+                              width: '80%'
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'headset',
+                                    tooltip: 'Listen the selected expression',
+                                    fn: function(record, column, imgActionColumn) {
+                                          pronunciationSrv.listenExpression(record.dsExpressao);                 
+                                    }
+                              }                 
+                        },
+                        {
+                              width: '10%',
+                              action: {
+                                    mdIcon: 'delete_forever',
+                                    tooltip: 'Remove a expression from pronunciation',
+                                    fn: function(record, column, imgActionColumn) {
+                                          PronunciationRestSrv.del(record.cdPronuncia).then(function(serverResponse) {
+
+                                                var deleteItemFn = function(data) {
+                                                      for (var i = data.length - 1; i >= 0; i--) {
+                                                            if (data[i].cdPronuncia == record.cdPronuncia) {
+                                                                  data.splice(i, 1);
+                                                                  break;
+                                                            }
+                                                      }
+                                                }
+
+                                                deleteItemFn(vm.controller.gridPronunciationOptions.data);
+                                                deleteItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                                                vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
+                                          });
+                                    }
+                              }                 
+                        }
+                  ],
+                  listeners: {
+                        onafterload: function(data, gridOptions) {
+                              if (expressionAdded) {
+                                    gridOptions.api.selectRow(expressionAdded);
+                                    expressionAdded = null;
+                              }
+                        },
+                  }
+            }
+
+      }
+
+      vm.searchInputChange = function() {
+            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHING;
+      }
+
+      vm.searchInputKeydown = function() {
+            if (event.keyCode == 13) {  //Return Key
+
+                  //Find a Record
+                  if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) {
+                        vm.searchButtonClick(vm.controller);
+
+                  //Add a Record    
+                  } else if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED) {
+                        vm.searchButtonAddClick()
+                  }     
+            }
+      }
+
+      vm.showSearchButton = function(button) {
+            return (
+                        (button == 'search' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) ||
+                        (button == 'add' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED)
+                   );
+      }
+
+      vm.searchButtonClick = function() {
+            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHED;            
+            var searchInput = $('.pronunciation-modal .search-input');            
+            vm.controller.gridPronunciationOptions.api.filter(searchInput.val());            
+      }
+
+      vm.searchButtonAddClick = function() {
+            vm.controller.searchState = PronunciationModalEnums.SearchState.ADDED;            
+            var searchInput = $('.pronunciation-modal .search-input');            
+            var expressionAdd = searchInput.val();
+            
+            PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
+                  expressionAdded = serverResponse.data.data[0];
+
+                  var insertItemFn = function(data) {
+                        var indexAdd = data.length;
+                        for (var i = data.length - 1; i >= 0; i--) {
+                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
+                                    indexAdd = i;
+                                    break;
+                              }
+                        }
+                        data.splice(indexAdd, 0, expressionAdded);                        
+                  }
+
+                  insertItemFn(vm.controller.gridPronunciationOptions.data);
+                  insertItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                  vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
+                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;
+            });
+      }
+
+
+      vm.showLoading = function() {
+            return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;
+      }
+
+
+});
 'use strict';
 
 angular.module('app').service('dictionaryModalEditSrv', function($q, $interval, uiDeniModalSrv, DictionaryRestSrv) {
@@ -1678,27 +1681,6 @@ angular.module('app').controller('NewVideoItemModalCtrl', function($sce) {
 	}
 
 });
-angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
-
-	//use this control in the service	
-	pronunciationModalSrv.setController(this);
-
-	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
-	this.searchValue = '';
-
-	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
-
-	this.searchInputChange = pronunciationModalSrv.searchInputChange;
-	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
-
-	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
-	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
-	this.showSearchButton = pronunciationModalSrv.showSearchButton;
-
-	this.showLoading = pronunciationModalSrv.showLoading;
-
-});
-
 angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
 	
 	var vm = this;
@@ -1766,6 +1748,27 @@ angular.module('app').controller('SpacedRevisionSelectExpressionsModalCtrl', fun
 	this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModal.filterExpressionsPronunciation;
 
 });
+angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
+
+	//use this control in the service	
+	pronunciationModalSrv.setController(this);
+
+	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
+	this.searchValue = '';
+
+	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
+
+	this.searchInputChange = pronunciationModalSrv.searchInputChange;
+	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
+
+	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
+	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
+	this.showSearchButton = pronunciationModalSrv.showSearchButton;
+
+	this.showLoading = pronunciationModalSrv.showLoading;
+
+});
+
 angular.module('app').controller('DictionaryModalEditCtrl', function(dictionaryModalEditSrv) {
 
 	//use this control in the service	
@@ -1807,17 +1810,6 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 			scope.ctrl.element = $(element);	    
 		}	
 	}
-
-});
-angular.module('apagarDepois').service('apagarDepoisSrv', function() {
-
-	var vm = this;
-
-	vm.name = 'denimar de moraes';
-	vm.getMessage = function() {
-		return 'message test';
-	};
-
 
 });
 'use strict';
@@ -2447,60 +2439,6 @@ angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
 
 
 });
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
-
-	var vm = this;
-  vm.cdItem;
-	vm.controller;
-
-	vm.setController = function(controller, scope) {
-		vm.controller = controller;
-    vm.controller.cdItem = vm.cdItem;
-	}
-
-	vm.showModal = function(cdItem) {
-      vm.cdItem = cdItem;
-      var deferred = $q.defer();
-
-      var wndImportSubtitle = uiDeniModalSrv.createWindow({
-            scope: $rootScope,
-            title: 'Importing Subtitle from a text (often lyrics of musics)',
-            width: '550px',         
-            height: '500px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
-            modal: true,
-            listeners: {
-
-            	onshow: function(objWindow) {
-            	}
-
-            }
-      });
-
-      wndImportSubtitle.show().then(function(modalResponse) {
-
-        if (modalResponse.button == 'ok') {
-          var successfullyMessage = {
-            title: 'Updating',
-            message: 'Item updated successfully!'
-          }
-
-          var textArea = $(wndImportSubtitle).find('textarea');
-          lyrics = textArea.val();
-
-          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
-            deferred.resolve(serverReturn.data);
-          });   
-        }
-
-      });
-
-      return deferred.promise;
-	};
-
-});
 angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
 
 	var vm = this;
@@ -2575,6 +2513,60 @@ angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $ht
     //spanFileName.html(fileItem.file.name);
   };
 	
+
+});
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+
+	var vm = this;
+  vm.cdItem;
+	vm.controller;
+
+	vm.setController = function(controller, scope) {
+		vm.controller = controller;
+    vm.controller.cdItem = vm.cdItem;
+	}
+
+	vm.showModal = function(cdItem) {
+      vm.cdItem = cdItem;
+      var deferred = $q.defer();
+
+      var wndImportSubtitle = uiDeniModalSrv.createWindow({
+            scope: $rootScope,
+            title: 'Importing Subtitle from a text (often lyrics of musics)',
+            width: '550px',         
+            height: '500px',
+            position: uiDeniModalSrv.POSITION.CENTER,
+            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
+            modal: true,
+            listeners: {
+
+            	onshow: function(objWindow) {
+            	}
+
+            }
+      });
+
+      wndImportSubtitle.show().then(function(modalResponse) {
+
+        if (modalResponse.button == 'ok') {
+          var successfullyMessage = {
+            title: 'Updating',
+            message: 'Item updated successfully!'
+          }
+
+          var textArea = $(wndImportSubtitle).find('textarea');
+          lyrics = textArea.val();
+
+          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+            deferred.resolve(serverReturn.data);
+          });   
+        }
+
+      });
+
+      return deferred.promise;
+	};
 
 });
 angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
@@ -2912,14 +2904,14 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
     vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
 
 });
-angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
-
-	videoModalImportSubtitleLyricsSrv.setController(this);    
-
-});
 angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
 
 	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
+
+});
+angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
+
+	videoModalImportSubtitleLyricsSrv.setController(this);    
 
 });
 //CONSTANTS
