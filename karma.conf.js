@@ -18,12 +18,12 @@ module.exports = function(config) {
       'app.js , app.test.js',
       'dist/app.js , dist/app.test.js',
       './dist/app.js , test/*.js',
-      'dist/app.js , test/*.js',
-      'dist/app.js,test/*.js',
-      'dist/app.js,test/*.js',
-      './dist/app.js,test/*.js',
-      '/dist/app.js,test/*.js',
-      '/dist/app.js,test/*.js'
+      'dist/app.js , ./test/*.js',
+      'dist/app.js,/test/*.js',
+      'dist/app.js,/test/*.js',
+      './dist/app.js,/test/*.js',
+      '/dist/app.js,/test/*.js',
+      '/dist/app.js,/test/*.js'
     ],
 
 
