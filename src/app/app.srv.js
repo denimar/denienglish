@@ -3,7 +3,6 @@
 angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
 
 	var vm = this;
-
 	vm.currentCategory = null; //Category Id	
 	
 	vm.allExpressions = []; //All Expressions (Dictionary plus Pronunciations)

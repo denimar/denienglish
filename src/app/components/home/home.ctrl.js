@@ -1,6 +1,7 @@
 angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
 	
 	var vm = this;
+
 	vm.categoryPath = null;		
 
 	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);

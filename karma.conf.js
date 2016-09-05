@@ -15,7 +15,39 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'test/**/*.js'
+      'src/assets/bower_components/jquery/dist/jquery.min.js',
+      'src/assets/bower_components/angular/angular.min.js',
+      'src/assets/bower_components/angular-mocks/angular-mocks.js',
+
+      /*
+      'src/assets/bower_components/angular-route/angular-route.min.js',  
+      'src/assets/bower_components/angular-resource/angular-resource.min.js',    
+      'src/assets/bower_components/angular-aria/angular-aria.min.js',
+      'src/assets/bower_components/angular-animate/angular-animate.min.js',
+      'src/assets/bower_components/angular-sanitize/angular-sanitize.min.js',        
+      'src/assets/bower_components/angular-messages/angular-messages.min.js',
+      'src/assets/bower_components/svg-assets-cache/svg-assets-cache.js',    
+      'src/assets/bower_components/angular-material/angular-material.min.js',
+      
+      'src/assets/bower_components/jstree/dist/jstree.js',   
+
+      'src/assets/bower_components/ui-deni-grid/dist/ui-deni-grid.js',        
+      'src/assets/bower_components/ui-deni-modal/dist/ui-deni-modal.js',          
+
+
+      'src/assets/bower_components/videogular/videogular.min.js',
+      'src/assets/bower_components/videogular-controls/vg-controls.js',    
+      'src/assets/bower_components/videogular-youtube/youtube.js', 
+      'src/assets/bower_components/ng-file-upload/ng-file-upload.min.js',
+
+      'src/assets/bower_components/summernote/dist/summernote.min.js',
+      'src/assets/bower_components/angular-summernote/dist/angular-summernote.min.js',
+      */
+
+
+      'dist/app.js',
+
+      'src/app/shared/**/*test.js'
     ],
 
 
@@ -55,8 +87,8 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Firefox'], //to run in travis
-    //browsers: ['Chrome'], //to run in locally
+    //browsers: ['Firefox'], //to run in travis
+    browsers: ['Chrome'], //to run in locally
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app').service('categoryRestSrv', function(AppSrv) {
+angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 
 	var vm = this;
 

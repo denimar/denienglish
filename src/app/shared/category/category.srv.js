@@ -1,6 +1,17 @@
 'use strict';
 
-angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
+angular.module('categoryMdl').service('categorySrv', function() {
+
+	var vm = this;
+
+	vm.getMessage = function() {
+		return 'message test';
+	};
+});
+
+/*
+
+angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
 	var vm = this;
 
@@ -33,3 +44,5 @@ angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDen
 	};
 
 });
+
+*/

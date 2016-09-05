@@ -12,6 +12,8 @@ angular.module('app', [
 	'ui-deni-grid',
 	'uiDeniModalMdl',
 
+	'categoryMdl',
+
 	"com.2fdevs.videogular",
 	"com.2fdevs.videogular.plugins.controls",
 	"info.vietnamcode.nampnq.videogular.plugins.youtube",

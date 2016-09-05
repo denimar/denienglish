@@ -1,3 +1,5 @@
+angular.module('categoryMdl', []);
+angular.module('apagarDepois', []);
 angular.module('TextMdl', []);
 angular.module('VideoMdl', []);
 'use strict';
@@ -13,6 +15,8 @@ angular.module('app', [
 	'material.svgAssetsCache', 
 	'ui-deni-grid',
 	'uiDeniModalMdl',
+
+	'categoryMdl',
 
 	"com.2fdevs.videogular",
 	"com.2fdevs.videogular.plugins.controls",
@@ -54,7 +58,7 @@ angular.module('app').constant('PronunciationModalEnums', {
 });	
 'use strict';
 
-angular.module('app').service('categoryRestSrv', function(AppSrv) {
+angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 
 	var vm = this;
 
@@ -87,7 +91,18 @@ angular.module('app').service('categoryRestSrv', function(AppSrv) {
 
 'use strict';
 
-angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
+angular.module('categoryMdl').service('categorySrv', function() {
+
+	var vm = this;
+
+	vm.getMessage = function() {
+		return 'message test';
+	};
+});
+
+/*
+
+angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
 	var vm = this;
 
@@ -120,6 +135,8 @@ angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDen
 	};
 
 });
+
+*/
 'use strict';
 
 angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
@@ -1743,6 +1760,27 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 	}
 
 });
+describe('CategoryTest', function () {
+
+	var $injector = angular.injector(['categoryMdl']);
+	var categorySrv = $injector.get('categorySrv');
+
+	it('should have a correct message', function() {
+	    expect(categorySrv.getMessage()).toBe('message test');
+	});	
+
+});
+angular.module('apagarDepois').service('apagarDepoisSrv', function() {
+
+	var vm = this;
+
+	vm.name = 'denimar de moraes';
+	vm.getMessage = function() {
+		return 'message test';
+	};
+
+
+});
 'use strict';
 
 angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
@@ -2585,6 +2623,7 @@ angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalS
 angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
 	
 	var vm = this;
+
 	vm.categoryPath = null;		
 
 	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
@@ -2895,7 +2934,6 @@ angular.module('app').config(function($routeProvider) {
 angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
 
 	var vm = this;
-
 	vm.currentCategory = null; //Category Id	
 	
 	vm.allExpressions = []; //All Expressions (Dictionary plus Pronunciations)
