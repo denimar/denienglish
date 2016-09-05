@@ -1,4 +1,9 @@
-angular.module('categoryMdl', []);
+angular.module('categoryMdl', [
+	'ngResource',
+	'routinesMdl',
+	'uiDeniModalMdl'
+]);
+angular.module('routinesMdl', []);
 angular.module('apagarDepois', []);
 angular.module('TextMdl', []);
 angular.module('VideoMdl', []);
@@ -17,6 +22,7 @@ angular.module('app', [
 	'uiDeniModalMdl',
 
 	'categoryMdl',
+	'routinesMdl',
 
 	"com.2fdevs.videogular",
 	"com.2fdevs.videogular.plugins.controls",
@@ -58,7 +64,7 @@ angular.module('app').constant('PronunciationModalEnums', {
 });	
 'use strict';
 
-angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
+angular.module('categoryMdl').service('categoryRestSrv', function(restSrv) {
 
 	var vm = this;
 
@@ -67,7 +73,7 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 			title: 'Adding',
 			message: 'Category added successfully!'
 		};
-		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+		return restSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
 	};
 
 	vm.rename = function(cd_categoria, ds_categoria) {
@@ -75,7 +81,7 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 			title: 'Editing',
 			message: 'Category renamed successfully!'
 		};
-		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+		return restSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
 	};
 
 	vm.del = function(cd_categoria) {
@@ -83,7 +89,7 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 			title: 'Deleting',
 			message: 'Category deleted successfully!'
 		};
-		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+		return restSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
 	};
 
 
@@ -91,20 +97,13 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 
 'use strict';
 
-angular.module('categoryMdl').service('categorySrv', function() {
+angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
 	var vm = this;
 
 	vm.getMessage = function() {
 		return 'message test';
 	};
-});
-
-/*
-
-angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
-
-	var vm = this;
 
 	vm.add = function(scope, cd_categoria_pai) {
 		var deferred = $q.defer();
@@ -135,8 +134,6 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 	};
 
 });
-
-*/
 'use strict';
 
 angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
@@ -872,6 +869,58 @@ angular.module('app').service('GeneralSrv', function($q, $sce, $compile, Diction
 	};	
 
 });
+'use strict';
+
+angular.module('routinesMdl').service('restSrv', function($q, $http, uiDeniModalSrv) {
+
+	var vm = this;
+
+	var SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosted in Open Shift
+	//var SERVER_URL = 'http://localhost:8087/denienglish/'; //Local
+
+    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
+		var deferred = $q.defer();
+
+		var execRequest = function() {
+			var parametrosUrl = {params: parameters};			
+			$http.get(SERVER_URL + relativeUrl, parametrosUrl)
+				.then(function(retornoServer) {
+					if (retornoServer.data.success) {
+						if (successMessage) {						
+							uiDeniModalSrv.ghost(successMessage.title, successMessage.message);
+						}	
+						deferred.resolve(retornoServer);
+					} else {
+						throw retornoServer.data.message;
+					}	
+				})
+				.catch(function(retornoServer) {
+					if (retornoServer.data.message) {
+						uiDeniModalSrv.error(retornoServer.data.message);
+					} else {
+						uiDeniModalSrv.error(retornoServer.data);
+					}
+
+					deferred.reject(retornoServer);
+				});
+		};
+
+		if (confirmMessage) {
+			uiDeniModalSrv.confirm(confirmMessage)
+				.then(function (response) { 
+					if (response.button === 'yes') {
+						execRequest();
+					}
+				});	
+		} else {
+			execRequest();
+		}
+
+		return deferred.promise;
+    };
+
+
+})
 'use strict';
 
 angular.module('app').service('StringSrv', function(AppSrv) {
@@ -1758,16 +1807,6 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 			scope.ctrl.element = $(element);	    
 		}	
 	}
-
-});
-describe('CategoryTest', function () {
-
-	var $injector = angular.injector(['categoryMdl']);
-	var categorySrv = $injector.get('categorySrv');
-
-	it('should have a correct message', function() {
-	    expect(categorySrv.getMessage()).toBe('message test');
-	});	
 
 });
 angular.module('apagarDepois').service('apagarDepoisSrv', function() {

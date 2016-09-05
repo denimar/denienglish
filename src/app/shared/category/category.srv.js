@@ -1,19 +1,12 @@
 'use strict';
 
-angular.module('categoryMdl').service('categorySrv', function() {
+angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
 
 	var vm = this;
 
 	vm.getMessage = function() {
 		return 'message test';
 	};
-});
-
-/*
-
-angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
-
-	var vm = this;
 
 	vm.add = function(scope, cd_categoria_pai) {
 		var deferred = $q.defer();
@@ -44,5 +37,3 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 	};
 
 });
-
-*/

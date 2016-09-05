@@ -15,7 +15,7 @@ var jshint = require('gulp-jshint');
 gulp.task('scripts', function() {
 
   /*****************************************************************************
-    Add the files - Add in order *mdl.js > *fltr.js > *cnst.js > *val.js > *srv.js > *drv.js > *ctrl.js > *mock.js > *test.js
+    Add the files - Add in order *mdl.js > *fltr.js > *cnst.js > *val.js > *srv.js > *drv.js > *ctrl.js
   
 	Legend:
 	
@@ -28,8 +28,6 @@ gulp.task('scripts', function() {
 		*cfg.js   - Config (Route)
 		*drv.js   - Directives
 		*ctrl.js  - Controllers
-		*mock.js  - Mocks
-		*test.js  -	Tests
     
   *****************************************************************************/ 
   gulp.src('')
@@ -47,8 +45,6 @@ gulp.task('scripts', function() {
 	.pipe(addsrc.append('src/app/shared/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*ctrl.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*drv.js'))  			
-	.pipe(addsrc.append('src/app/shared/**/*mock.js'))  		
-	.pipe(addsrc.append('src/app/shared/**/*test.js'))  			
   
 	//COMPONENTS FOLDER
 	.pipe(addsrc.append('src/app/components/**/*fltr.js'))  	
@@ -58,8 +54,6 @@ gulp.task('scripts', function() {
 	.pipe(addsrc.append('src/app/components/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*drv.js'))  		
-	.pipe(addsrc.append('src/app/components/**/*mock.js'))  		
-	.pipe(addsrc.append('src/app/components/**/*test.js'))  			
 
 	//REST FOLDER
 	.pipe(addsrc.append('src/app/rest/*srv.js'))  	

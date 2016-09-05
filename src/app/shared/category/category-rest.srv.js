@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
+angular.module('categoryMdl').service('categoryRestSrv', function(restSrv) {
 
 	var vm = this;
 
@@ -9,7 +9,7 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 			title: 'Adding',
 			message: 'Category added successfully!'
 		};
-		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+		return restSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
 	};
 
 	vm.rename = function(cd_categoria, ds_categoria) {
@@ -17,7 +17,7 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 			title: 'Editing',
 			message: 'Category renamed successfully!'
 		};
-		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+		return restSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
 	};
 
 	vm.del = function(cd_categoria) {
@@ -25,7 +25,7 @@ angular.module('categoryMdl').service('categoryRestSrv', function(AppSrv) {
 			title: 'Deleting',
 			message: 'Category deleted successfully!'
 		};
-		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+		return restSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
 	};
 
 

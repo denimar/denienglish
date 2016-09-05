@@ -1,1 +1,5 @@
-angular.module('categoryMdl', []);
+angular.module('categoryMdl', [
+	'ngResource',
+	'routinesMdl',
+	'uiDeniModalMdl'
+]);
