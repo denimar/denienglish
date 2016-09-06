@@ -1,4 +1,4 @@
-angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, GeneralSrv) {
+angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, generalService) {
 
 	var vm = this;
 
@@ -7,7 +7,7 @@ angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, Strin
 		controller.content = content;
         //controller.formatedContent = $sce.trustAsHtml(StringSrv.addLinksDictionaryAndPronunciation(controller.content));
         controller.formatedContent = StringSrv.addLinksDictionaryAndPronunciation(controller.content);
-		GeneralSrv.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
+		generalService.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
 	}
 
 

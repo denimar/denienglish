@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app').service('homeSrv', function($timeout, $rootScope, categoryService, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
+angular.module('app').service('homeSrv', function($timeout, $rootScope, generalService, categoryService, AppConsts, AppSrv, itemService, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, itemRestService) {
 
 	var vm = this;
 	var jsTreeInstance = null;
@@ -69,7 +69,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
     	var topParentNode = _getTopParentNode(controller);
     	var fnNewItem;
 
-		itemSrv.add(scope, topParentNode).then(function(addedItem) {
+		itemService.add(scope, topParentNode, controller.currentCategoryNode).then(function(addedItem) {
 			controller.gridOptions.api.reload().then(function(responseData) {
 				var objAdded = addedItem.data[0];
 				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
@@ -231,8 +231,8 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 							var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
 							wndDescriptionMorImage.show().then(function(response) {
 								if (response.button == 'ok') {								
-									var uriImage = AppSrv.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
-									ItemRestSrv.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
+									var uriImage = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
+									itemRestService.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
 										controller.gridOptions.api.reload().then(function(responseData) {
 											imgEl.attr('src', response.data.image);								
 
@@ -251,7 +251,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		                mdIcon: 'delete_forever',
 		                tooltip: '',
 		                fn: function(record, column, imgActionColumn) {
-							itemSrv.del(record.cdItem).then(function() {
+							itemService.del(record.cdItem).then(function() {
 								controller.gridOptions.api.reload();
 							});	                	
 		                }
@@ -280,7 +280,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 								revisionIcon.addClass('selected');
 							}	
 
-							itemSrv.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
+							itemService.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
 								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
 							});
 						});
@@ -298,7 +298,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 								favoriteIcon.addClass('selected');
 							}	
 
-							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
+							itemService.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
 								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
 							});
 						});

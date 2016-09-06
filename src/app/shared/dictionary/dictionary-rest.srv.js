@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
+angular.module('app').service('DictionaryRestSrv', function(restService) {
 
 	var vm = this;
 
 	vm.list = function() {
-		return AppSrv.requestWithPromise('dictionary/list');
+		return restService.requestWithPromise('dictionary/list');
 	};
 
 	vm.add = function(ds_expressao, ds_tags) {
@@ -13,7 +13,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Inserting',
 			message: 'Expression added successfully!'
 		};
-		return AppSrv.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
+		return restService.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
 	};
 
 	vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
@@ -21,7 +21,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		}
-		return AppSrv.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
+		return restService.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
 	}	
 
 	vm.del = function(cd_dicionario) {
@@ -29,7 +29,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Deleting',
 			message: 'Expression deleted successfully!'
 		};
-		return AppSrv.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
+		return restService.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
 	};
 
 
@@ -38,7 +38,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		};
-		return AppSrv.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
+		return restService.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
 	};
 
 	vm.definitionSet = function(cd_dicionario, definition) {
@@ -46,11 +46,11 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		};
-		return AppSrv.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
+		return restService.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
 	};
 
 	vm.definitionGet = function(cd_dicionario) {
-		return AppSrv.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
+		return restService.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
 	};	
 
 });

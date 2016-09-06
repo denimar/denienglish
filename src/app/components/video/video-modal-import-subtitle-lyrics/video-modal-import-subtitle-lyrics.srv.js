@@ -1,4 +1,4 @@
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, restService, uiDeniModalSrv) {
 
 	var vm = this;
   vm.cdItem;
@@ -41,7 +41,7 @@ angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($roo
           var textArea = $(wndImportSubtitle).find('textarea');
           lyrics = textArea.val();
 
-          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+          restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
             deferred.resolve(serverReturn.data);
           });   
         }

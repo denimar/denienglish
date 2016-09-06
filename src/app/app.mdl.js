@@ -13,6 +13,7 @@ angular.module('app', [
 	'uiDeniModalMdl',
 
 	'category',
+	'item',	
 	'routinesMdl',
 
 	"com.2fdevs.videogular",

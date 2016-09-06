@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, ItemRestSrv) {
+angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, generalService, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, itemRestService) {
      
     var vm = this;
 
@@ -14,7 +14,7 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.t05itm = null;
     vm.t07txt = null;
 
-    ItemRestSrv.get(vm.params.cdItem).then(function(serverResponse) {
+    itemRestService.get(vm.params.cdItem).then(function(serverResponse) {
         vm.t05itm = serverResponse.data.data[0];
         $rootScope.subTitle = vm.t05itm.dsItem;
     });
@@ -43,7 +43,7 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     	    	vm.t07txt = vm.texts[current];
 
     			TextRestSrv.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
-    				GeneralSrv.getAllExpressions().then(function(response) {
+    				generalService.getAllExpressions().then(function(response) {
                         TextSrv.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
                         $rootScope.loading = false;
     				});

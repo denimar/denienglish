@@ -1,4 +1,8 @@
 'use strict';
 
 angular
-	.module('category', ['ngResource', 'routinesMdl', 'uiDeniModalMdl']);
+	.module('category', [
+		'ngResource', 
+		'routinesMdl', 
+		'uiDeniModalMdl'
+	]);

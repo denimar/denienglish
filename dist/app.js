@@ -2,7 +2,19 @@ angular.module('routinesMdl', []);
 'use strict';
 
 angular
-	.module('category', ['ngResource', 'routinesMdl', 'uiDeniModalMdl']);
+	.module('category', [
+		'ngResource', 
+		'routinesMdl', 
+		'uiDeniModalMdl'
+	]);
+'use strict';
+
+angular
+	.module('item', [
+		'ngResource', 		
+		'routinesMdl', 
+		'uiDeniModalMdl'		
+	]);
 angular.module('TextMdl', []);
 angular.module('VideoMdl', []);
 'use strict';
@@ -20,6 +32,7 @@ angular.module('app', [
 	'uiDeniModalMdl',
 
 	'category',
+	'item',	
 	'routinesMdl',
 
 	"com.2fdevs.videogular",
@@ -62,12 +75,12 @@ angular.module('app').constant('PronunciationModalEnums', {
 });	
 'use strict';
 
-angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
+angular.module('app').service('DictionaryRestSrv', function(restService) {
 
 	var vm = this;
 
 	vm.list = function() {
-		return AppSrv.requestWithPromise('dictionary/list');
+		return restService.requestWithPromise('dictionary/list');
 	};
 
 	vm.add = function(ds_expressao, ds_tags) {
@@ -75,7 +88,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Inserting',
 			message: 'Expression added successfully!'
 		};
-		return AppSrv.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
+		return restService.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
 	};
 
 	vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
@@ -83,7 +96,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		}
-		return AppSrv.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
+		return restService.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
 	}	
 
 	vm.del = function(cd_dicionario) {
@@ -91,7 +104,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Deleting',
 			message: 'Expression deleted successfully!'
 		};
-		return AppSrv.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
+		return restService.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
 	};
 
 
@@ -100,7 +113,7 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		};
-		return AppSrv.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
+		return restService.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
 	};
 
 	vm.definitionSet = function(cd_dicionario, definition) {
@@ -108,11 +121,11 @@ angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		};
-		return AppSrv.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
+		return restService.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
 	};
 
 	vm.definitionGet = function(cd_dicionario) {
-		return AppSrv.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
+		return restService.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
 	};	
 
 });
@@ -175,224 +188,12 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 	};	
 
 });
-angular.module('app').service('ItemRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.list = function(cd_categoria) {
-		return AppSrv.requestWithPromise('item/list', {'cd_categoria': cd_categoria});
-	}
-
-	vm.get = function(cd_item) {
-		return AppSrv.requestWithPromise('item/get', {'cd_item': cd_item});
-	}
-
-	vm.add = function(topCategoryNode, cd_categoria, ds_item, bt_imagem) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Item added successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('item/add', {'topCategoryNode': topCategoryNode, 'cd_categoria': cd_categoria, 'ds_item': ds_item}, {'bt_imagem': bt_imagem}, successfullyMessage);		
-	}
-
-	vm.upd = function(cd_item, cd_categoria, ds_item, bt_imagem) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Item updated successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('item/upd', {'cd_item': cd_item, 'cd_categoria': cd_categoria, 'ds_item': ds_item}, {'bt_imagem': bt_imagem}, successfullyMessage);		
-	}
-
-	vm.del = function(cd_item) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Item deleted successfully!'
-		}
-		return AppSrv.requestWithPromise('item/del', {'cd_item': cd_item}, successfullyMessage, 'Confirm deleting?');
-	}
-
-	vm.favorite = {
-
-		set: function(cd_item, bl_favorite) {
-			return AppSrv.requestWithPromise('item/favorite/set', {'cd_item': cd_item, 'bl_favorite': bl_favorite});
-		},
-
-		get: function(cd_item) {
-			return AppSrv.requestWithPromise('item/favorite/get', {'cd_item': cd_item});			
-		}
-
-	}	
-
-	vm.revision = {
-
-		set: function(cd_item, bl_fazer_revisao) {
-			return AppSrv.requestWithPromise('item/revision/set', {'cd_item': cd_item, 'bl_fazer_revisao': bl_fazer_revisao});
-		},
-
-		get: function(cd_item) {
-			return AppSrv.requestWithPromise('item/revision/get', {'cd_item': cd_item});			
-		}
-
-	}	
-
-
-});
-angular.module('app').service('itemSrv', function($rootScope, $q, ItemRestSrv, AppSrv, uiDeniModalSrv, newVideoItemModalSrv, AppEnums, VideoRestSrv, AppConsts) {
-
-	var vm = this;
-
-	/**
-	 *
-	 */
-	 var _addItemText = function(scope) {
-	 	var deferred = $q.defer();
-
-		var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage();
-		wndDescriptionMorImage.show().then(function(response) {
-			if (response.button == 'ok') {
-				var imageURI = AppSrv.getDataURLImagemObjeto(response.data.imageEl.get(0), 150, 150, 0.5);
-				ItemRestSrv.add(AppEnums.CategoryType.TEXT, AppSrv.currentCategory, response.data.description, imageURI).then(function(responseAdd) {
-					deferred.resolve(responseAdd);
-				});				
-			} else {
-				deferred.reject();
-			}
-		});
-
-		return deferred.promise;
-	 }	
-
-
-	/**
-	 *
-	 */
-	 var _addItemVideo = function(scope) {
-	 	var deferred = $q.defer();
-	 	scope.newVideoItemModal = {
-	 		canShowImagePreview: false,
-	 		tp_video: 0
-	 	};
-
-		scope.newVideoItemModal.getImagePreviewUrl = function() {
-			scope.newVideoItemModal.canShowImagePreview = (scope.newVideoItemModal.id_video) &&
-				                                          (
-			                                                ((scope.newVideoItemModal.tp_video == 0) && (scope.newVideoItemModal.id_video.length == 11)) || //youtube
-														    ((scope.newVideoItemModal.tp_video == 1) && (scope.newVideoItemModal.id_video.length == 28)) //google drive
-														  );  
-
-		    if (scope.newVideoItemModal.canShowImagePreview) {
-				return AppConsts.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
-			} 
-			return null;
-
-			/*
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/0.jpg';
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/1.jpg';
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/2.jpg';
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/3.jpg';
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/jpg.jpg';
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/mqdefault.jpg';
-			//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/maxresdefault.jpg';
-			*/
-		};
-
-
-	 	newVideoItemModalSrv.showModal(scope).then(function(response) {
-	 		$rootScope.loading = true;
-	 		VideoRestSrv.add(AppSrv.currentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
- 				deferred.resolve(serverResponse);
- 				$rootScope.loading = false;
-	 		});
-	 	});
-
-	 	return deferred.promise;
-	 }
-
-
-	/**
-	 *
-	 */
-	 vm.add = function(scope, categoryType) {
-
-	 	//text
-	 	if (categoryType == AppEnums.CategoryType.TEXT) {
-	 		return _addItemText(scope);
-
-	 	//video
-	 	} else {
-	 		return _addItemVideo(scope);
-
-	 	}
-	 }	
-
-	/**
-	 *
-	 */
-	vm.del = function(cd_item) {
-		return ItemRestSrv.del(cd_item);
-	}
-
-	/**
-	 *
-	 */
-	vm.favorite = {
-
-		set: function(cd_item, bl_favorite) {
-			var deferred = $q.defer();
-			ItemRestSrv.favorite.set(cd_item, bl_favorite).then(function(serverReturn) {
-				deferred.resolve(serverReturn.data.data[0].blFavorite);
-			}, function(reason) {
-				deferred.reject(reason);
-			});
-			return deferred.promise;
-		},
-
-		get: function(cd_item) {
-			var deferred = $q.defer();
-			ItemRestSrv.favorite.get(cd_item).then(function(serverReturn) {
-				deferred.resolve(serverReturn.data.data[0].blFavorite);
-			}, function(reason) {
-				deferred.reject(reason);
-			});
-			return deferred.promise;
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	vm.revision = {
-
-		set: function(cd_item, bl_fazer_revisao) {
-			var deferred = $q.defer();
-			ItemRestSrv.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
-				deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
-			}, function(reason) {
-				deferred.reject(reason);
-			});
-			return deferred.promise;
-		},
-
-		get: function(cd_item) {
-			var deferred = $q.defer();
-			ItemRestSrv.revision.get(cd_item).then(function(serverReturn) {
-				deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
-			}, function(reason) {
-				deferred.reject(reason);
-			});
-			return deferred.promise;
-		}
-
-	}
-
-});
-angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
+angular.module('app').service('PronunciationRestSrv', function(restService) {
 
 	var vm = this;
 
 	vm.list = function() {
-		return AppSrv.requestWithPromise('pronunciation/list');
+		return restService.requestWithPromise('pronunciation/list');
 	}
 
 	vm.add = function(ds_expressao) {
@@ -400,7 +201,7 @@ angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 			title: 'Inserting',
 			message: 'Expression added successfully!'
 		}
-		return AppSrv.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
+		return restService.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
 	}
 
 	vm.del = function(cd_pronuncia) {
@@ -408,7 +209,7 @@ angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 			title: 'Deleting',
 			message: 'Expression deleted successfully!'
 		}
-		return AppSrv.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
+		return restService.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
 	}
 
 
@@ -417,7 +218,7 @@ angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		}
-		return AppSrv.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
+		return restService.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
 	}
 
 });
@@ -473,16 +274,16 @@ angular.module('app').service('pronunciationSrv', function($q, $window) {
 
 
 });
-angular.module('app').service('RevisionRestSrv', function(AppSrv) {
+angular.module('app').service('RevisionRestSrv', function(restService) {
 
 	var vm = this;
 
 	vm.getItemInfo = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/item/info', {'cd_item': cd_item});
+		return restService.requestWithPromise('revision/item/info', {'cd_item': cd_item});
 	}
 
 	vm.getExpressions = function(cd_item, onlyVisible) {
-		return AppSrv.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
+		return restService.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
 	}
 
 	vm.updExpressions = function(cd_item, expressions) {
@@ -490,7 +291,7 @@ angular.module('app').service('RevisionRestSrv', function(AppSrv) {
 			title: 'Spaced Revision',
 			message: 'expressions updated succesfully!'
 		}
-		return AppSrv.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
+		return restService.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
 	}
 
 	vm.updText = function(cd_item, returnOnlyVisible) {
@@ -498,11 +299,11 @@ angular.module('app').service('RevisionRestSrv', function(AppSrv) {
 			title: 'Spaced Revision',
 			message: 'expressions updated succesfully!'
 		}
-		return AppSrv.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
+		return restService.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
 	}
 
 	vm.markAsReviewed = function(cd_item) {
-		return AppSrv.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
+		return restService.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
 	}
 	
 
@@ -745,118 +546,6 @@ angular.module('app').service('DatabaseSrv', function() {
 });
 'use strict';
 
-angular.module('app').service('GeneralSrv', function($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
-
-	var me = this;
-
-	me.getAllExpressions = function() {
-		var deferred = $q.defer();
-
-		DictionaryRestSrv.list().then(function(responseDictionary) {
-			AppSrv.dictionaryExpressions = responseDictionary.data.data;
-	
-			PronunciationRestSrv.list().then(function(responsePronunciation) {
-				AppSrv.pronunciationExpressions = responsePronunciation.data.data;	
-
-				AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(AppSrv.pronunciationExpressions);
-				deferred.resolve(AppSrv.allExpressions);
-			}, function(reasonPronunciation) {
-				console.error(reasonPronunciation);
-			});
-
-		}, function(reasonDictionary) {
-			console.error(reasonDictionary);
-		});
-
-
-		return deferred.promise;
-	};
-
-	/**
-	 * Insert into a element a specific html and binding it with a controller
-	 * passed by parameter
-	 *
-	 */
-	 /*
-	me.insertHtmlWithController = function(targetElement, html, controller) {
-		var $div = $('<div ng-controller="' + controller + '">' + html + '</div>');
-		targetElement.append($div);
-
-		var scope = angular.element($div).scope();
-		$compile($div)(scope);
-	}
-	*/
-
-	me.insertHtmlWithController = function(targetElement, html, controller, scope) {	
-		targetElement.html('')
-		var $div = $('<div>' + html + '</div>');
-		$compile($div)(scope);
-		targetElement.append($div);
-	};	
-
-});
-'use strict';
-
-angular.module('routinesMdl').service('restSrv', function($q, $http, uiDeniModalSrv) {
-
-	var vm = this;
-
-	var SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosted in Open Shift
-	//var SERVER_URL = 'http://localhost:8087/denienglish/'; //Local
-
-    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
-		var deferred = $q.defer();
-
-		var execRequest = function() {
-			var parametrosUrl = {params: parameters};			
-			$http.get(SERVER_URL + relativeUrl, parametrosUrl)
-				.then(function(retornoServer) {
-					if (retornoServer.data.success) {
-						if (successMessage) {						
-							uiDeniModalSrv.ghost(successMessage.title, successMessage.message);
-						}	
-						deferred.resolve(retornoServer);
-					} else {
-						throw retornoServer.data.message;
-					}	
-				})
-				.catch(function(retornoServer) {
-					if (retornoServer.data.message) {
-						uiDeniModalSrv.error(retornoServer.data.message);
-					} else {
-						uiDeniModalSrv.error(retornoServer.data);
-					}
-
-					deferred.reject(retornoServer);
-				});
-		};
-
-		try { 
-			angular.module("ngRoute") 
-		} catch(err) {
-			//Enter here only when it is testing, because in this case there no need to show messages
-			successMessage = null;
-			confirmMessage = null;
-		}
-
-		if (confirmMessage) {
-			uiDeniModalSrv.confirm(confirmMessage)
-				.then(function (response) { 
-					if (response.button === 'yes') {
-						execRequest();
-					}
-				});	
-		} else {
-			execRequest();
-		}
-
-		return deferred.promise;
-    };
-
-
-})
-'use strict';
-
 angular.module('app').service('StringSrv', function(AppSrv) {
 
 	var me = this;
@@ -1006,43 +695,6 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 			return texto;
 		}	
 	};
-
-});
-angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.showModal = function(scope) {
-	 	var deferred = $q.defer();
-
-		var modal = uiDeniModalSrv.createWindow({
-			scope: scope,
-			title: 'Creating a new video',
-			width: '550px',			
-			height: '300px',
-			position: uiDeniModalSrv.POSITION.CENTER,
-			buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
-			urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.tpl.htm',
-			modal: true,
-			listeners: {
-				onshow: function(objWindow) {
-					scope.newVideoItemModal.kindOfVideo = 0;
-				}
-			}
-		});
-
-		modal.show().then(function(modalResponse) {
-			if (modalResponse.button == 'ok') {
-				deferred.resolve(scope.newVideoItemModal);
-
-			} else {
-				deferred.reject();
-			}
-		});		
-
-
-		return deferred.promise;
-	}
 
 });
 angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
@@ -1525,87 +1177,574 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 
 });
-'use strict';
+(function () {
+	'use strict';
 
-angular
-	.module('category')
-	.service('categoryRestService', categoryRestService);
+	angular
+		.module('category')
+		.service('categoryRestService', categoryRestService);
 
-function categoryRestService(restSrv) {
+	function categoryRestService(restService) {
 
-	var vm = this;
+		var vm = this;
 
-	vm.add = function(cd_categoria_pai, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Adding',
-			message: 'Category added successfully!'
+		vm.add = function(cd_categoria_pai, ds_categoria) {
+			var successfullyMessage = {
+				title: 'Adding',
+				message: 'Category added successfully!'
+			};
+			return restService.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
 		};
-		return restSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+
+		vm.rename = function(cd_categoria, ds_categoria) {
+			var successfullyMessage = {
+				title: 'Editing',
+				message: 'Category renamed successfully!'
+			};
+			return restService.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+		};
+
+		vm.del = function(cd_categoria) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Category deleted successfully!'
+			};
+			return restService.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+		};
+
+
 	};
 
-	vm.rename = function(cd_categoria, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Editing',
-			message: 'Category renamed successfully!'
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('category')
+		.service('categoryService', categoryService);
+
+	function categoryService($q, categoryRestService, uiDeniModalSrv) {
+		var vm = this;
+
+		vm.add = function(scope, cd_categoria_pai) {
+			var deferred = $q.defer();
+
+			uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
+				categoryRestService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+					deferred.resolve(serverResponse.data.data[0]);
+				});
+			});
+
+			return deferred.promise;		
 		};
-		return restSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-	};
 
-	vm.del = function(cd_categoria) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Category deleted successfully!'
+		vm.rename = function(scope, cd_categoria, ds_categoria) {
+			var deferred = $q.defer();
+
+			uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
+				categoryRestService.rename(cd_categoria, enteredText).then(function(serverResponse) {
+					deferred.resolve(serverResponse.data.data[0].dsCategoria);
+				});
+			});
+
+			return deferred.promise;		
 		};
-		return restSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-	};
 
-
-};
-
-'use strict';
-
-angular
-	.module('category')
-	.service('categoryService', categoryService);
-
-function categoryService($q, categoryRestService, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.add = function(scope, cd_categoria_pai) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-			categoryRestService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+		vm.del = function(cd_categoria) {
+			var deferred = $q.defer();
+			categoryRestService.del(cd_categoria).then(function(serverResponse) {
 				deferred.resolve(serverResponse.data.data[0]);
 			});
-		});
+			return deferred.promise;			
+		};
 
-		return deferred.promise;		
+
 	};
 
-	vm.rename = function(scope, cd_categoria, ds_categoria) {
-		var deferred = $q.defer();
+})();	
+(function() {
+	'use strict';
+	
+	angular
+		.module('item')
+		.service('itemRestService', itemRestService);
 
-		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-			categoryRestService.rename(cd_categoria, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0].dsCategoria);
+	function itemRestService(restService) {
+		var vm = this;
+
+		vm.list = function(cd_categoria) {
+			return restService.requestWithPromise('item/list', {'cd_categoria': cd_categoria});
+		}
+
+		vm.get = function(cd_item) {
+			return restService.requestWithPromise('item/get', {'cd_item': cd_item});
+		}
+
+		vm.add = function(topCategoryNode, cd_categoria, ds_item, bt_imagem) {
+			var successfullyMessage = {
+				title: 'Inserting',
+				message: 'Item added successfully!'
+			}
+			return restService.requestWithPromisePayLoad('item/add', {'topCategoryNode': topCategoryNode, 'cd_categoria': cd_categoria, 'ds_item': ds_item}, {'bt_imagem': bt_imagem}, successfullyMessage);		
+		}
+
+		vm.upd = function(cd_item, cd_categoria, ds_item, bt_imagem) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Item updated successfully!'
+			}
+			return restService.requestWithPromisePayLoad('item/upd', {'cd_item': cd_item, 'cd_categoria': cd_categoria, 'ds_item': ds_item}, {'bt_imagem': bt_imagem}, successfullyMessage);		
+		}
+
+		vm.del = function(cd_item) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Item deleted successfully!'
+			}
+			return restService.requestWithPromise('item/del', {'cd_item': cd_item}, successfullyMessage, 'Confirm deleting?');
+		}
+
+		vm.favorite = {
+
+			set: function(cd_item, bl_favorite) {
+				return restService.requestWithPromise('item/favorite/set', {'cd_item': cd_item, 'bl_favorite': bl_favorite});
+			},
+
+			get: function(cd_item) {
+				return restService.requestWithPromise('item/favorite/get', {'cd_item': cd_item});			
+			}
+
+		}	
+
+		vm.revision = {
+
+			set: function(cd_item, bl_fazer_revisao) {
+				return restService.requestWithPromise('item/revision/set', {'cd_item': cd_item, 'bl_fazer_revisao': bl_fazer_revisao});
+			},
+
+			get: function(cd_item) {
+				return restService.requestWithPromise('item/revision/get', {'cd_item': cd_item});			
+			}
+
+		}	
+
+
+	};
+
+})();	
+(function() {
+	'use strict';
+
+	angular
+		.module('item')
+		.service('itemService', itemService);
+
+	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, AppEnums, VideoRestSrv, AppConsts) {
+		var vm = this;
+
+		/**
+		 *
+		 */
+		 var _addItemText = function(scope, parentCategory) {
+		 	var deferred = $q.defer();
+
+			var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage();
+			wndDescriptionMorImage.show().then(function(response) {
+				if (response.button == 'ok') {
+					var imageURI = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 150, 150, 0.5);
+					itemRestService.add(AppEnums.CategoryType.TEXT, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
+						deferred.resolve(responseAdd);
+					});				
+				} else {
+					deferred.reject();
+				}
 			});
-		});
 
-		return deferred.promise;		
+			return deferred.promise;
+		 }	
+
+
+		/**
+		 *
+		 */
+		 var _addItemVideo = function(scope, parentCategory) {
+		 	var deferred = $q.defer();
+		 	scope.newVideoItemModal = {
+		 		canShowImagePreview: false,
+		 		tp_video: 0
+		 	};
+
+			scope.newVideoItemModal.getImagePreviewUrl = function() {
+				scope.newVideoItemModal.canShowImagePreview = (scope.newVideoItemModal.id_video) &&
+					                                          (
+				                                                ((scope.newVideoItemModal.tp_video == 0) && (scope.newVideoItemModal.id_video.length == 11)) || //youtube
+															    ((scope.newVideoItemModal.tp_video == 1) && (scope.newVideoItemModal.id_video.length == 28)) //google drive
+															  );  
+
+			    if (scope.newVideoItemModal.canShowImagePreview) {
+					return AppConsts.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
+				} 
+				return null;
+
+				/*
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/0.jpg';
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/1.jpg';
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/2.jpg';
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/3.jpg';
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/jpg.jpg';
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/mqdefault.jpg';
+				//return 'https://img.youtube.com/vi/' + scope.newVideoItemModal.id_video '/maxresdefault.jpg';
+				*/
+			};
+
+
+		 	newVideoItemModalService.showModal(scope).then(function(response) {
+		 		$rootScope.loading = true;
+		 		VideoRestSrv.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
+	 				deferred.resolve(serverResponse);
+	 				$rootScope.loading = false;
+		 		});
+		 	});
+
+		 	return deferred.promise;
+		 }
+
+
+		/**
+		 *
+		 */
+		 vm.add = function(scope, categoryType, parentCategory) {
+
+		 	//text
+		 	if (categoryType == AppEnums.CategoryType.TEXT) {
+		 		return _addItemText(scope, parentCategory);
+
+		 	//video
+		 	} else {
+		 		return _addItemVideo(scope, parentCategory);
+
+		 	}
+		 }	
+
+		/**
+		 *
+		 */
+		vm.del = function(cd_item) {
+			return itemRestService.del(cd_item);
+		}
+
+		/**
+		 *
+		 */
+		vm.favorite = {
+
+			set: function(cd_item, bl_favorite) {
+				var deferred = $q.defer();
+				itemRestService.favorite.set(cd_item, bl_favorite).then(function(serverReturn) {
+					deferred.resolve(serverReturn.data.data[0].blFavorite);
+				}, function(reason) {
+					deferred.reject(reason);
+				});
+				return deferred.promise;
+			},
+
+			get: function(cd_item) {
+				var deferred = $q.defer();
+				itemRestService.favorite.get(cd_item).then(function(serverReturn) {
+					deferred.resolve(serverReturn.data.data[0].blFavorite);
+				}, function(reason) {
+					deferred.reject(reason);
+				});
+				return deferred.promise;
+			}
+
+		}
+
+		/**
+		 *
+		 */
+		vm.revision = {
+
+			set: function(cd_item, bl_fazer_revisao) {
+				var deferred = $q.defer();
+				itemRestService.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
+					deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
+				}, function(reason) {
+					deferred.reject(reason);
+				});
+				return deferred.promise;
+			},
+
+			get: function(cd_item) {
+				var deferred = $q.defer();
+				itemRestService.revision.get(cd_item).then(function(serverReturn) {
+					deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
+				}, function(reason) {
+					deferred.reject(reason);
+				});
+				return deferred.promise;
+			}
+
+		}
+
 	};
 
-	vm.del = function(cd_categoria) {
-		var deferred = $q.defer();
-		categoryRestService.del(cd_categoria).then(function(serverResponse) {
-			deferred.resolve(serverResponse.data.data[0]);
-		});
-		return deferred.promise;			
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('routinesMdl')
+		.service('generalService', generalService);
+
+	function generalService($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
+		var vm = this;
+
+		vm.getAllExpressions = function() {
+			var deferred = $q.defer();
+
+			DictionaryRestSrv.list().then(function(responseDictionary) {
+				AppSrv.dictionaryExpressions = responseDictionary.data.data;
+		
+				PronunciationRestSrv.list().then(function(responsePronunciation) {
+					AppSrv.pronunciationExpressions = responsePronunciation.data.data;	
+
+					AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(AppSrv.pronunciationExpressions);
+					deferred.resolve(AppSrv.allExpressions);
+				}, function(reasonPronunciation) {
+					console.error(reasonPronunciation);
+				});
+
+			}, function(reasonDictionary) {
+				console.error(reasonDictionary);
+			});
+
+
+			return deferred.promise;
+		};
+
+		/**
+		 * Insert into a element a specific html and binding it with a controller
+		 * passed by parameter
+		 *
+		 */
+		 /*
+		vm.insertHtmlWithController = function(targetElement, html, controller) {
+			var $div = $('<div ng-controller="' + controller + '">' + html + '</div>');
+			targetElement.append($div);
+
+			var scope = angular.element($div).scope();
+			$compile($div)(scope);
+		}
+		*/
+
+		vm.insertHtmlWithController = function(targetElement, html, controller, scope) {	
+			targetElement.html('')
+			var $div = $('<div>' + html + '</div>');
+			$compile($div)(scope);
+			targetElement.append($div);
+		};	
+
+		vm.getDataURLImagemObjeto = function(prObjeto, prLargura, prAltura, prQualidade) {
+			var xLarguraOriginal = 0;
+			var xAlturaOriginal = 0;	
+			if (prObjeto instanceof HTMLImageElement) { //Imagem
+				xLarguraOriginal = prObjeto.naturalWidth;
+				xAlturaOriginal = prObjeto.naturalHeight;		
+			} else {
+				xLarguraOriginal = prObjeto.videoWidth;
+				xAlturaOriginal = prObjeto.videoHeight;		
+			}	
+			
+			var canvas = document.createElement('canvas');
+			var xNovaLargura = prLargura;
+			var xNovaAltura = prAltura;
+			
+			var xPerc = 1;
+			if (xAlturaOriginal > xLarguraOriginal) {
+				xPerc = xNovaLargura / xLarguraOriginal;							
+				xNovaAltura = xPerc * xAlturaOriginal;
+			} else {
+				xPerc = xNovaAltura / xAlturaOriginal;
+				xNovaLargura = xPerc * xLarguraOriginal;							
+			}
+			
+			canvas.width  = xNovaLargura;
+			canvas.height = xNovaAltura;
+			var ctx = canvas.getContext('2d');
+
+			ctx.drawImage(prObjeto,0,0,xLarguraOriginal,xAlturaOriginal,0,0,xNovaLargura,xNovaAltura);
+
+			return canvas.toDataURL("image/png", prQualidade); //o certo é dimininuir também um pouco a qualidade...
+		};
+
+
 	};
 
+})();	
+(function() {
+	'use strict';
 
-};
+	angular
+		.module('routinesMdl')
+		.service('restService', restService);
+
+	function restService($q, $http, uiDeniModalSrv) {
+
+		var vm = this;
+
+		var SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
+		//var SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally
+
+	    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
+			var deferred = $q.defer();
+
+			var execRequest = function() {
+				var parametrosUrl = {params: parameters};			
+				$http.get(SERVER_URL + relativeUrl, parametrosUrl)
+					.then(function(retornoServer) {
+						if (retornoServer.data.success) {
+							if (successMessage) {						
+								uiDeniModalSrv.ghost(successMessage.title, successMessage.message);
+							}	
+							deferred.resolve(retornoServer);
+						} else {
+							throw retornoServer.data.message;
+						}	
+					})
+					.catch(function(retornoServer) {
+						if (retornoServer.data.message) {
+							uiDeniModalSrv.error(retornoServer.data.message);
+						} else {
+							uiDeniModalSrv.error(retornoServer.data);
+						}
+
+						deferred.reject(retornoServer);
+					});
+			};
+
+			try { 
+				angular.module("ngRoute") 
+			} catch(err) {
+				//Enter here only when it is testing, because in this case there no need to show messages
+				successMessage = null;
+				confirmMessage = null;
+			}
+
+			if (confirmMessage) {
+				uiDeniModalSrv.confirm(confirmMessage)
+					.then(function (response) { 
+						if (response.button === 'yes') {
+							execRequest();
+						}
+					});	
+			} else {
+				execRequest();
+			}
+
+			return deferred.promise;
+	    };
+
+	    vm.requestWithPromisePayLoad = function(relativeUrl, parameters, parametersPayLoad, successMessage, confirmMessage) {
+			var deferred = $q.defer();
+
+			var execRequest = function() {
+		        var resource = $resource(SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
+		        resource.save(parametersPayLoad).$promise
+					.then(function(retornoServer) {
+						if (retornoServer.success) {
+							if (successMessage) {		
+								uiDeniModalSrv.ghost(successMessage.title, successMessage.message);			
+							}	
+							deferred.resolve(retornoServer);
+						} else {
+							uiDeniModalSrv.error(retornoServer.message);
+							deferred.reject(retornoServer);
+						}	
+					})
+					.catch(function(retornoServer) {
+						if (retornoServer.message) {
+							uiDeniModalSrv.error(retornoServer.message);
+						} else if (retornoServer.data) {
+							if (retornoServer.data.message) {
+								uiDeniModalSrv.error(retornoServer.data.message);
+							} else {
+								uiDeniModalSrv.error(retornoServer.data);
+							}
+						} else {
+							uiDeniModalSrv.error('Inespected Error!');
+						}	
+						deferred.reject(retornoServer);
+					});
+			};
+
+			if (confirmMessage) {
+				
+				uiDeniModalSrv.confirm(confirmMessage)
+					.then(function (response) { 
+						if (response.button === 'yes') {
+							execRequest();
+						}
+					});	
+
+			} else {
+				execRequest();
+			}
+
+			return deferred.promise;
+	    };    
+
+
+	};
+
+})();	
+(function() {
+	'use strict';
+	
+	angular
+		.module('item')
+		.service('newVideoItemModalService', newVideoItemModalService);
+
+	function newVideoItemModalService($q, uiDeniModalSrv) {
+		var vm = this;
+
+		vm.showModal = function(scope) {
+		 	var deferred = $q.defer();
+
+			var modal = uiDeniModalSrv.createWindow({
+				scope: scope,
+				title: 'Creating a new video',
+				width: '550px',			
+				height: '300px',
+				position: uiDeniModalSrv.POSITION.CENTER,
+				buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
+				urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.view.html',
+				modal: true,
+				listeners: {
+					onshow: function(objWindow) {
+						scope.newVideoItemModal.kindOfVideo = 0;
+					}
+				}
+			});
+
+			modal.show().then(function(modalResponse) {
+				if (modalResponse.button == 'ok') {
+					deferred.resolve(scope.newVideoItemModal);
+
+				} else {
+					deferred.reject();
+				}
+			});		
+
+
+			return deferred.promise;
+		}
+
+	};
+
+})();	
 angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModalSrv, DictionaryModalEnums) {
 
 	//use this control in the service	
@@ -1627,72 +1766,6 @@ angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModal
 
 });
 
-angular.module('app').controller('NewVideoItemModalCtrl', function($sce) {
-
-	var vm = this;
-
-	/*
-	vm.videoConfig = {
-		preload: "auto",
-		sources: [
-			//{src: t08vdo.dsUrl},
-			{src: $sce.trustAsResourceUrl('https://www.youtube.com/watch?v=d020hcWA_Wg'), type: "video/mp4"},
-		],
-		theme: {
-			url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
-		},
-		plugins: {
-			controls: {
-				autoHide: true,
-				autoHideTime: 5000
-			}
-		}
-	};	
-	*/
-
-	var _getDataURLImagemObjeto = function(videoElement, width, height, quality) {
-		var originalWiddh = 0;
-		var originalHeight = 0;	
-		if (videoElement instanceof HTMLImageElement) { //Imagem
-			originalWiddh = videoElement.naturalWidth;
-			originalHeight = videoElement.naturalHeight;		
-		} else {
-			originalWiddh = videoElement.videoWidth;
-			originalHeight = videoElement.videoHeight;		
-		}	
-		
-		var canvas = document.createElement('canvas');
-		var newWidth = width;
-		var newHeight = height;
-		
-		var xPerc = 1;
-		if (originalHeight > originalWiddh) {
-			xPerc = newWidth / originalWiddh;							
-			newHeight = xPerc * originalHeight;
-		} else {
-			xPerc = newHeight / originalHeight;
-			newWidth = xPerc * originalWiddh;							
-		}
-		
-		canvas.width  = newWidth;
-		canvas.height = newHeight;
-		var ctx = canvas.getContext('2d');
-
-		ctx.drawImage(videoElement, 0, 0, originalWiddh, originalHeight, 0, 0, newWidth, newHeight);
-
-		return canvas.toDataURL("image/jpeg", quality);
-	}
-
-	vm.capturePosterFromVideo = function() {
-		var videoElement = $('.video-preview').get(0);
-			
-		var imageUrl = _getDataURLImagemObjeto(videoElement, 150, 150, 0.5);
-
-		//var imageUrl = _getDataURLImagemObjeto(videoElement, 150, 150, 0.5);
-		console.log(imageUrl);
-	}
-
-});
 angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
 
 	//use this control in the service	
@@ -1714,7 +1787,7 @@ angular.module('app').controller('PronunciationModalCtrl', function(pronunciatio
 
 });
 
-angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
+angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemService, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
 	
 	var vm = this;
 	spacedRevisionModalSrv.setController(vm);
@@ -1807,6 +1880,61 @@ angular.module('app').controller('DictionaryDefinitionViewCtrl', function($scope
 	});
 
 });
+(function() {
+	'use strict';
+
+	angular
+		.module('item')
+		.controller('newVideoItemModalController', newVideoItemModalController);
+
+	function newVideoItemModalController($sce) {
+		var vm = this;
+
+		var _getDataURLImagemObjeto = function(videoElement, width, height, quality) {
+			var originalWiddh = 0;
+			var originalHeight = 0;	
+			if (videoElement instanceof HTMLImageElement) { //Imagem
+				originalWiddh = videoElement.naturalWidth;
+				originalHeight = videoElement.naturalHeight;		
+			} else {
+				originalWiddh = videoElement.videoWidth;
+				originalHeight = videoElement.videoHeight;		
+			}	
+			
+			var canvas = document.createElement('canvas');
+			var newWidth = width;
+			var newHeight = height;
+			
+			var xPerc = 1;
+			if (originalHeight > originalWiddh) {
+				xPerc = newWidth / originalWiddh;							
+				newHeight = xPerc * originalHeight;
+			} else {
+				xPerc = newHeight / originalHeight;
+				newWidth = xPerc * originalWiddh;							
+			}
+			
+			canvas.width  = newWidth;
+			canvas.height = newHeight;
+			var ctx = canvas.getContext('2d');
+
+			ctx.drawImage(videoElement, 0, 0, originalWiddh, originalHeight, 0, 0, newWidth, newHeight);
+
+			return canvas.toDataURL("image/jpeg", quality);
+		}
+
+		vm.capturePosterFromVideo = function() {
+			var videoElement = $('.video-preview').get(0);
+				
+			var imageUrl = _getDataURLImagemObjeto(videoElement, 150, 150, 0.5);
+
+			//var imageUrl = _getDataURLImagemObjeto(videoElement, 150, 150, 0.5);
+			console.log(imageUrl);
+		}
+
+	};
+
+})();	
 angular.module('app').directive('dictionaryDefinitionView', function() {
 
 	return {
@@ -1826,7 +1954,7 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 });
 'use strict';
 
-angular.module('app').service('homeSrv', function($timeout, $rootScope, categoryService, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
+angular.module('app').service('homeSrv', function($timeout, $rootScope, generalService, categoryService, AppConsts, AppSrv, itemService, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, itemRestService) {
 
 	var vm = this;
 	var jsTreeInstance = null;
@@ -1895,7 +2023,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
     	var topParentNode = _getTopParentNode(controller);
     	var fnNewItem;
 
-		itemSrv.add(scope, topParentNode).then(function(addedItem) {
+		itemService.add(scope, topParentNode, controller.currentCategoryNode).then(function(addedItem) {
 			controller.gridOptions.api.reload().then(function(responseData) {
 				var objAdded = addedItem.data[0];
 				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
@@ -2057,8 +2185,8 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 							var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
 							wndDescriptionMorImage.show().then(function(response) {
 								if (response.button == 'ok') {								
-									var uriImage = AppSrv.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
-									ItemRestSrv.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
+									var uriImage = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
+									itemRestService.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
 										controller.gridOptions.api.reload().then(function(responseData) {
 											imgEl.attr('src', response.data.image);								
 
@@ -2077,7 +2205,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 		                mdIcon: 'delete_forever',
 		                tooltip: '',
 		                fn: function(record, column, imgActionColumn) {
-							itemSrv.del(record.cdItem).then(function() {
+							itemService.del(record.cdItem).then(function() {
 								controller.gridOptions.api.reload();
 							});	                	
 		                }
@@ -2106,7 +2234,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 								revisionIcon.addClass('selected');
 							}	
 
-							itemSrv.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
+							itemService.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
 								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
 							});
 						});
@@ -2124,7 +2252,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 								favoriteIcon.addClass('selected');
 							}	
 
-							itemSrv.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
+							itemService.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
 								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
 							});
 						});
@@ -2145,16 +2273,16 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	};
 
 });
-angular.module('app').service('TextRestSrv', function(AppSrv) {
+angular.module('app').service('TextRestSrv', function(restService) {
 
 	var vm = this;
 
 	vm.list = function(cd_item) {
-		return AppSrv.requestWithPromise('text/list', {'cd_item': cd_item});
+		return restService.requestWithPromise('text/list', {'cd_item': cd_item});
 	}
 
 	vm.getContent = function(cd_texto) {
-		return AppSrv.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
+		return restService.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
 	}
 
 	vm.setContent = function(cd_texto, content) {
@@ -2162,12 +2290,12 @@ angular.module('app').service('TextRestSrv', function(AppSrv) {
 			title: 'Texts',
 			message: 'text updated successfully!'
 		}
-		return AppSrv.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
+		return restService.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
 	}
 
 
 });
-angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, GeneralSrv) {
+angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, generalService) {
 
 	var vm = this;
 
@@ -2176,12 +2304,12 @@ angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, Strin
 		controller.content = content;
         //controller.formatedContent = $sce.trustAsHtml(StringSrv.addLinksDictionaryAndPronunciation(controller.content));
         controller.formatedContent = StringSrv.addLinksDictionaryAndPronunciation(controller.content);
-		GeneralSrv.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
+		generalService.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
 	}
 
 
 });
-angular.module('app').service('VideoRestSrv', function(AppSrv) {
+angular.module('app').service('VideoRestSrv', function(restService) {
 
 	var vm = this;
 
@@ -2190,11 +2318,11 @@ angular.module('app').service('VideoRestSrv', function(AppSrv) {
 			title: 'Videos',
 			message: 'Video added successfully!'
 		}
-		return AppSrv.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
+		return restService.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
 	}
 
 	vm.get = function(cd_item) {
-		return AppSrv.requestWithPromise('video/get', {'cd_item': cd_item});
+		return restService.requestWithPromise('video/get', {'cd_item': cd_item});
 	}
 
 	vm.commentaries = {
@@ -2204,7 +2332,7 @@ angular.module('app').service('VideoRestSrv', function(AppSrv) {
 				title: 'Videos',
 				message: 'commentary updated successfully!'
 			}
-			return AppSrv.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
+			return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
 		}
 
 	}
@@ -2401,57 +2529,7 @@ angular.module('VideoMdl').service('VideoSrv', function($rootScope, $timeout, $s
 
 
 });
-angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.list = function(cd_item) {
-		return AppSrv.requestWithPromise('subtitle/list', {'cd_item': cd_item});
-	}
-
-	vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Subtitle added successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-	}
-
-	vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-	}
-
-	vm.incASecond = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return AppSrv.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-	}
-
-	vm.decASecond = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return AppSrv.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-	}
-
-	vm.del = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Subtitle deleted successfully!'
-		}
-		return AppSrv.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
-	}
-
-
-});
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
+angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, restService, uiDeniModalSrv) {
 
 	var vm = this;
   vm.cdItem;
@@ -2494,7 +2572,7 @@ angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($roo
           var textArea = $(wndImportSubtitle).find('textarea');
           lyrics = textArea.val();
 
-          AppSrv.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+          restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
             deferred.resolve(serverReturn.data);
           });   
         }
@@ -2503,6 +2581,56 @@ angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($roo
 
       return deferred.promise;
 	};
+
+});
+angular.module('app').service('SubtitleRestSrv', function(restService) {
+
+	var vm = this;
+
+	vm.list = function(cd_item) {
+		return restService.requestWithPromise('subtitle/list', {'cd_item': cd_item});
+	}
+
+	vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
+		var successfullyMessage = {
+			title: 'Inserting',
+			message: 'Subtitle added successfully!'
+		}
+		return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
+	}
+
+	vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
+	}
+
+	vm.incASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
+	vm.decASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
+	vm.del = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Deleting',
+			message: 'Subtitle deleted successfully!'
+		}
+		return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
+	}
+
 
 });
 angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
@@ -2706,7 +2834,7 @@ angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $route
 });
 'use strict';
 
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, GeneralSrv, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, ItemRestSrv) {
+angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, generalService, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, itemRestService) {
      
     var vm = this;
 
@@ -2720,7 +2848,7 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     vm.t05itm = null;
     vm.t07txt = null;
 
-    ItemRestSrv.get(vm.params.cdItem).then(function(serverResponse) {
+    itemRestService.get(vm.params.cdItem).then(function(serverResponse) {
         vm.t05itm = serverResponse.data.data[0];
         $rootScope.subTitle = vm.t05itm.dsItem;
     });
@@ -2749,7 +2877,7 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
     	    	vm.t07txt = vm.texts[current];
 
     			TextRestSrv.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
-    				GeneralSrv.getAllExpressions().then(function(response) {
+    				generalService.getAllExpressions().then(function(response) {
                         TextSrv.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
                         $rootScope.loading = false;
     				});
@@ -2797,7 +2925,7 @@ angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $r
 });
 'use strict';
 
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, ItemRestSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
+angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, generalService, itemRestService, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
 	var vm = this;
 	VideoSrv.setController(this);
 	vm.scope = $scope;
@@ -2810,7 +2938,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 	vm.commentaries = '';
 	vm.initialCommentaries = '';
 
-	ItemRestSrv.get($scope.params.cdItem).then(function(serverResponse) {
+	itemRestService.get($scope.params.cdItem).then(function(serverResponse) {
 		vm.t05itm = serverResponse.data.data[0];
 		$rootScope.subTitle = vm.t05itm.dsItem;
 	});
@@ -2822,7 +2950,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 
 	VideoSrv.configGridSubtitles(vm, $scope.params.cdItem);		
 	VideoSrv.configWYSIWYG(vm, $scope.params.cdItem);	
-	GeneralSrv.getAllExpressions().then(function(response) {
+	generalService.getAllExpressions().then(function(response) {
 		vm.gridSubtitlesOptions.api.repaint();
 	});
 
@@ -3079,126 +3207,6 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 			}
 	    };
 
-	};
-
-    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
-		var deferred = $q.defer();
-
-		var execRequest = function() {
-			var parametrosUrl = {params: parameters};			
-			$http.get(AppConsts.SERVER_URL + relativeUrl, parametrosUrl)
-				.then(function(retornoServer) {
-					if (retornoServer.data.success) {
-						if (successMessage) {						
-							uiDeniModalSrv.ghost(successMessage.title, successMessage.message);
-						}	
-						deferred.resolve(retornoServer);
-					} else {
-						throw retornoServer.data.message;
-					}	
-				})
-				.catch(function(retornoServer) {
-					if (retornoServer.data.message) {
-						uiDeniModalSrv.error(retornoServer.data.message);
-					} else {
-						uiDeniModalSrv.error(retornoServer.data);
-					}
-
-					deferred.reject(retornoServer);
-				});
-		};
-
-		if (confirmMessage) {
-			uiDeniModalSrv.confirm(confirmMessage)
-				.then(function (response) { 
-					if (response.button === 'yes') {
-						execRequest();
-					}
-				});	
-		} else {
-			execRequest();
-		}
-
-		return deferred.promise;
-    };
-
-    vm.requestWithPromisePayLoad = function(relativeUrl, parameters, parametersPayLoad, successMessage, confirmMessage) {
-		var deferred = $q.defer();
-
-		var execRequest = function() {
-	        var resource = $resource(AppConsts.SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
-	        resource.save(parametersPayLoad).$promise
-				.then(function(retornoServer) {
-					if (retornoServer.success) {
-						if (successMessage) {		
-							uiDeniModalSrv.ghost(successMessage.title, successMessage.message);			
-						}	
-						deferred.resolve(retornoServer);
-					} else {
-						uiDeniModalSrv.error(retornoServer.message);
-						deferred.reject(retornoServer);
-					}	
-				})
-				.catch(function(retornoServer) {
-					if (retornoServer.message) {
-						uiDeniModalSrv.error(retornoServer.message);
-					} else if (retornoServer.data) {
-						if (retornoServer.data.message) {
-							uiDeniModalSrv.error(retornoServer.data.message);
-						} else {
-							uiDeniModalSrv.error(retornoServer.data);
-						}
-					} else {
-						uiDeniModalSrv.error('Inespected Error!');
-					}	
-					deferred.reject(retornoServer);
-				});
-		};
-
-		if (confirmMessage) {
-			w2confirm(confirmMessage, function (btn) { 
-				if (btn === 'Yes') {
-					execRequest();
-				}		
-			});
-		} else {
-			execRequest();
-		}
-
-		return deferred.promise;
-    };
-
-	vm.getDataURLImagemObjeto = function(prObjeto, prLargura, prAltura, prQualidade) {
-		var xLarguraOriginal = 0;
-		var xAlturaOriginal = 0;	
-		if (prObjeto instanceof HTMLImageElement) { //Imagem
-			xLarguraOriginal = prObjeto.naturalWidth;
-			xAlturaOriginal = prObjeto.naturalHeight;		
-		} else {
-			xLarguraOriginal = prObjeto.videoWidth;
-			xAlturaOriginal = prObjeto.videoHeight;		
-		}	
-		
-		var canvas = document.createElement('canvas');
-		var xNovaLargura = prLargura;
-		var xNovaAltura = prAltura;
-		
-		var xPerc = 1;
-		if (xAlturaOriginal > xLarguraOriginal) {
-			xPerc = xNovaLargura / xLarguraOriginal;							
-			xNovaAltura = xPerc * xAlturaOriginal;
-		} else {
-			xPerc = xNovaAltura / xAlturaOriginal;
-			xNovaLargura = xPerc * xLarguraOriginal;							
-		}
-		
-		canvas.width  = xNovaLargura;
-		canvas.height = xNovaAltura;
-		var ctx = canvas.getContext('2d');
-
-		ctx.drawImage(prObjeto,0,0,xLarguraOriginal,xAlturaOriginal,0,0,xNovaLargura,xNovaAltura);
-
-		return canvas.toDataURL("image/png", prQualidade); //o certo é dimininuir também um pouco a qualidade...
 	};
 
 	/*

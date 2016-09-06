@@ -1,8 +1,8 @@
-describe('category', function () {
+describe('item', function () {
 
-	var $injector = angular.injector(['category']);
+	var $injector = angular.injector(['item']);
 	var scope;
-	var fakeCategory = {cdCategoria: 1, dsCategoria: '_Catecory-Testing'};
+	var fakeItem = {cdItem: 1, dsItem: '_Item-Testing'};
 	
 	beforeEach(inject(function(_$rootScope_) {
 		scope = _$rootScope_;
@@ -12,16 +12,39 @@ describe('category', function () {
 			then: function(callbackFn) {
 				callbackFn({
 					data: {
-						data: [fakeCategory]
+						data: [fakeItem]
 					}		
 				});
 			}
 		});		
 
-	}));		
+	}));
 
 
-	describe('categoryService', function () {
+	describe('itemService', function () {
+		var itemService = $injector.get('itemService');
+		var uiDeniModalSrv = $injector.get('uiDeniModalSrv');
+
+		beforeEach(function() {
+			spyOn(uiDeniModalSrv, 'createWindowDescriptionMoreImage').and.returnValue({
+				then: function(callbackFn){
+					callbackFn(fakeCategory.dsCategoria);
+				}
+			});		
+		});	
+
+		it("add", function (done) {
+			itemService.add(scope, 0).then(function(addedRecord) {
+				expect(addedRecord.cdItem).toBe(1);				
+				expect(addedRecord.dsItem).toBe(fakeItem.dsItem);
+				done();				
+			});
+		});
+
+	});	
+
+	/*
+	describe('CategorySrv', function () {
 		var categoryService = $injector.get('categoryService');
 		var uiDeniModalSrv = $injector.get('uiDeniModalSrv');
 
@@ -59,7 +82,7 @@ describe('category', function () {
 			
 	});
 
-	describe('categoryRestService', function () {
+	describe('CategoryRestSrv', function () {
 
 		var categoryRestService;
 
@@ -92,5 +115,6 @@ describe('category', function () {
 		});		
 
 	});	
+	*/
 	
 });

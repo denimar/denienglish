@@ -1,9 +1,9 @@
-angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
+angular.module('app').service('PronunciationRestSrv', function(restService) {
 
 	var vm = this;
 
 	vm.list = function() {
-		return AppSrv.requestWithPromise('pronunciation/list');
+		return restService.requestWithPromise('pronunciation/list');
 	}
 
 	vm.add = function(ds_expressao) {
@@ -11,7 +11,7 @@ angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 			title: 'Inserting',
 			message: 'Expression added successfully!'
 		}
-		return AppSrv.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
+		return restService.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
 	}
 
 	vm.del = function(cd_pronuncia) {
@@ -19,7 +19,7 @@ angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 			title: 'Deleting',
 			message: 'Expression deleted successfully!'
 		}
-		return AppSrv.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
+		return restService.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
 	}
 
 
@@ -28,7 +28,7 @@ angular.module('app').service('PronunciationRestSrv', function(AppSrv) {
 			title: 'Updating',
 			message: 'Expression updated successfully!'
 		}
-		return AppSrv.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
+		return restService.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
 	}
 
 });

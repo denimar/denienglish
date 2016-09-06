@@ -47,7 +47,9 @@ gulp.task('scripts', function() {
 	.pipe(addsrc.append('src/app/shared/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*.service.js'))	
 	.pipe(addsrc.append('src/app/shared/**/*ctrl.js'))  		
-	.pipe(addsrc.append('src/app/shared/**/*drv.js'))  			
+	.pipe(addsrc.append('src/app/shared/**/*.controller.js')) 	
+	.pipe(addsrc.append('src/app/shared/**/*drv.js'))
+	.pipe(addsrc.append('src/app/shared/**/*.directive.js'))	
   
 	//COMPONENTS FOLDER
 	.pipe(addsrc.append('src/app/components/**/*fltr.js'))  	
@@ -56,8 +58,10 @@ gulp.task('scripts', function() {
 	.pipe(addsrc.append('src/app/components/**/*val.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*.service.js'))  			
-	.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  		
+	.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  	
+	.pipe(addsrc.append('src/app/components/**/*.controller.js')) 	
 	.pipe(addsrc.append('src/app/components/**/*drv.js'))  		
+	.pipe(addsrc.append('src/app/components/**/*.directive.js'))		
 
 	//REST FOLDER
 	.pipe(addsrc.append('src/app/rest/*srv.js'))  	

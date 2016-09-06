@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, GeneralSrv, ItemRestSrv, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
+angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, generalService, itemRestService, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
 	var vm = this;
 	VideoSrv.setController(this);
 	vm.scope = $scope;
@@ -13,7 +13,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 	vm.commentaries = '';
 	vm.initialCommentaries = '';
 
-	ItemRestSrv.get($scope.params.cdItem).then(function(serverResponse) {
+	itemRestService.get($scope.params.cdItem).then(function(serverResponse) {
 		vm.t05itm = serverResponse.data.data[0];
 		$rootScope.subTitle = vm.t05itm.dsItem;
 	});
@@ -25,7 +25,7 @@ angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, 
 
 	VideoSrv.configGridSubtitles(vm, $scope.params.cdItem);		
 	VideoSrv.configWYSIWYG(vm, $scope.params.cdItem);	
-	GeneralSrv.getAllExpressions().then(function(response) {
+	generalService.getAllExpressions().then(function(response) {
 		vm.gridSubtitlesOptions.api.repaint();
 	});
 

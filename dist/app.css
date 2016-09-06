@@ -419,22 +419,22 @@ label {
     height: 310px;
     border: solid 1px #99bce8; }
 
-.new-video-item-modal-tpl {
+.new-video-item-modal-view {
   height: 100%;
   box-sizing: border-box;
   padding: 30px 10px 10px 10px; }
-  .new-video-item-modal-tpl md-input-container {
+  .new-video-item-modal-view md-input-container {
     padding: 0px;
     margin: 0px 0px 0px 0px;
     vertical-align: middle;
     width: 100%; }
-  .new-video-item-modal-tpl .kind-of-video {
+  .new-video-item-modal-view .kind-of-video {
     width: 100px;
     border-right: dotted 1px #e6e6e6;
     margin-right: 40px; }
-  .new-video-item-modal-tpl .main .video-id-input {
+  .new-video-item-modal-view .main .video-id-input {
     width: 220px; }
-  .new-video-item-modal-tpl .main .image-preview {
+  .new-video-item-modal-view .main .image-preview {
     width: 120px;
     height: 100px; }
 
