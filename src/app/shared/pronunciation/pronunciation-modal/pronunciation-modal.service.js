@@ -6,7 +6,7 @@
             .module('pronunciation')
             .service('pronunciationModalService', pronunciationModalService);
       
-      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, AppConsts, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
+      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
       	var vm = this;
             vm.controller;      
 

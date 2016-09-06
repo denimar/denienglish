@@ -118,6 +118,59 @@
 			return canvas.toDataURL("image/png", prQualidade); //o certo é dimininuir também um pouco a qualidade...
 		};
 
+		vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
+
+			var saveButton = function () {
+				var ui = $.summernote.ui;
+
+				// create button
+				var button = ui.button({
+					contents: '<i class="glyphicon glyphicon-floppy-save"/>',
+					tooltip: 'save changes',
+					click: function () {
+						fnExecSaveButton();
+					}
+				});
+
+				return button.render();   // return button as jquery object 
+			};
+
+
+			var cancelButton = function () {
+			  var ui = $.summernote.ui;
+			  
+			  // create button
+			  var button = ui.button({
+			    contents: '<i class="glyphicon glyphicon-remove"/>',
+			    tooltip: 'cancel changes',
+			    click: function () {
+			    	fnExecCancelButton();
+			    }
+			  });
+
+			  return button.render();   // return button as jquery object 
+			};
+
+		    return {
+				disableDragAndDrop : true,
+				toolbar: [
+					// [groupName, [list of button]]	      
+					['saveOrCancelButtons', ['saveButton', 'cancelButton']],
+					['fontsize', ['fontname', 'fontsize', 'color']],
+					['style', ['bold', 'italic', 'underline', 'clear']],		    		    
+					['para', ['ul', 'ol', 'paragraph']],
+					['height', ['height']],
+					['table', ['table']],
+					['insert', ['link','picture','video','hr']],
+					['view', ['fullscreen', 'codeview']],
+				],
+				buttons: {
+					saveButton: saveButton,
+					cancelButton: cancelButton
+				}
+		    };
+
+		};
 
 	};
 

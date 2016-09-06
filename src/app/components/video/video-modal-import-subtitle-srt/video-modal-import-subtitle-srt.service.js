@@ -6,7 +6,7 @@
     .module('video')
     .service('videoModalImportSubtitleSrtService', videoModalImportSubtitleSrtService);
 
-    function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv, Upload) {
+  function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv) {
 
   	var vm = this;
     vm.cdItem;
@@ -73,13 +73,6 @@
 
         return deferred.promise;
   	};
-
-    vm.uploaderOnAfterAddingFile = function(fileItem) {
-      vm.controller.file = fileItem.file; 
-      //var spanFileName = $('.video-modal-import-subtitle-srt .select-file-drag-and-drop .filename');
-      //spanFileName.html(fileItem.file.name);
-    };
-  	
 
   };
 

@@ -3,7 +3,7 @@
 	'use strict';
 
 	angular
-		.module('app')
+		.module('video')
 		.service('subtitleRestService', subtitleRestService);
 
 	function subtitleRestService(restService) {

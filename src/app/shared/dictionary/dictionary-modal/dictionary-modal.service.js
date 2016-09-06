@@ -7,7 +7,7 @@
             .service('dictionaryModalService', dictionaryModalService);
 
 
-      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, AppSrv, AppConsts, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
+      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
       	var vm = this;
             vm.controller;      
 

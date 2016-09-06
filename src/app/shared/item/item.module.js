@@ -3,6 +3,7 @@
 angular
 	.module('item', [
 		'ngResource', 		
+		'text',		
 		'video',
 		'expression',
 		'pronunciation',		

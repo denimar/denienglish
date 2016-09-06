@@ -6,7 +6,7 @@
 		.module('video')
 		.service('videoService', videoService);
 
-	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, AppSrv, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService) {
+	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
 		var vm = this;
 		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
 		vm.controller;
@@ -171,7 +171,7 @@
 		    	});
 			}
 
-			controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
+			controller.options = generalService.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
 		};
 
 		vm.editSubtitleButtonClick = function() {

@@ -68,7 +68,7 @@ gulp.task('scripts', function() {
 	//.pipe(addsrc.append('src/app/rest/*.service.js'))  		
 
 	//APP FOLDER
-	.pipe(addsrc.append('src/app/app.cnst.js'))
+	//.pipe(addsrc.append('src/app/app.cnst.js'))
 	.pipe(addsrc.append('src/app/app.cfg.js')) 
 	//.pipe(addsrc.append('src/app/app.srv.js')) 		
 	.pipe(addsrc.append('src/app/app.ctrl.js'))

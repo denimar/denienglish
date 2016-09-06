@@ -6,7 +6,7 @@
         .module('text')
         .controller('textController', textController);
 
-    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, AppSrv, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
          
         var vm = this;
 

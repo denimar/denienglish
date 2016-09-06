@@ -6,7 +6,7 @@
 		.module('text')
 		.service('textService', textService);
 
-	function textService(AppSrv, textRestService, stringService, generalService) {
+	function textService(textRestService, stringService, generalService) {
 
 		var vm = this;
 		vm.topParentNodeId = 275; //t02ctg.cdCategoria from the top parent node

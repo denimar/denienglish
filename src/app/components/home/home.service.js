@@ -75,7 +75,7 @@
 	    	var topParentNode = _getTopParentNode(controller);
 	    	var fnNewItem;
 
-			itemService.add(scope, topParentNode, controller.currentCategoryNode).then(function(addedItem) {
+			itemService.add(scope, topParentNode, controller.currentCategoryNode.id).then(function(addedItem) {
 				controller.gridOptions.api.reload().then(function(responseData) {
 					var objAdded = addedItem.data[0];
 					var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;

@@ -28,6 +28,7 @@ angular
 angular
 	.module('item', [
 		'ngResource', 		
+		'text',		
 		'video',
 		'expression',
 		'pronunciation',		
@@ -800,7 +801,7 @@ angular.module('app').config(function($compileProvider){
             .service('dictionaryModalService', dictionaryModalService);
 
 
-      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, AppSrv, AppConsts, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
+      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
       	var vm = this;
             vm.controller;      
 
@@ -1117,6 +1118,59 @@ angular.module('app').config(function($compileProvider){
 			return canvas.toDataURL("image/png", prQualidade); //o certo é dimininuir também um pouco a qualidade...
 		};
 
+		vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
+
+			var saveButton = function () {
+				var ui = $.summernote.ui;
+
+				// create button
+				var button = ui.button({
+					contents: '<i class="glyphicon glyphicon-floppy-save"/>',
+					tooltip: 'save changes',
+					click: function () {
+						fnExecSaveButton();
+					}
+				});
+
+				return button.render();   // return button as jquery object 
+			};
+
+
+			var cancelButton = function () {
+			  var ui = $.summernote.ui;
+			  
+			  // create button
+			  var button = ui.button({
+			    contents: '<i class="glyphicon glyphicon-remove"/>',
+			    tooltip: 'cancel changes',
+			    click: function () {
+			    	fnExecCancelButton();
+			    }
+			  });
+
+			  return button.render();   // return button as jquery object 
+			};
+
+		    return {
+				disableDragAndDrop : true,
+				toolbar: [
+					// [groupName, [list of button]]	      
+					['saveOrCancelButtons', ['saveButton', 'cancelButton']],
+					['fontsize', ['fontname', 'fontsize', 'color']],
+					['style', ['bold', 'italic', 'underline', 'clear']],		    		    
+					['para', ['ul', 'ol', 'paragraph']],
+					['height', ['height']],
+					['table', ['table']],
+					['insert', ['link','picture','video','hr']],
+					['view', ['fullscreen', 'codeview']],
+				],
+				buttons: {
+					saveButton: saveButton,
+					cancelButton: cancelButton
+				}
+		    };
+
+		};
 
 	};
 
@@ -1129,7 +1183,7 @@ angular.module('app').config(function($compileProvider){
 		.module('routines')
 		.service('restService', restService);
 
-	function restService($q, $http, uiDeniModalSrv) {
+	function restService($q, $resource, $http, uiDeniModalSrv) {
 		var vm = this;
 		vm.SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
 		//vm.SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally
@@ -1450,7 +1504,7 @@ angular.module('app').config(function($compileProvider){
             .module('pronunciation')
             .service('pronunciationModalService', pronunciationModalService);
       
-      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, AppConsts, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
+      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
       	var vm = this;
             vm.controller;      
 
@@ -1620,6 +1674,111 @@ angular.module('app').config(function($compileProvider){
 
 	angular
 		.module('app')
+		.service('spacedRevisionSelectExpressionsModalService', spacedRevisionSelectExpressionsModalService);
+
+	function spacedRevisionSelectExpressionsModalService($rootScope, $timeout, $filter, $q, revisionService, revisionRestService, uiDeniModalSrv) {
+		var vm = this;
+		vm.controller;
+		vm.expressions;
+
+		vm.setController = function(controller) {
+			vm.controller = controller;
+		}
+
+		vm.showModal = function(cdItem) {
+			var deferred = $q.defer();
+
+			$rootScope.loading = true;
+		
+			revisionService.getExpressions(cdItem, false).then(function(expressions) {
+				$rootScope.loading = false;
+
+				vm.expressions = expressions;			
+
+		        var modal = uiDeniModalSrv.createWindow({
+		            scope: $rootScope,
+		            title: 'Spaced Revision - Selecting Expressions',
+		            width: '750px',         
+		            height: '600px',
+		            position: uiDeniModalSrv.POSITION.CENTER,
+		            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+		            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.view.html',
+		            modal: true,
+		            listeners: {
+
+		            	onshow: function(objWindow) {
+		            	}
+
+		            }
+		        });
+
+				modal.show().then(function(modalResponse) {
+					if (modalResponse.button == 'ok') {
+						revisionRestService.updExpressions(cdItem, vm.controller.expressions).then(function() {
+							deferred.resolve(vm.controller.expressions);
+						});
+
+					} else {
+						deferred.reject();
+					}
+				});
+
+			});			
+
+
+			return deferred.promise;
+		}
+
+		vm.getExpressions = function() {
+			return vm.expressions;
+		}
+
+		vm.filterExpressionsDicionary = function(expression) {
+			return expression.t50dci;
+		}
+
+		vm.filterExpressionsPronunciation = function(expression) {
+			return expression.t51prn;
+		}
+
+		/*
+		vm.addWords = function() {
+
+			vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
+				return record.t50dci;
+			});
+
+			vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
+				return record.t51prn;
+			});
+
+
+		}
+
+		/*
+		vm.getNgModelExpression = function(expression) {
+			var ngModel;
+			if (expression.t50dci) {
+				ngModel = 'd' + expression.t50dci.cdDicionario;
+			} else {
+				ngModel = 'p' + expression.t51prn.cdPronuncia;
+			}
+
+			vm.controller.selectedExpressions[ngModel] = true;
+
+			return 'ctrl.selectedExpressions.' + ngModel;
+		}
+		*/
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
 		.service('spacedRevisionModalService', spacedRevisionModalService);
 
 	function spacedRevisionModalService($rootScope, $filter, stringService, videoService, dictionaryService, pronunciationService, revisionRestService, uiDeniModalSrv, revisionService, spacedRevisionSelectExpressionsModalService) {
@@ -1727,111 +1886,6 @@ angular.module('app').config(function($compileProvider){
 
 		}
 		
-	};
-
-})();	
-(function() {
-	
-	'use strict';
-
-	angular
-		.module('app')
-		.service('spacedRevisionSelectExpressionsModalService', spacedRevisionSelectExpressionsModalService);
-
-	function spacedRevisionSelectExpressionsModalService($rootScope, $timeout, $filter, $q, revisionService, revisionRestService, uiDeniModalSrv) {
-		var vm = this;
-		vm.controller;
-		vm.expressions;
-
-		vm.setController = function(controller) {
-			vm.controller = controller;
-		}
-
-		vm.showModal = function(cdItem) {
-			var deferred = $q.defer();
-
-			$rootScope.loading = true;
-		
-			revisionService.getExpressions(cdItem, false).then(function(expressions) {
-				$rootScope.loading = false;
-
-				vm.expressions = expressions;			
-
-		        var modal = uiDeniModalSrv.createWindow({
-		            scope: $rootScope,
-		            title: 'Spaced Revision - Selecting Expressions',
-		            width: '750px',         
-		            height: '600px',
-		            position: uiDeniModalSrv.POSITION.CENTER,
-		            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-		            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.view.html',
-		            modal: true,
-		            listeners: {
-
-		            	onshow: function(objWindow) {
-		            	}
-
-		            }
-		        });
-
-				modal.show().then(function(modalResponse) {
-					if (modalResponse.button == 'ok') {
-						revisionRestService.updExpressions(cdItem, vm.controller.expressions).then(function() {
-							deferred.resolve(vm.controller.expressions);
-						});
-
-					} else {
-						deferred.reject();
-					}
-				});
-
-			});			
-
-
-			return deferred.promise;
-		}
-
-		vm.getExpressions = function() {
-			return vm.expressions;
-		}
-
-		vm.filterExpressionsDicionary = function(expression) {
-			return expression.t50dci;
-		}
-
-		vm.filterExpressionsPronunciation = function(expression) {
-			return expression.t51prn;
-		}
-
-		/*
-		vm.addWords = function() {
-
-			vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
-				return record.t50dci;
-			});
-
-			vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
-				return record.t51prn;
-			});
-
-
-		}
-
-		/*
-		vm.getNgModelExpression = function(expression) {
-			var ngModel;
-			if (expression.t50dci) {
-				ngModel = 'd' + expression.t50dci.cdDicionario;
-			} else {
-				ngModel = 'p' + expression.t51prn.cdPronuncia;
-			}
-
-			vm.controller.selectedExpressions[ngModel] = true;
-
-			return 'ctrl.selectedExpressions.' + ngModel;
-		}
-		*/
-
 	};
 
 })();	
@@ -2085,6 +2139,27 @@ angular.module('app').config(function($compileProvider){
 
 	angular
 		.module('app')
+		.controller('SpacedRevisionSelectExpressionsModalController', SpacedRevisionSelectExpressionsModalController);
+
+	function SpacedRevisionSelectExpressionsModalController(spacedRevisionSelectExpressionsModalService) {
+		this.selectedExpressions = {};
+
+		spacedRevisionSelectExpressionsModalService.setController(this);
+		
+		this.expressions = spacedRevisionSelectExpressionsModalService.getExpressions();
+
+		this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModalService.filterExpressionsDicionary;
+		this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModalService.filterExpressionsPronunciation;
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
 		.controller('SpacedRevisionController', SpacedRevisionController);
 
 	function SpacedRevisionController(stringService, restService, itemService, revisionService, dictionaryService, spacedRevisionModalService) {		
@@ -2137,27 +2212,6 @@ angular.module('app').config(function($compileProvider){
 			new Error('Attributes passed in a wrong way!')
 		}
 		*/
-
-	};
-
-})();	
-(function() {
-	
-	'use strict';
-
-	angular
-		.module('app')
-		.controller('SpacedRevisionSelectExpressionsModalController', SpacedRevisionSelectExpressionsModalController);
-
-	function SpacedRevisionSelectExpressionsModalController(spacedRevisionSelectExpressionsModalService) {
-		this.selectedExpressions = {};
-
-		spacedRevisionSelectExpressionsModalService.setController(this);
-		
-		this.expressions = spacedRevisionSelectExpressionsModalService.getExpressions();
-
-		this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModalService.filterExpressionsDicionary;
-		this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModalService.filterExpressionsPronunciation;
 
 	};
 
@@ -2311,7 +2365,7 @@ angular.module('app').config(function($compileProvider){
 	    	var topParentNode = _getTopParentNode(controller);
 	    	var fnNewItem;
 
-			itemService.add(scope, topParentNode, controller.currentCategoryNode).then(function(addedItem) {
+			itemService.add(scope, topParentNode, controller.currentCategoryNode.id).then(function(addedItem) {
 				controller.gridOptions.api.reload().then(function(responseData) {
 					var objAdded = addedItem.data[0];
 					var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
@@ -2568,7 +2622,7 @@ angular.module('app').config(function($compileProvider){
     'use strict';
 
     angular
-	    .module('app')
+	    .module('text')
 	    .service('textRestService', textRestService);
 
 	function textRestService(restService) {
@@ -2602,7 +2656,7 @@ angular.module('app').config(function($compileProvider){
 		.module('text')
 		.service('textService', textService);
 
-	function textService(AppSrv, textRestService, stringService, generalService) {
+	function textService(textRestService, stringService, generalService) {
 
 		var vm = this;
 		vm.topParentNodeId = 275; //t02ctg.cdCategoria from the top parent node
@@ -2665,7 +2719,7 @@ angular.module('app').config(function($compileProvider){
 		.module('video')
 		.service('videoService', videoService);
 
-	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, AppSrv, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService) {
+	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
 		var vm = this;
 		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
 		vm.controller;
@@ -2830,7 +2884,7 @@ angular.module('app').config(function($compileProvider){
 		    	});
 			}
 
-			controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
+			controller.options = generalService.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
 		};
 
 		vm.editSubtitleButtonClick = function() {
@@ -2862,7 +2916,7 @@ angular.module('app').config(function($compileProvider){
 	'use strict';
 
 	angular
-		.module('app')
+		.module('video')
 		.service('subtitleRestService', subtitleRestService);
 
 	function subtitleRestService(restService) {
@@ -2989,7 +3043,7 @@ angular.module('app').config(function($compileProvider){
     .module('video')
     .service('videoModalImportSubtitleSrtService', videoModalImportSubtitleSrtService);
 
-    function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv, Upload) {
+  function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv) {
 
   	var vm = this;
     vm.cdItem;
@@ -3056,13 +3110,6 @@ angular.module('app').config(function($compileProvider){
 
         return deferred.promise;
   	};
-
-    vm.uploaderOnAfterAddingFile = function(fileItem) {
-      vm.controller.file = fileItem.file; 
-      //var spanFileName = $('.video-modal-import-subtitle-srt .select-file-drag-and-drop .filename');
-      //spanFileName.html(fileItem.file.name);
-    };
-  	
 
   };
 
@@ -3218,7 +3265,7 @@ angular.module('app').config(function($compileProvider){
         .module('text')
         .controller('textController', textController);
 
-    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, AppSrv, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
          
         var vm = this;
 
@@ -3494,125 +3541,12 @@ angular.module('app').config(function($routeProvider) {
     	});	
 
 });
-'use strict';
-
-angular.module('app').service('AppSrv', function($q, $resource, $http, uiDeniModalSrv) {
-
-	var vm = this;
-	vm.auxiliarMenu = [];
-
-	/**
-	 *
-	 * It works like this: ng-repeat="rec in grid.data track by getTrackById(rec)"
- 	 * 	
-	 */
-	vm.getNgRepeatTrackById = function(record) {
-		//The first property is gonna be the id property
-		var keyField = Object.keys(record)[0];
-		//Get the id value
-		return record[keyField];
-	};
-   
-	vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
-
-		var saveButton = function () {
-			var ui = $.summernote.ui;
-
-			// create button
-			var button = ui.button({
-				contents: '<i class="glyphicon glyphicon-floppy-save"/>',
-				tooltip: 'save changes',
-				click: function () {
-					fnExecSaveButton();
-				}
-			});
-
-			return button.render();   // return button as jquery object 
-		};
-
-
-		var cancelButton = function () {
-		  var ui = $.summernote.ui;
-		  
-		  // create button
-		  var button = ui.button({
-		    contents: '<i class="glyphicon glyphicon-remove"/>',
-		    tooltip: 'cancel changes',
-		    click: function () {
-		    	fnExecCancelButton();
-		    }
-		  });
-
-		  return button.render();   // return button as jquery object 
-		};
-
-	    return {
-			disableDragAndDrop : true,
-			toolbar: [
-				// [groupName, [list of button]]	      
-				['saveOrCancelButtons', ['saveButton', 'cancelButton']],
-				['fontsize', ['fontname', 'fontsize', 'color']],
-				['style', ['bold', 'italic', 'underline', 'clear']],		    		    
-				['para', ['ul', 'ol', 'paragraph']],
-				['height', ['height']],
-				['table', ['table']],
-				['insert', ['link','picture','video','hr']],
-				['view', ['fullscreen', 'codeview']],
-			],
-			buttons: {
-				saveButton: saveButton,
-				cancelButton: cancelButton
-			}
-	    };
-
-	};
-
-	/*
-	this.atualizaItemSelecionado = function(descricao, elementoImg) {
-		var $divItemSelecionado = $('.selecionado');
-		var $img = $divItemSelecionado.find('img');
-	}
-	*/
-
-	vm.listenExpression = function(expression, callbackFunction) {
-		if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
-			//var siteBuscar = 'http://emmasaying.com/?s=';
-			var siteBuscar = 'http://www.wordreference.com/enpt/';
-			window.open(siteBuscar + expression);
-		} else {
-			var u = new SpeechSynthesisUtterance();
-			u.text = expression;
-			u.lang = 'en-US';
-
-			u.rate = 0.8;
-			
-			u.onstart = function(event) { 
-			}
-			u.onend = function(event) { 
-				if (callbackFunction) {
-					callbackFunction();
-				}
-			}
-			
-			speechSynthesis.speak(u);
-		}	
-	};
-
-	/*
-	this.getArrayPronunciasEDicionario = function() {
-		return varsSrv;		
-	}
-	*/
-
-});
-angular.module('app').controller('AppCtrl', function($scope, $rootScope, $route, $routeParams, $location, AppSrv) {
+angular.module('app').controller('AppCtrl', function($scope, $rootScope, $route, $routeParams, $location) {
 	
 	$scope.$route = $route;
 	$scope.$location = $location;
 	$scope.$routeParams = $routeParams;		
 
 	$rootScope.loading = false;
-	//$scope.auxiliarMenu	= AppSrv.auxiliarMenu;
-
 
 });

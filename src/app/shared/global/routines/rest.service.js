@@ -6,7 +6,7 @@
 		.module('routines')
 		.service('restService', restService);
 
-	function restService($q, $http, uiDeniModalSrv) {
+	function restService($q, $resource, $http, uiDeniModalSrv) {
 		var vm = this;
 		vm.SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
 		//vm.SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally

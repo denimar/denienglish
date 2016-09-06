@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-	    .module('app')
+	    .module('text')
 	    .service('textRestService', textRestService);
 
 	function textRestService(restService) {
