@@ -1,12 +1,19 @@
-//ENUMERATIONS
-angular.module('app').constant('DictionaryModalEnums', {
+(function() {
 
-	SearchState: {
-		STOPPED: 0,
-		SEARCHING: 1,
-		SEARCHED: 2,
-		ADDING: 3,
-		ADDED: 4,		
-	},
+	'use strict';
 
-});	
+	angular
+		.module('dictionary')
+		.constant('dictionaryModalEnums', {
+
+			SearchState: {
+				STOPPED: 0,
+				SEARCHING: 1,
+				SEARCHED: 2,
+				ADDING: 3,
+				ADDED: 4,		
+			},
+
+		});
+
+})();	

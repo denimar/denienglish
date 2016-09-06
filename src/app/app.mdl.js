@@ -2,8 +2,8 @@
 
 angular.module('app', [
 	'ngRoute',
-	'TextMdl',
-	'VideoMdl',
+	'text',
+	'video',
 	'ngMaterial', 
 	'ngResource',
 	'ngMessages', 
@@ -12,9 +12,13 @@ angular.module('app', [
 	'ui-deni-grid',
 	'uiDeniModalMdl',
 
+	'expression',
+	'dictionary',
+	'pronunciation',
+
 	'category',
 	'item',	
-	'routinesMdl',
+	'routines',
 
 	"com.2fdevs.videogular",
 	"com.2fdevs.videogular.plugins.controls",

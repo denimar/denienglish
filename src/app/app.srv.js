@@ -1,45 +1,9 @@
 'use strict';
 
-angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
+angular.module('app').service('AppSrv', function($q, $resource, $http, uiDeniModalSrv) {
 
 	var vm = this;
-	vm.currentCategory = null; //Category Id	
-	
-	vm.allExpressions = []; //All Expressions (Dictionary plus Pronunciations)
-	vm.dictionaryExpressions = [];
-	vm.pronunciationExpressions = [];	
 	vm.auxiliarMenu = [];
-
-	/**
-	 * className is waiting for a array of String considering: hide-x, hide-gt-xs, hide-sm, hide-md...
-	 * side is waiting for AppEnums.Side.LEFT | AppEnums.Side.RIGHT
-	 * reference: https://material.angularjs.org/latest/layout/options
-	 */
-	vm.createHamburgerButton = function(classArray, side) {
-		var hamburgerIconButton = $(document.createElement('button'));
-		hamburgerIconButton.addClass("md-button");		
-		hamburgerIconButton.addClass("md-icon-button");
-		hamburgerIconButton.addClass("md-ink-ripple");
-
-		for (var index = 0 ; index < classArray.length ; index++) {
-			var className = classArray[index];
-			hamburgerIconButton.attr(className, "");
-			hamburgerIconButton.addClass(className);	
-		}
-
-		var hamburgerIconButtonImg = $(document.createElement('img'));
-		hamburgerIconButtonImg.attr('src', 'src/assets/images/hamburger.png');
-		hamburgerIconButtonImg.addClass("hamburger-button");
-		hamburgerIconButton.append(hamburgerIconButtonImg);
-
-		var mainToobar = $('.md-toolbar-tools-main');
-
-		if (side === AppEnums.Side.LEFT) {
-			mainToobar.prepend(hamburgerIconButton);
-		} else {
-			mainToobar.append(hamburgerIconButton);			
-		}	
-	};
 
 	/**
 	 *
@@ -56,18 +20,18 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 	vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
 
 		var saveButton = function () {
-		  var ui = $.summernote.ui;
-		  
-		  // create button
-		  var button = ui.button({
-		    contents: '<i class="glyphicon glyphicon-floppy-save"/>',
-		    tooltip: 'save changes',
-		    click: function () {
-				fnExecSaveButton();
-		    }
-		  });
+			var ui = $.summernote.ui;
 
-		  return button.render();   // return button as jquery object 
+			// create button
+			var button = ui.button({
+				contents: '<i class="glyphicon glyphicon-floppy-save"/>',
+				tooltip: 'save changes',
+				click: function () {
+					fnExecSaveButton();
+				}
+			});
+
+			return button.render();   // return button as jquery object 
 		};
 
 

@@ -1,23 +1,22 @@
 (function() {
+	
 	'use strict';
 
 	angular
-		.module('routinesMdl')
+		.module('routines')
 		.service('restService', restService);
 
 	function restService($q, $http, uiDeniModalSrv) {
-
 		var vm = this;
-
-		var SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
-		//var SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally
+		vm.SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
+		//vm.SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally
 
 	    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
 			var deferred = $q.defer();
 
 			var execRequest = function() {
 				var parametrosUrl = {params: parameters};			
-				$http.get(SERVER_URL + relativeUrl, parametrosUrl)
+				$http.get(vm.SERVER_URL + relativeUrl, parametrosUrl)
 					.then(function(retornoServer) {
 						if (retornoServer.data.success) {
 							if (successMessage) {						
@@ -65,7 +64,7 @@
 			var deferred = $q.defer();
 
 			var execRequest = function() {
-		        var resource = $resource(SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
+		        var resource = $resource(vm.SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
 		        resource.save(parametersPayLoad).$promise
 					.then(function(retornoServer) {
 						if (retornoServer.success) {

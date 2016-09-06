@@ -1,28 +1,66 @@
-angular.module('routinesMdl', []);
 'use strict';
 
 angular
 	.module('category', [
 		'ngResource', 
-		'routinesMdl', 
+		'routines', 
 		'uiDeniModalMdl'
 	]);
 'use strict';
 
 angular
+	.module('dictionary', [
+		
+	]);
+(function() {
+
+	'use strict';
+
+	angular
+		.module('expression', [
+		]);
+
+})();
+
+
+'use strict';
+
+angular
 	.module('item', [
 		'ngResource', 		
-		'routinesMdl', 
+		'video',
+		'expression',
+		'pronunciation',		
+		'dictionary',
+		'routines', 
 		'uiDeniModalMdl'		
 	]);
-angular.module('TextMdl', []);
-angular.module('VideoMdl', []);
+'use strict'
+
+angular
+	.module('pronunciation', [
+	]);
+'use strict';
+
+angular
+	.module('routines', [
+	]);
+'use strict';
+
+angular
+	.module('text', [
+	]);
+'use strict';
+
+angular
+	.module('video', [
+	]);
 'use strict';
 
 angular.module('app', [
 	'ngRoute',
-	'TextMdl',
-	'VideoMdl',
+	'text',
+	'video',
 	'ngMaterial', 
 	'ngResource',
 	'ngMessages', 
@@ -31,9 +69,13 @@ angular.module('app', [
 	'ui-deni-grid',
 	'uiDeniModalMdl',
 
+	'expression',
+	'dictionary',
+	'pronunciation',
+
 	'category',
 	'item',	
-	'routinesMdl',
+	'routines',
 
 	"com.2fdevs.videogular",
 	"com.2fdevs.videogular.plugins.controls",
@@ -49,1134 +91,42 @@ angular.module('app', [
 angular.module('app').config(function($compileProvider){
 	$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|javascript):/);
 });
-//ENUMERATIONS
-angular.module('app').constant('DictionaryModalEnums', {
+(function() {
 
-	SearchState: {
-		STOPPED: 0,
-		SEARCHING: 1,
-		SEARCHED: 2,
-		ADDING: 3,
-		ADDED: 4,		
-	},
+	'use strict';
 
-});	
-//ENUMERATIONS
-angular.module('app').constant('PronunciationModalEnums', {
+	angular
+		.module('dictionary')
+		.constant('dictionaryModalEnums', {
 
-	SearchState: {
-		STOPPED: 0,
-		SEARCHING: 1,
-		SEARCHED: 2,
-		ADDING: 3,
-		ADDED: 4,		
-	},
+			SearchState: {
+				STOPPED: 0,
+				SEARCHING: 1,
+				SEARCHED: 2,
+				ADDING: 3,
+				ADDED: 4,		
+			},
 
-});	
-'use strict';
-
-angular.module('app').service('DictionaryRestSrv', function(restService) {
-
-	var vm = this;
-
-	vm.list = function() {
-		return restService.requestWithPromise('dictionary/list');
-	};
-
-	vm.add = function(ds_expressao, ds_tags) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Expression added successfully!'
-		};
-		return restService.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
-	};
-
-	vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Expression updated successfully!'
-		}
-		return restService.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
-	}	
-
-	vm.del = function(cd_dicionario) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Expression deleted successfully!'
-		};
-		return restService.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
-	};
-
-
-	vm.learnedToogle = function(cd_dicionario) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Expression updated successfully!'
-		};
-		return restService.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
-	};
-
-	vm.definitionSet = function(cd_dicionario, definition) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Expression updated successfully!'
-		};
-		return restService.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
-	};
-
-	vm.definitionGet = function(cd_dicionario) {
-		return restService.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
-	};	
-
-});
-'use strict';
-
-angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, dictionaryModalSrv, uiDeniModalSrv, pronunciationSrv) {
-
-	var vm = this;
-
-	vm.list = function() {
-		return DictionaryRestSrv.list();
-	};
-
-	vm.add = function(ds_expressao, ds_tags) {
-		return DictionaryRestSrv.add(ds_expressao, ds_tags);
-	}
-
-	vm.del = function(cd_dicionario) {
-		return DictionaryRestSrv.del(cd_dicionario);
-	};
-
-
-	vm.learnedToogle = function(cd_dicionario) {
-		return DictionaryRestSrv.learnedToogle(cd_dicionario);
-	};
-
-	vm.definitionSet = function(cd_dicionario, definition) {
-		return DictionaryRestSrv.definitionSet(cd_dicionario, definition);
-	};
-
-	vm.definitionGet = function(cd_dicionario) {
-		var deferred = $q.defer();
-
-		DictionaryRestSrv.definitionGet(cd_dicionario).then(function(serverResponse) {
-			deferred.resolve(serverResponse.data.data[0].txDefinicao);			
 		});
 
-		return deferred.promise;
-	};
-
-	vm.openDictionaryDefinitionView = function(scope, cdDicionario, dsExpressao) {
-
-		if (event.ctrlKey) {
-			
-			pronunciationSrv.listenExpression(dsExpressao);
-
-		} else {
-	        uiDeniModalSrv.createWindow({
-	            scope: scope,
-	            title: 'Dictionary - ' + dsExpressao,
-	            width: '800px',         
-	            height: '500px',
-	            position: uiDeniModalSrv.POSITION.CENTER,
-	            buttons: [uiDeniModalSrv.BUTTON.OK],
-	            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
-	            modal: true
-	        }).show();        
-	    }
-
-	};	
-
-});
-angular.module('app').service('PronunciationRestSrv', function(restService) {
-
-	var vm = this;
-
-	vm.list = function() {
-		return restService.requestWithPromise('pronunciation/list');
-	}
-
-	vm.add = function(ds_expressao) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Expression added successfully!'
-		}
-		return restService.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
-	}
-
-	vm.del = function(cd_pronuncia) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Expression deleted successfully!'
-		}
-		return restService.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
-	}
-
-
-	vm.learnedToogle = function(cd_pronuncia) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Expression updated successfully!'
-		}
-		return restService.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
-	}
-
-});
-angular.module('app').service('pronunciationSrv', function($q, $window) {
-
-	var vm = this;
-
-	this.listenExpression = function(expression) {
-		var deferred = $q.defer();
-
-		try {
-			if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
-				//var altenativeSite = 'http://emmasaying.com/?s=';
-				var altenativeSite = 'http://www.wordreference.com/enpt/'
-				$window.open(altenativeSite + expression);
-			} else {
-				var timer = setInterval(function() {
-				    var voices = speechSynthesis.getVoices();
-				    if (voices.length !== 0) {
-				    	clearInterval(timer);
-
-						var sentence = new SpeechSynthesisUtterance();
-						sentence.text = expression;
-						sentence.lang = 'en-US';
-
-					    for(var i = 0; i < voices.length; i++) {
-							if(voices[i].lang == sentence.lang ){
-								sentence.voice = voices[i];
-								break;
-							}
-						}				
-
-						sentence.rate = 0.8;
-						
-						sentence.onstart = function(event) { 
-						}
-						sentence.onend = function(event) { 
-							deferred.resolve();
-						}
-						
-						speechSynthesis.speak(sentence);
-					}
-						
-				}, 200);
-					
-			}	
-		} catch(e) {
-			deferred.reject(e);
-		}
-
-		return deferred.promise;
-	}
-
-
-});
-angular.module('app').service('RevisionRestSrv', function(restService) {
-
-	var vm = this;
-
-	vm.getItemInfo = function(cd_item) {
-		return restService.requestWithPromise('revision/item/info', {'cd_item': cd_item});
-	}
-
-	vm.getExpressions = function(cd_item, onlyVisible) {
-		return restService.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
-	}
-
-	vm.updExpressions = function(cd_item, expressions) {
-		var successfullyMessage = {
-			title: 'Spaced Revision',
-			message: 'expressions updated succesfully!'
-		}
-		return restService.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
-	}
-
-	vm.updText = function(cd_item, returnOnlyVisible) {
-		var successfullyMessage = {
-			title: 'Spaced Revision',
-			message: 'expressions updated succesfully!'
-		}
-		return restService.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
-	}
-
-	vm.markAsReviewed = function(cd_item) {
-		return restService.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
-	}
-	
-
-});
-angular.module('app').service('revisionSrv', function($q, RevisionRestSrv) {
-
-	var vm = this;
-
-	vm.getItemInfo = function(cd_item) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.getItemInfo(cd_item).then(function(serverResponse) {
-			var informations = serverResponse.data.data[0];
-			deferred.resolve(informations);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-	vm.getExpressions = function(cd_item, onlyVisible) {
-		var deferred = $q.defer();
-
-		RevisionRestSrv.getExpressions(cd_item, onlyVisible).then(function(serverResponse) {
-			var expressions = serverResponse.data.data;
-			deferred.resolve(expressions);
-		}, function(reason) {
-			deferred.reject(reason);
-		});
-
-		return deferred.promise;
-	}
-
-});
-'use strict';
-
-angular.module('app').service('dictionaryModalSrv', function($rootScope, $q, $timeout, uiDeniModalSrv, DictionaryModalEnums, AppSrv, AppConsts, DictionaryRestSrv, dictionaryModalEditSrv) {
-
-	var vm = this;
-      vm.controller;      
-
-      var expressionAdded = null;
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      };
-
-	vm.showModal = function(scope) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Dictionary',
-                  width: '700px',         
-                  height: '580px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
-                  urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(objWindow) {
-                  	}
-
-                  }
-            }).show().then(function() {
-                  AppSrv.allExpressions = AppSrv.pronunciationExpressions.concat(vm.controller.gridDictionaryOptions.alldata);
-                  deferred.resolve(vm.controller.gridDictionaryOptions.alldata);
-            });
-
-            return deferred.promise;
-	};	
-
-      var _editExpression = function(record) {
-            dictionaryModalEditSrv.showModal($rootScope, record).then(function(modelAdded) {
-                  record.dsExpressao = modelAdded.dsExpression;
-                  record.dsTags = modelAdded.dsTags;   
-                  var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
-                  vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
-                  vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
-            });
-      }
-
-      vm.getGridDictionaryOptions = function() {
-
-            return {
-                  keyField: 'cdDicionario',
-                  rowHeight: '25px',
-                  data: AppSrv.dictionaryExpressions,
-                  hideHeaders: true,
-                  columns: [
-                        {
-                              name: 'dsExpressao',
-                              width: '40%'
-                        },
-                        {
-                              name: 'dsTags',
-                              width: '40%'
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'edit',
-                                    tooltip: 'Edit the current expression',
-                                    fn: function(record, column, imgActionColumn) {
-                                          _editExpression(record);
-                                    }
-                              }                 
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'delete_forever',
-                                    tooltip: 'Remove a expression from dictionary',
-                                    fn: function(record, column, imgActionColumn) {
-                                          DictionaryRestSrv.del(record.cdDicionario).then(function(serverResponse) {
-
-                                                var deleteItemFn = function(data) {
-                                                      for (var i = data.length - 1; i >= 0; i--) {
-                                                            if (data[i].cdDicionario == record.cdDicionario) {
-                                                                  data.splice(i, 1);
-                                                                  break;
-                                                            }
-                                                      }
-                                                }
-
-                                                deleteItemFn(vm.controller.gridDictionaryOptions.data);
-                                                deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
-                                                vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
-
-                                          });
-                                    }
-                              }                 
-                        }
-                  ],
-                  listeners: {
-                        onselectionchange: function(ctrl, element, rowIndex, record) {
-                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
-                              var element = angular.element(dictionaryDefinitionView);
-                              var scope = element.scope();
-                              scope.$$childTail.ctrl.cdDicionario = record.cdDicionario;
-                              if (!scope.$$phase) {
-                                    scope.$apply();
-                              }                              
-                        },
-
-                        onbeforeload: function() {
-                              var dictionaryDefinitionView = $('.dictionary-modal .dictionary-definition-view');
-                              var element = angular.element(dictionaryDefinitionView);
-                              var scope = element.scope();
-                              scope.$$childTail.ctrl.cdDicionario = null;
-                        },
-
-                        onafterload: function(data, gridOptions) {
-                              if (expressionAdded) {
-                                    gridOptions.api.selectRow(expressionAdded);
-                                    expressionAdded = null;
-                              }
-                        },
-
-                        onrowdblclick: function(record, rowElement, rowIndex) {
-                              _editExpression(record);
-                        }
-                  }   
-            }
-
-      };
-
-      vm.searchInputChange = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHING;
-      };
-
-      vm.searchInputKeydown = function() {
-            if (event.keyCode == 13) {  //Return Key
-
-                  //Find a Record
-                  if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) {
-                        vm.searchButtonClick(vm.controller);
-
-                  //Add a Record    
-                  } else if (vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED) {
-                        vm.searchButtonAddClick()
-                  }     
-            }
-      };
-
-      vm.showSearchButton = function(button) {
-            return (
-                        (button == 'search' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHING) ||
-                        (button == 'add' && vm.controller.searchState == DictionaryModalEnums.SearchState.SEARCHED)
-                   );
-      };
-
-      vm.searchButtonClick = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.SEARCHED;            
-            var searchInput = $('.dictionary-modal .search-input');            
-            vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
-      };
-
-      vm.searchButtonAddClick = function() {
-            vm.controller.searchState = DictionaryModalEnums.SearchState.ADDED;            
-            var searchInput = $('.dictionary-modal .search-input');            
-            var expressionAdd = searchInput.val();
-            
-            DictionaryRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  expressionAdded = serverResponse.data.data[0];
-
-                  var insertItemFn = function(data) {
-                        var indexAdd = data.length;
-                        for (var i = data.length - 1; i >= 0; i--) {
-                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
-                                    indexAdd = i;
-                                    break;
-                              }
-                        }
-                        data.splice(indexAdd, 0, expressionAdded);                        
-                  }
-
-                  insertItemFn(vm.controller.gridDictionaryOptions.data);
-                  insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
-                  vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
-
-                  vm.controller.searchState = DictionaryModalEnums.SearchState.STOPPED;
-            });
-      };
-
-      vm.showLoading = function() {
-            return vm.controller.searchState == DictionaryModalEnums.SearchState.ADDED;
-      };
-
-
-});
-'use strict';
-
-angular.module('app').service('DatabaseSrv', function() {
-
-	var me = this;
-
-});
-'use strict';
-
-angular.module('app').service('StringSrv', function(AppSrv) {
-
-	var me = this;
-
-	me.format = function() {
-		var formatted = arguments[0];
-		for (var i = 1; i < arguments.length; i++) {
-			var regexp = new RegExp('\\{' + (i - 1).toString() + '\\}', 'gi');
-			formatted = formatted.replace(regexp, arguments[i]);
-		}
-		return formatted;        
-	};
-
-
-    me.leftPad = function(numero, qtdVezes, caracterRepetir) {
-        var retorno = qtdVezes - numero.toString().length + 1;
-        return Array(+(retorno > 0 && retorno)).join(caracterRepetir) + numero;
-    }  ;  
-
-    me.replaceAll = function(string, find, replace) {
-        if (string) {
-            return string.replace(RegExp('\\b' + find + '\\b','g'), replace);   
-        } else {
-            return '';
-        }
-    };       
-
-
-    me.doubleToStrTime = function(segundos) {
-        //00:05:22,900
-
-        var  SEGUNDOS_HORA = 3600;      
-        var SEGUNDOS_MINUTO = 60;
-        
-        //var xSegundos = segundos;
-        
-        var xHoras = (segundos / SEGUNDOS_HORA);
-        var xHorasStr = me.leftPad(Math.floor(xHoras), 2, "0");
-        
-        //xSegundos = xSegundos % SEGUNDOS_HORA;
-        
-        var xMinutos = (segundos / SEGUNDOS_MINUTO);
-        var xMinutosStr = me.leftPad(Math.floor(xMinutos), 2, "0");
-
-        var xSegundosStr = (segundos % SEGUNDOS_MINUTO).toString();   
-        var xSegundosFrac = "000";
-        var xPosSeg = xSegundosStr.indexOf(".");
-        if (xPosSeg != -1) {
-            xSegundosFrac = xSegundosStr.substring(xPosSeg + 1).substring(0, 3);
-            xSegundosFrac += "0".repeat(3 - xSegundosFrac.length);
-            xSegundosStr = xSegundosStr.substring(0, xPosSeg);
-        }
-        xSegundosStr = me.leftPad(Math.floor(xSegundosStr), 2, "0") + "," + xSegundosFrac; 
-        
-        return xHorasStr + ":" + xMinutosStr + ":" + xSegundosStr;
-    };   
-
-    me.strTimeToDouble = function(strTime) {
-        //00:05:22,900
-        var xTimeStr = strTime;
-        var xHours = parseInt(xTimeStr.substring(0, 2));
-        var xMinutes = parseInt(xTimeStr.substring(3, 5));
-        xTimeStr = xTimeStr.substring(6, xTimeStr.length).replace(",", ".");
-        var xSeconds = parseFloat(xTimeStr);        
-        
-        return (xHours * 3600) + (xMinutes * 60) + xSeconds;
-    };       
-
-
-	/*
-	 * @param array deve conter os array do dicionário e das pronúncias contatenado, formando um grande array.
-	 *
-	 */
-	me.addLinksDictionaryAndPronunciation = function(text) {
-		if (AppSrv.allExpressions.length == 0) {
-			return text;
-		} else {
-			//Order by Length of the Expressions
-			var array = AppSrv.allExpressions.sort(function(a, b){
-			  // ASC  -> a.length - b.length
-			  // DESC -> b.length - a.length
-			  return b.dsExpressao.length - a.dsExpressao.length;
-			});
-
-
-			var texto = me.replaceAll(text, '"', "'");
-			var textoLower = texto.toLowerCase();	
-			var matrizSubst = 'matrizsubst1-{0}-matrizsubst2';
-			var expressoesSubst = [];
-			var contaSubst = 0;
-			
-			for (var conta = 0 ; conta < array.length ; conta++) {
-				var item = array[conta];
-				var expressionsToReplace = [];
-				expressionsToReplace.push(item.dsExpressao.toLowerCase());
-
-				if (item.dsTags) {
-					var tagsArray = item.dsTags.split(',');
-					angular.forEach(tagsArray, function(tag) {
-						expressionsToReplace.push(tag.trim().toLowerCase());
-					});
-				}
-
-				angular.forEach(expressionsToReplace, function(expressaoLower) {
-					var posExpressao = textoLower.search(new RegExp('\\b' + expressaoLower + '\\b'));
-					while (posExpressao != -1) {
-						var textoSubs = texto.substring(posExpressao, posExpressao + expressaoLower.length);
-						if (textoSubs.toLowerCase() == expressaoLower) {
-							expressoesSubst.push({
-								cd_pronuncia: item.cdPronuncia,
-								cd_dicionario: item.cdDicionario,								
-								ds_expressao: item.dsExpressao,
-								texto: textoSubs
-							});
-							var subst = me.format(matrizSubst, contaSubst);
-							texto = texto.replace(new RegExp('\\b' + textoSubs + '\\b', "g"), subst);
-
-							contaSubst++;
-							//xPos += subst.length;
-							textoLower = texto.toLowerCase();	
-						}
-						
-						posExpressao = textoLower.search(new RegExp('\\b' + expressaoLower + '\\b'));
-					}
-				});	
-
-			}
-
-			for (var conta = 0 ; conta < expressoesSubst.length ; conta++) {
-				var item = expressoesSubst[conta];
-				var find = me.format(matrizSubst, conta);
-				var replace = null;
-				var functionExec = null;
-				var classLink = null;
-				if (item.cd_dicionario) {
-					functionExec = 'openDictionary(' + item.cd_dicionario + ', \'' + item.texto + '\');';
-					classLink = 'dictionary-link';
-				} else {
-					functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					
-					classLink = 'pronunciation-link';					
-				}
-				//replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.texto, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
-				replace = '<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.texto + '</span>';
-				texto = me.replaceAll(texto, find, replace);		
-			}					
-
-			return texto;
-		}	
-	};
-
-});
-angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
-
-	var vm = this;
-      vm.controller;      
-
-      var expressionAdded = null;
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      }
-
-	vm.showModal = function(scope) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Pronunciation',
-                  width: '550px',         
-                  height: '450px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.CLOSE],
-                  urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(objWindow) {
-      					
-                  	}
-
-                  }
-            }).show().then(function() {
-                  AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
-                  deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
-            });
-
-            return deferred.promise;
-	}	
-
-      vm.getGridPronunciationOptions = function() {
-
-            return {
-                  keyField: 'cdPronuncia',
-                  rowHeight: '25px',
-                  data: AppSrv.pronunciationExpressions,
-                  hideHeaders: true,
-                  columns: [
-                        {
-                              name: 'dsExpressao',
-                              width: '80%'
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'headset',
-                                    tooltip: 'Listen the selected expression',
-                                    fn: function(record, column, imgActionColumn) {
-                                          pronunciationSrv.listenExpression(record.dsExpressao);                 
-                                    }
-                              }                 
-                        },
-                        {
-                              width: '10%',
-                              action: {
-                                    mdIcon: 'delete_forever',
-                                    tooltip: 'Remove a expression from pronunciation',
-                                    fn: function(record, column, imgActionColumn) {
-                                          PronunciationRestSrv.del(record.cdPronuncia).then(function(serverResponse) {
-
-                                                var deleteItemFn = function(data) {
-                                                      for (var i = data.length - 1; i >= 0; i--) {
-                                                            if (data[i].cdPronuncia == record.cdPronuncia) {
-                                                                  data.splice(i, 1);
-                                                                  break;
-                                                            }
-                                                      }
-                                                }
-
-                                                deleteItemFn(vm.controller.gridPronunciationOptions.data);
-                                                deleteItemFn(vm.controller.gridPronunciationOptions.alldata);                  
-                                                vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
-
-                                          });
-                                    }
-                              }                 
-                        }
-                  ],
-                  listeners: {
-                        onafterload: function(data, gridOptions) {
-                              if (expressionAdded) {
-                                    gridOptions.api.selectRow(expressionAdded);
-                                    expressionAdded = null;
-                              }
-                        },
-                  }
-            }
-
-      }
-
-      vm.searchInputChange = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHING;
-      }
-
-      vm.searchInputKeydown = function() {
-            if (event.keyCode == 13) {  //Return Key
-
-                  //Find a Record
-                  if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) {
-                        vm.searchButtonClick(vm.controller);
-
-                  //Add a Record    
-                  } else if (vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED) {
-                        vm.searchButtonAddClick()
-                  }     
-            }
-      }
-
-      vm.showSearchButton = function(button) {
-            return (
-                        (button == 'search' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHING) ||
-                        (button == 'add' && vm.controller.searchState == PronunciationModalEnums.SearchState.SEARCHED)
-                   );
-      }
-
-      vm.searchButtonClick = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.SEARCHED;            
-            var searchInput = $('.pronunciation-modal .search-input');            
-            vm.controller.gridPronunciationOptions.api.filter(searchInput.val());            
-      }
-
-      vm.searchButtonAddClick = function() {
-            vm.controller.searchState = PronunciationModalEnums.SearchState.ADDED;            
-            var searchInput = $('.pronunciation-modal .search-input');            
-            var expressionAdd = searchInput.val();
-            
-            PronunciationRestSrv.add(expressionAdd, '').then(function(serverResponse) {
-                  expressionAdded = serverResponse.data.data[0];
-
-                  var insertItemFn = function(data) {
-                        var indexAdd = data.length;
-                        for (var i = data.length - 1; i >= 0; i--) {
-                              if (expressionAdded.dsExpressao > data[i].dsExpressao) {
-                                    indexAdd = i;
-                                    break;
-                              }
-                        }
-                        data.splice(indexAdd, 0, expressionAdded);                        
-                  }
-
-                  insertItemFn(vm.controller.gridPronunciationOptions.data);
-                  insertItemFn(vm.controller.gridPronunciationOptions.alldata);                  
-                  vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
-
-                  vm.controller.searchState = PronunciationModalEnums.SearchState.STOPPED;
-            });
-      }
-
-
-      vm.showLoading = function() {
-            return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;
-      }
-
-
-});
-angular.module('app').service('spacedRevisionModalSrv', function($rootScope, $filter, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv, spacedRevisionSelectExpressionsModal) {
-
-	var vm = this;
-	vm.controller;
-
-	vm.setController = function(controller) {
-		vm.controller = controller;
-	}
-
-	vm.selectExpression = function(index) {
-		vm.controller.showDefinitionContent = false;
-		if (vm.controller.expressions.length > 0) {
-			vm.controller.currentExpressionIndex = index;
-			vm.controller.currentExpression = vm.controller.expressions[index];
-			if (vm.controller.currentExpression.t50dci) {
-				vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t50dci.dsExpressao;
-				vm.controller.model.expression.type = 'Dictionary';		
-				vm.controller.model.expression.resultType = 'menu';				
-			} else {
-				vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t51prn.dsExpressao;
-				vm.controller.model.expression.type = 'Pronuciation';		
-				vm.controller.model.expression.resultType = 'volume_up';				
-			}
-			vm.controller.model.expression.definition = '';
-		}	
-	}
-
-	vm.showResult = function(controller) {
-		//dictionary Result
-		if (controller.currentExpression.t50dci) {
-			//
-			if (event.ctrlKey) {
-				pronunciationSrv.listenExpression(controller.currentExpression.t50dci.dsExpressao);
-			}	
-
-			var dictionaryDefinitionView = $('.spaced-revision-modal .definition-detail-content-content dictionary-definition-view');
-			var element = angular.element(dictionaryDefinitionView);
-			var scope = element.scope();
-			scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.t50dci.cdDicionario;
-			if (!scope.$$phase) {
-				scope.$apply();
-			}
-
-			vm.controller.showDefinitionContent = true;                              
-
-		//pronunciation Result
-		} else if (angular.isDefined(controller.currentExpression.t51prn.cdPronuncia)) {
-			pronunciationSrv.listenExpression(controller.currentExpression.t51prn.dsExpressao);
-		}
-
-	}
-
-	vm.markAsReviewed = function(cd_item) {
-		return RevisionRestSrv.markAsReviewed(cd_item).then(function() {
-			uiDeniModalSrv.ghost('Spaced Revision', 'Item marked as reviewed successfuly!');
-		});
-	}
-
-	vm.selectExpressions = function() {
-		spacedRevisionSelectExpressionsModal.showModal($rootScope.selectedCdItem).then(function(expressions) {
-			vm.controller.expressions = $filter('filter')(expressions, function(record, index, array) {
-				return record.blMostrar;
-			});
-		});
-	}	
-
-	vm.showModal = function(scope, cdItem) {
-		$rootScope.selectedCdItem = cdItem;
-		$rootScope.loading = true;
-	
-		revisionSrv.getExpressions(cdItem, true).then(function(response) {
-			$rootScope.loading = false;
-
-	        uiDeniModalSrv.createWindow({
-	            scope: $rootScope,
-	            title: 'Spaced Revision',
-	            width: '900px',         
-	            height: '600px',
-	            position: uiDeniModalSrv.POSITION.CENTER,
-	            buttons: [uiDeniModalSrv.BUTTON.CLOSE],
-	            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-modal/spaced-revision-modal.tpl.htm',
-	            modal: true,
-	            listeners: {
-
-	            	onshow: function(objWindow) {
-						
-						revisionSrv.getItemInfo(cdItem).then(function(serverResponse) {
-							vm.controller.expressions = response;
-							vm.selectExpression(0);
-							vm.controller.element = $(objWindow);
-							
-							vm.controller.cdItem = cdItem;
-							vm.controller.itemImage = StringSrv.format('{0}item/image/get?cd_item={1}&time={2}', AppConsts.SERVER_URL, cdItem, (new Date()).getMilliseconds());
-						
-							vm.controller.dsItem = serverResponse.dsItem;
-							vm.controller.dsBreadCrumbPath = serverResponse.dsBreadCrumbPath;
-						});
-	            	}
-
-	            }
-	        }).show();
-
-	    });
-
-	}
-	
-});
-'use strict'
-
-angular.module('app').service('spacedRevisionSelectExpressionsModal', function($rootScope, $timeout, $filter, $q, revisionSrv, RevisionRestSrv, uiDeniModalSrv) {
-
-	var vm = this;
-	vm.controller;
-	vm.expressions;
-
-	vm.setController = function(controller) {
-		vm.controller = controller;
-	}
-
-	vm.showModal = function(cdItem) {
-		var deferred = $q.defer();
-
-		$rootScope.loading = true;
-	
-		revisionSrv.getExpressions(cdItem, false).then(function(expressions) {
-			$rootScope.loading = false;
-
-			vm.expressions = expressions;			
-
-	        var modal = uiDeniModalSrv.createWindow({
-	            scope: $rootScope,
-	            title: 'Spaced Revision - Selecting Expressions',
-	            width: '750px',         
-	            height: '600px',
-	            position: uiDeniModalSrv.POSITION.CENTER,
-	            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-	            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.tpl.htm',
-	            modal: true,
-	            listeners: {
-
-	            	onshow: function(objWindow) {
-	            	}
-
-	            }
-	        });
-
-			modal.show().then(function(modalResponse) {
-				if (modalResponse.button == 'ok') {
-					RevisionRestSrv.updExpressions(cdItem, vm.controller.expressions).then(function() {
-						deferred.resolve(vm.controller.expressions);
-					});
-
-				} else {
-					deferred.reject();
-				}
-			});
-
-		});			
-
-
-		return deferred.promise;
-	}
-
-	vm.getExpressions = function() {
-		return vm.expressions;
-	}
-
-	vm.filterExpressionsDicionary = function(expression) {
-		return expression.t50dci;
-	}
-
-	vm.filterExpressionsPronunciation = function(expression) {
-		return expression.t51prn;
-	}
-
-	/*
-	vm.addWords = function() {
-
-		vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
-			return record.t50dci;
-		});
-
-		vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
-			return record.t51prn;
-		});
-
-
-	}
-
-	/*
-	vm.getNgModelExpression = function(expression) {
-		var ngModel;
-		if (expression.t50dci) {
-			ngModel = 'd' + expression.t50dci.cdDicionario;
-		} else {
-			ngModel = 'p' + expression.t51prn.cdPronuncia;
-		}
-
-		vm.controller.selectedExpressions[ngModel] = true;
-
-		return 'ctrl.selectedExpressions.' + ngModel;
-	}
-	*/
-
-});
-'use strict';
-
-angular.module('app').service('dictionaryModalEditSrv', function($q, $interval, uiDeniModalSrv, DictionaryRestSrv) {
-
-      var vm = this;
-      vm.controller;      
-      
-      vm.setController = function(controller) {
-            vm.controller = controller;
-      };
-
-	vm.showModal = function(scope, recordToEdit) {
-            var deferred = $q.defer();
-
-            uiDeniModalSrv.createWindow({
-                  scope: scope,
-                  title: 'Dictionary - Editing',
-                  width: '400px',         
-                  height: '200px',
-                  position: uiDeniModalSrv.POSITION.CENTER,
-                  buttons: [uiDeniModalSrv.BUTTON.OK],
-                  urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal-edit/dictionary-modal-edit.tpl.htm',
-                  modal: true,
-                  listeners: {
-
-                  	onshow: function(wnd) {
-                              var intervalPromise = $interval(function() {
-
-                                    if (vm.controller) {
-                                          $interval.cancel(intervalPromise);
-
-                                          vm.controller.model.dsExpression = recordToEdit.dsExpressao;
-                                          vm.controller.model.dsTags = recordToEdit.dsTags;    
-
-                                          $(wnd).keydown(function() {
-                                                var key = event.which || event.keyCode;  // Use either which or keyCode, depending on browser support
-                                                if ((key == 13) && (event.target.name == 'tagsEdit')) {  // 13 is the RETURN key
-                                                      wnd.close('ok');
-                                                }
-                                          });
-                                    }
-
-                              }, 100);
-                  	}
-
-                  }
-            }).show().then(function(modalResponse) {
-                  if (modalResponse.button == 'ok') {
-                        DictionaryRestSrv.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
-                        deferred.resolve(vm.controller.model);
-                  }
-            });
-
-            return deferred.promise;
-	};
-
-});
-angular.module('app').service('dictionaryDefinitionViewSrv', function(DictionaryRestSrv) {
-
-	var vm = this;
-	vm.cdDicionario = null;
-	vm.controller = null;
-
-	vm.setController = function(controller) {
-		vm.controller = controller;
-	}
-
-	var _updateDefinitionDiv = function(definition) {
-		var definitionEl = vm.controller.element.find('.definition');
-	    definitionEl.html('');
-
-	    if (definition) {
-		    var div = $(document.createElement('div'));
-		    div.html(definition);
-		    definitionEl.append(div);
-		}    
-	}
-
-	vm.refreshDefinition = function(cdDicionario) {
-		vm.controller.currentDefinition = '';
-		_updateDefinitionDiv('');
-		vm.cdDicionario = cdDicionario;		
-		if (cdDicionario) {
-			DictionaryRestSrv.definitionGet(cdDicionario).then(function(serverResponse) {
-				if (serverResponse.data.total > 0) {
-					var record = serverResponse.data.data[0];
-				    vm.controller.currentDefinition = record.txDefinicao;
-				    _updateDefinitionDiv(vm.controller.currentDefinition);
-				}
-			});
-		}	
-	}
-
-	vm.definitionEditClick = function() {
-		vm.controller.currentDefinitionBeforeEditing = vm.controller.currentDefinition;
-	    vm.controller.editingDefinition = true;
-	}
-
-	vm.definitionSaveClick = function() {
-	    DictionaryRestSrv.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
-			vm.controller.editingDefinition = false;                  
-			_updateDefinitionDiv(vm.controller.currentDefinition);
-	    });
-	}
-
-	vm.definitionCancelClick = function() {
-	    vm.controller.currentDefinition = vm.controller.currentDefinitionBeforeEditing;
-	    vm.controller.editingDefinition = false;
-	}
-
-
-});
+})();	
+(function() {
+
+	'use strict'
+
+	angular
+		.module('pronunciation')
+		.constant('pronunciationModalEnums', {
+			SearchState: {
+				STOPPED: 0,
+				SEARCHING: 1,
+				SEARCHED: 2,
+				ADDING: 3,
+				ADDED: 4,		
+			},
+		});	
+
+})();
 (function () {
 	'use strict';
 
@@ -1264,6 +214,160 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 })();	
 (function() {
+
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.service('dictionaryRestService', dictionaryRestService);
+
+	function dictionaryRestService($q, restService) {
+
+		var vm = this;
+		vm.loadedExpressions = [];
+
+		vm.list = function() {
+			var deferred = $q.defer();
+
+			restService.requestWithPromise('dictionary/list').then(function(dictionaryResponse) {
+				vm.loadedExpressions = dictionaryResponse.data.data;
+				deferred.resolve(vm.loadedExpressions);
+			});
+
+			return deferred.promise;
+		}
+
+
+		vm.add = function(ds_expressao, ds_tags) {
+			var successfullyMessage = {
+				title: 'Inserting',
+				message: 'Expression added successfully!'
+			};
+			return restService.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
+		};
+
+		vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Expression updated successfully!'
+			}
+			return restService.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
+		}	
+
+		vm.del = function(cd_dicionario) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Expression deleted successfully!'
+			};
+			return restService.requestWithPromise('dictionary/del', {'cd_dicionario': cd_dicionario}, successfullyMessage, 'Confirm deleting?');
+		};
+
+
+		vm.learnedToogle = function(cd_dicionario) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Expression updated successfully!'
+			};
+			return restService.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
+		};
+
+		vm.definitionSet = function(cd_dicionario, definition) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Expression updated successfully!'
+			};
+			return restService.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
+		};
+
+		vm.definitionGet = function(cd_dicionario) {
+			return restService.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
+		};	
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.service('dictionaryService', dictionaryService);
+
+	function dictionaryService($q, dictionaryRestService, dictionaryModalService, uiDeniModalSrv, pronunciationService) {
+		var vm = this;
+
+		vm.list = function() {
+			return dictionaryRestService.list();
+		};
+
+		vm.add = function(ds_expressao, ds_tags) {
+			return dictionaryRestService.add(ds_expressao, ds_tags);
+		}
+
+		vm.del = function(cd_dicionario) {
+			return dictionaryRestService.del(cd_dicionario);
+		};
+
+
+		vm.learnedToogle = function(cd_dicionario) {
+			return dictionaryRestService.learnedToogle(cd_dicionario);
+		};
+
+		vm.definitionSet = function(cd_dicionario, definition) {
+			return dictionaryRestService.definitionSet(cd_dicionario, definition);
+		};
+
+		vm.definitionGet = function(cd_dicionario) {
+			var deferred = $q.defer();
+
+			dictionaryRestService.definitionGet(cd_dicionario).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0].txDefinicao);			
+			});
+
+			return deferred.promise;
+		};
+
+		vm.openDictionaryDefinitionView = function(scope, cdDicionario, dsExpressao) {
+
+			if (event.ctrlKey) {
+				
+				pronunciationService.listenExpression(dsExpressao);
+
+			} else {
+		        uiDeniModalSrv.createWindow({
+		            scope: scope,
+		            title: 'Dictionary - ' + dsExpressao,
+		            width: '800px',         
+		            height: '500px',
+		            position: uiDeniModalSrv.POSITION.CENTER,
+		            buttons: [uiDeniModalSrv.BUTTON.OK],
+		            htmlTemplate: '<dictionary-definition-viewer cd-dicionario="' + cdDicionario + '"></dictionary-definition-viewer>',
+		            modal: true
+		        }).show();        
+		    }
+
+		};	
+
+	};
+
+})();	
+(function() {
+
+	'use strict';
+
+	angular
+		.module('expression')
+		.service('expressionService', expressionService);
+
+	function expressionService() {
+		var vm = this;
+		vm.loadedExpressions = []; //store the joining between dictionary and pronunciation expressions
+
+	};
+
+})();
+(function() {
 	'use strict';
 	
 	angular
@@ -1340,7 +444,7 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 		.module('item')
 		.service('itemService', itemService);
 
-	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, AppEnums, VideoRestSrv, AppConsts) {
+	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, videoRestService, restService, textService) {
 		var vm = this;
 
 		/**
@@ -1353,7 +457,7 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 			wndDescriptionMorImage.show().then(function(response) {
 				if (response.button == 'ok') {
 					var imageURI = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 150, 150, 0.5);
-					itemRestService.add(AppEnums.CategoryType.TEXT, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
+					itemRestService.add(textService.topParentNodeId, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
 						deferred.resolve(responseAdd);
 					});				
 				} else {
@@ -1383,7 +487,7 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 															  );  
 
 			    if (scope.newVideoItemModal.canShowImagePreview) {
-					return AppConsts.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
+					return restService.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
 				} 
 				return null;
 
@@ -1401,7 +505,7 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 		 	newVideoItemModalService.showModal(scope).then(function(response) {
 		 		$rootScope.loading = true;
-		 		VideoRestSrv.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
+		 		videoRestService.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
 	 				deferred.resolve(serverResponse);
 	 				$rootScope.loading = false;
 		 		});
@@ -1417,7 +521,7 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 		 vm.add = function(scope, categoryType, parentCategory) {
 
 		 	//text
-		 	if (categoryType == AppEnums.CategoryType.TEXT) {
+		 	if (categoryType == textService.topParentNodeId) {
 		 		return _addItemText(scope, parentCategory);
 
 		 	//video
@@ -1493,26 +597,428 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 })();
 (function() {
 
+	'use strict'
+
+	angular
+		.module('pronunciation')
+		.service('pronunciationRestService', pronunciationRestService);
+
+	function pronunciationRestService($q, restService) {
+
+		var vm = this;
+		vm.loadedExpressions = [];		
+
+		vm.list = function() {
+			var deferred = $q.defer();
+
+			restService.requestWithPromise('pronunciation/list').then(function(pronunciationResponse) {
+				vm.loadedExpressions = pronunciationResponse.data.data;
+				deferred.resolve(vm.loadedExpressions);
+			});
+
+			return deferred.promise;
+		}
+
+		vm.add = function(ds_expressao) {
+			var successfullyMessage = {
+				title: 'Inserting',
+				message: 'Expression added successfully!'
+			}
+			return restService.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
+		}
+
+		vm.del = function(cd_pronuncia) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Expression deleted successfully!'
+			}
+			return restService.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
+		}
+
+
+		vm.learnedToogle = function(cd_pronuncia) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Expression updated successfully!'
+			}
+			return restService.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
+		}
+
+	};
+
+})();	
+(function() {
+
+	'use strict'
+
+	angular
+		.module('pronunciation')
+		.service('pronunciationService', pronunciationService);
+
+	function pronunciationService($q, $window) {
+		var vm = this;
+
+		this.listenExpression = function(expression) {
+			var deferred = $q.defer();
+
+			try {
+				if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
+					//var altenativeSite = 'http://emmasaying.com/?s=';
+					var altenativeSite = 'http://www.wordreference.com/enpt/'
+					$window.open(altenativeSite + expression);
+				} else {
+					var timer = setInterval(function() {
+					    var voices = speechSynthesis.getVoices();
+					    if (voices.length !== 0) {
+					    	clearInterval(timer);
+
+							var sentence = new SpeechSynthesisUtterance();
+							sentence.text = expression;
+							sentence.lang = 'en-US';
+
+						    for(var i = 0; i < voices.length; i++) {
+								if(voices[i].lang == sentence.lang ){
+									sentence.voice = voices[i];
+									break;
+								}
+							}				
+
+							sentence.rate = 0.8;
+							
+							sentence.onstart = function(event) { 
+							}
+							sentence.onend = function(event) { 
+								deferred.resolve();
+							}
+							
+							speechSynthesis.speak(sentence);
+						}
+							
+					}, 200);
+						
+				}	
+			} catch(e) {
+				deferred.reject(e);
+			}
+
+			return deferred.promise;
+		}
+
+
+	};
+
+})();	
+(function() {
+	
 	'use strict';
 
 	angular
-		.module('routinesMdl')
+		.module('app')
+		.service('revisionRestService', revisionRestService);
+
+	function revisionRestService(restService) {
+		var vm = this;
+
+		vm.getItemInfo = function(cd_item) {
+			return restService.requestWithPromise('revision/item/info', {'cd_item': cd_item});
+		}
+
+		vm.getExpressions = function(cd_item, onlyVisible) {
+			return restService.requestWithPromise('revision/expressions/get', {'cd_item': cd_item, 'onlyVisible': onlyVisible});
+		}
+
+		vm.updExpressions = function(cd_item, expressions) {
+			var successfullyMessage = {
+				title: 'Spaced Revision',
+				message: 'expressions updated succesfully!'
+			}
+			return restService.requestWithPromisePayLoad('revision/expressions/upd', {'cd_item': cd_item}, expressions, successfullyMessage);
+		}
+
+		vm.updText = function(cd_item, returnOnlyVisible) {
+			var successfullyMessage = {
+				title: 'Spaced Revision',
+				message: 'expressions updated succesfully!'
+			}
+			return restService.requestWithPromise('revision/expressions/updtext', {'cd_item': cd_item, 'returnOnlyVisible': returnOnlyVisible}, successfullyMessage);
+		}
+
+		vm.markAsReviewed = function(cd_item) {
+			return restService.requestWithPromise('revision/markasreviewed', {'cd_item': cd_item});
+		}
+		
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
+		.service('revisionService', revisionService);
+
+	function revisionService($q, revisionRestService) {
+		var vm = this;
+
+		vm.getItemInfo = function(cd_item) {
+			var deferred = $q.defer();
+
+			revisionRestService.getItemInfo(cd_item).then(function(serverResponse) {
+				var informations = serverResponse.data.data[0];
+				deferred.resolve(informations);
+			}, function(reason) {
+				deferred.reject(reason);
+			});
+
+			return deferred.promise;
+		}
+
+		vm.getExpressions = function(cd_item, onlyVisible) {
+			var deferred = $q.defer();
+
+			revisionRestService.getExpressions(cd_item, onlyVisible).then(function(serverResponse) {
+				var expressions = serverResponse.data.data;
+				deferred.resolve(expressions);
+			}, function(reason) {
+				deferred.reject(reason);
+			});
+
+			return deferred.promise;
+		}
+
+	};
+
+})();	
+(function() {
+
+      'use strict';
+
+      angular
+            .module('dictionary')
+            .service('dictionaryModalService', dictionaryModalService);
+
+
+      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, AppSrv, AppConsts, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
+      	var vm = this;
+            vm.controller;      
+
+            var expressionAdded = null;
+            
+            vm.setController = function(controller) {
+                  vm.controller = controller;
+            };
+
+      	vm.showModal = function(scope) {
+                  var deferred = $q.defer();
+
+                  uiDeniModalSrv.createWindow({
+                        scope: scope,
+                        title: 'Dictionary',
+                        width: '700px',         
+                        height: '580px',
+                        position: uiDeniModalSrv.POSITION.CENTER,
+                        buttons: [uiDeniModalSrv.BUTTON.CLOSE],
+                        urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal.view.html',
+                        modal: true,
+                        listeners: {
+
+                        	onshow: function(objWindow) {
+                        	}
+
+                        }
+                  }).show().then(function() {
+                        expressionService.loadedExpressions = pronunciationRestService.loadedExpressions.concat(vm.controller.gridDictionaryOptions.alldata);
+                        deferred.resolve(vm.controller.gridDictionaryOptions.alldata);
+                  });
+
+                  return deferred.promise;
+      	};	
+
+            var _editExpression = function(record) {
+                  dictionaryModalEditService.showModal($rootScope, record).then(function(modelAdded) {
+                        record.dsExpressao = modelAdded.dsExpression;
+                        record.dsTags = modelAdded.dsTags;   
+                        var selectedRowIndex = vm.controller.gridDictionaryOptions.api.getSelectedRowIndex();
+                        vm.controller.gridDictionaryOptions.api.repaintSelectedRow();                                             
+                        vm.controller.gridDictionaryOptions.api.selectRow(selectedRowIndex);
+                  });
+            }
+
+            vm.getGridDictionaryOptions = function() {
+
+                  return {
+                        keyField: 'cdDicionario',
+                        rowHeight: '25px',
+                        data: dictionaryRestService.loadedExpressions,
+                        hideHeaders: true,
+                        columns: [
+                              {
+                                    name: 'dsExpressao',
+                                    width: '40%'
+                              },
+                              {
+                                    name: 'dsTags',
+                                    width: '40%'
+                              },
+                              {
+                                    width: '10%',
+                                    action: {
+                                          mdIcon: 'edit',
+                                          tooltip: 'Edit the current expression',
+                                          fn: function(record, column, imgActionColumn) {
+                                                _editExpression(record);
+                                          }
+                                    }                 
+                              },
+                              {
+                                    width: '10%',
+                                    action: {
+                                          mdIcon: 'delete_forever',
+                                          tooltip: 'Remove a expression from dictionary',
+                                          fn: function(record, column, imgActionColumn) {
+                                                dictionaryRestService.del(record.cdDicionario).then(function(serverResponse) {
+
+                                                      var deleteItemFn = function(data) {
+                                                            for (var i = data.length - 1; i >= 0; i--) {
+                                                                  if (data[i].cdDicionario == record.cdDicionario) {
+                                                                        data.splice(i, 1);
+                                                                        break;
+                                                                  }
+                                                            }
+                                                      }
+
+                                                      deleteItemFn(vm.controller.gridDictionaryOptions.data);
+                                                      deleteItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                                                      vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
+                                                });
+                                          }
+                                    }                 
+                              }
+                        ],
+                        listeners: {
+                              onselectionchange: function(ctrl, element, rowIndex, record) {
+                                    var dictionaryDefinitionViewer = $('.dictionary-modal .dictionary-definition-viewer');
+                                    var element = angular.element(dictionaryDefinitionViewer);
+                                    var scope = element.scope();
+                                    scope.$$childTail.ctrl.cdDicionario = record.cdDicionario;
+                                    if (!scope.$$phase) {
+                                          scope.$apply();
+                                    }                              
+                              },
+
+                              onbeforeload: function() {
+                                    var dictionaryDefinitionViewer = $('.dictionary-modal .dictionary-definition-viewer');
+                                    var element = angular.element(dictionaryDefinitionViewer);
+                                    var scope = element.scope();
+                                    scope.$$childTail.ctrl.cdDicionario = null;
+                              },
+
+                              onafterload: function(data, gridOptions) {
+                                    if (expressionAdded) {
+                                          gridOptions.api.selectRow(expressionAdded);
+                                          expressionAdded = null;
+                                    }
+                              },
+
+                              onrowdblclick: function(record, rowElement, rowIndex) {
+                                    _editExpression(record);
+                              }
+                        }   
+                  }
+
+            };
+
+            vm.searchInputChange = function() {
+                  vm.controller.searchState = dictionaryModalEnums.SearchState.SEARCHING;
+            };
+
+            vm.searchInputKeydown = function() {
+                  if (event.keyCode == 13) {  //Return Key
+
+                        //Find a Record
+                        if (vm.controller.searchState == dictionaryModalEnums.SearchState.SEARCHING) {
+                              vm.searchButtonClick(vm.controller);
+
+                        //Add a Record    
+                        } else if (vm.controller.searchState == dictionaryModalEnums.SearchState.SEARCHED) {
+                              vm.searchButtonAddClick()
+                        }     
+                  }
+            };
+
+            vm.showSearchButton = function(button) {
+                  return (
+                              (button == 'search' && vm.controller.searchState == dictionaryModalEnums.SearchState.SEARCHING) ||
+                              (button == 'add' && vm.controller.searchState == dictionaryModalEnums.SearchState.SEARCHED)
+                         );
+            };
+
+            vm.searchButtonClick = function() {
+                  vm.controller.searchState = dictionaryModalEnums.SearchState.SEARCHED;            
+                  var searchInput = $('.dictionary-modal .search-input');            
+                  vm.controller.gridDictionaryOptions.api.filter(searchInput.val());            
+            };
+
+            vm.searchButtonAddClick = function() {
+                  vm.controller.searchState = dictionaryModalEnums.SearchState.ADDED;            
+                  var searchInput = $('.dictionary-modal .search-input');            
+                  var expressionAdd = searchInput.val();
+                  
+                  dictionaryRestService.add(expressionAdd, '').then(function(serverResponse) {
+                        expressionAdded = serverResponse.data.data[0];
+
+                        var insertItemFn = function(data) {
+                              var indexAdd = data.length;
+                              for (var i = data.length - 1; i >= 0; i--) {
+                                    if (expressionAdded.dsExpressao > data[i].dsExpressao) {
+                                          indexAdd = i;
+                                          break;
+                                    }
+                              }
+                              data.splice(indexAdd, 0, expressionAdded);                        
+                        }
+
+                        insertItemFn(vm.controller.gridDictionaryOptions.data);
+                        insertItemFn(vm.controller.gridDictionaryOptions.alldata);                  
+                        vm.controller.gridDictionaryOptions.api.loadData(vm.controller.gridDictionaryOptions.alldata);
+
+                        vm.controller.searchState = dictionaryModalEnums.SearchState.STOPPED;
+                  });
+            };
+
+            vm.showLoading = function() {
+                  return vm.controller.searchState == dictionaryModalEnums.SearchState.ADDED;
+            };
+
+
+      };
+
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('routines')
 		.service('generalService', generalService);
 
-	function generalService($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
+	function generalService($q, $sce, $compile, dictionaryRestService, pronunciationRestService, expressionService) {
 		var vm = this;
+		vm.SideEnum = {
+			LEFT: 1,
+			RIGHT: 2
+		};
 
 		vm.getAllExpressions = function() {
 			var deferred = $q.defer();
 
-			DictionaryRestSrv.list().then(function(responseDictionary) {
-				AppSrv.dictionaryExpressions = responseDictionary.data.data;
-		
-				PronunciationRestSrv.list().then(function(responsePronunciation) {
-					AppSrv.pronunciationExpressions = responsePronunciation.data.data;	
-
-					AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(AppSrv.pronunciationExpressions);
-					deferred.resolve(AppSrv.allExpressions);
+			dictionaryRestService.list().then(function(dictionaryResponseData) {
+				pronunciationRestService.list().then(function(pronunciationResponseData) {
+					expressionService.loadedExpressions = dictionaryResponseData.concat(pronunciationResponseData);
+					deferred.resolve(expressionService.loadedExpressions);
 				}, function(reasonPronunciation) {
 					console.error(reasonPronunciation);
 				});
@@ -1524,6 +1030,37 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 			return deferred.promise;
 		};
+
+		/**
+		 * className is waiting for a array of String considering: hide-x, hide-gt-xs, hide-sm, hide-md...
+		 * side is waiting for generalService.SideEnum.LEFT | generalService.SideEnum.RIGHT
+		 * reference: https://material.angularjs.org/latest/layout/options
+		 */
+		vm.createHamburgerButton = function(classArray, side) {
+			var hamburgerIconButton = $(document.createElement('button'));
+			hamburgerIconButton.addClass("md-button");		
+			hamburgerIconButton.addClass("md-icon-button");
+			hamburgerIconButton.addClass("md-ink-ripple");
+
+			for (var index = 0 ; index < classArray.length ; index++) {
+				var className = classArray[index];
+				hamburgerIconButton.attr(className, "");
+				hamburgerIconButton.addClass(className);	
+			}
+
+			var hamburgerIconButtonImg = $(document.createElement('img'));
+			hamburgerIconButtonImg.attr('src', 'src/assets/images/hamburger.png');
+			hamburgerIconButtonImg.addClass("hamburger-button");
+			hamburgerIconButton.append(hamburgerIconButtonImg);
+
+			var mainToobar = $('.md-toolbar-tools-main');
+
+			if (side === vm.SideEnum.LEFT) {
+				mainToobar.prepend(hamburgerIconButton);
+			} else {
+				mainToobar.append(hamburgerIconButton);			
+			}	
+		};		
 
 		/**
 		 * Insert into a element a specific html and binding it with a controller
@@ -1585,25 +1122,24 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 })();	
 (function() {
+	
 	'use strict';
 
 	angular
-		.module('routinesMdl')
+		.module('routines')
 		.service('restService', restService);
 
 	function restService($q, $http, uiDeniModalSrv) {
-
 		var vm = this;
-
-		var SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
-		//var SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally
+		vm.SERVER_URL = 'https://denienglishsrv-denimar.rhcloud.com/'; //Hosting in Open Shift
+		//vm.SERVER_URL = 'http://localhost:8087/denienglish/'; //Locally
 
 	    vm.requestWithPromise = function(relativeUrl, parameters, successMessage, confirmMessage) {
 			var deferred = $q.defer();
 
 			var execRequest = function() {
 				var parametrosUrl = {params: parameters};			
-				$http.get(SERVER_URL + relativeUrl, parametrosUrl)
+				$http.get(vm.SERVER_URL + relativeUrl, parametrosUrl)
 					.then(function(retornoServer) {
 						if (retornoServer.data.success) {
 							if (successMessage) {						
@@ -1651,7 +1187,7 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 			var deferred = $q.defer();
 
 			var execRequest = function() {
-		        var resource = $resource(SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
+		        var resource = $resource(vm.SERVER_URL + relativeUrl, parameters, {}, {'request': { method:'POST'}});
 		        resource.save(parametersPayLoad).$promise
 					.then(function(retornoServer) {
 						if (retornoServer.success) {
@@ -1701,6 +1237,167 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 })();	
 (function() {
+
+	'use strict';
+
+	angular
+		.module('routines')
+		.service('stringService', stringService);
+
+	function stringService(expressionService) {
+
+		var me = this;
+
+		me.format = function() {
+			var formatted = arguments[0];
+			for (var i = 1; i < arguments.length; i++) {
+				var regexp = new RegExp('\\{' + (i - 1).toString() + '\\}', 'gi');
+				formatted = formatted.replace(regexp, arguments[i]);
+			}
+			return formatted;        
+		};
+
+
+	    me.leftPad = function(numero, qtdVezes, caracterRepetir) {
+	        var retorno = qtdVezes - numero.toString().length + 1;
+	        return Array(+(retorno > 0 && retorno)).join(caracterRepetir) + numero;
+	    }  ;  
+
+	    me.replaceAll = function(string, find, replace) {
+	        if (string) {
+	            return string.replace(RegExp('\\b' + find + '\\b','g'), replace);   
+	        } else {
+	            return '';
+	        }
+	    };       
+
+
+	    me.doubleToStrTime = function(segundos) {
+	        //00:05:22,900
+
+	        var  SEGUNDOS_HORA = 3600;      
+	        var SEGUNDOS_MINUTO = 60;
+	        
+	        //var xSegundos = segundos;
+	        
+	        var xHoras = (segundos / SEGUNDOS_HORA);
+	        var xHorasStr = me.leftPad(Math.floor(xHoras), 2, "0");
+	        
+	        //xSegundos = xSegundos % SEGUNDOS_HORA;
+	        
+	        var xMinutos = (segundos / SEGUNDOS_MINUTO);
+	        var xMinutosStr = me.leftPad(Math.floor(xMinutos), 2, "0");
+
+	        var xSegundosStr = (segundos % SEGUNDOS_MINUTO).toString();   
+	        var xSegundosFrac = "000";
+	        var xPosSeg = xSegundosStr.indexOf(".");
+	        if (xPosSeg != -1) {
+	            xSegundosFrac = xSegundosStr.substring(xPosSeg + 1).substring(0, 3);
+	            xSegundosFrac += "0".repeat(3 - xSegundosFrac.length);
+	            xSegundosStr = xSegundosStr.substring(0, xPosSeg);
+	        }
+	        xSegundosStr = me.leftPad(Math.floor(xSegundosStr), 2, "0") + "," + xSegundosFrac; 
+	        
+	        return xHorasStr + ":" + xMinutosStr + ":" + xSegundosStr;
+	    };   
+
+	    me.strTimeToDouble = function(strTime) {
+	        //00:05:22,900
+	        var xTimeStr = strTime;
+	        var xHours = parseInt(xTimeStr.substring(0, 2));
+	        var xMinutes = parseInt(xTimeStr.substring(3, 5));
+	        xTimeStr = xTimeStr.substring(6, xTimeStr.length).replace(",", ".");
+	        var xSeconds = parseFloat(xTimeStr);        
+	        
+	        return (xHours * 3600) + (xMinutes * 60) + xSeconds;
+	    };       
+
+
+		/*
+		 * @param array deve conter os array do dicionário e das pronúncias contatenado, formando um grande array.
+		 *
+		 */
+		me.addLinksDictionaryAndPronunciation = function(text) {
+			if (expressionService.loadedExpressions.length == 0) {
+				return text;
+			} else {
+				//Order by Length of the Expressions
+				var array = expressionService.loadedExpressions.sort(function(a, b){
+				  // ASC  -> a.length - b.length
+				  // DESC -> b.length - a.length
+				  return b.dsExpressao.length - a.dsExpressao.length;
+				});
+
+
+				var texto = me.replaceAll(text, '"', "'");
+				var textoLower = texto.toLowerCase();	
+				var matrizSubst = 'matrizsubst1-{0}-matrizsubst2';
+				var expressoesSubst = [];
+				var contaSubst = 0;
+				
+				for (var conta = 0 ; conta < array.length ; conta++) {
+					var item = array[conta];
+					var expressionsToReplace = [];
+					expressionsToReplace.push(item.dsExpressao.toLowerCase());
+
+					if (item.dsTags) {
+						var tagsArray = item.dsTags.split(',');
+						angular.forEach(tagsArray, function(tag) {
+							expressionsToReplace.push(tag.trim().toLowerCase());
+						});
+					}
+
+					angular.forEach(expressionsToReplace, function(expressaoLower) {
+						var posExpressao = textoLower.search(new RegExp('\\b' + expressaoLower + '\\b'));
+						while (posExpressao != -1) {
+							var textoSubs = texto.substring(posExpressao, posExpressao + expressaoLower.length);
+							if (textoSubs.toLowerCase() == expressaoLower) {
+								expressoesSubst.push({
+									cd_pronuncia: item.cdPronuncia,
+									cd_dicionario: item.cdDicionario,								
+									ds_expressao: item.dsExpressao,
+									texto: textoSubs
+								});
+								var subst = me.format(matrizSubst, contaSubst);
+								texto = texto.replace(new RegExp('\\b' + textoSubs + '\\b', "g"), subst);
+
+								contaSubst++;
+								//xPos += subst.length;
+								textoLower = texto.toLowerCase();	
+							}
+							
+							posExpressao = textoLower.search(new RegExp('\\b' + expressaoLower + '\\b'));
+						}
+					});	
+
+				}
+
+				for (var conta = 0 ; conta < expressoesSubst.length ; conta++) {
+					var item = expressoesSubst[conta];
+					var find = me.format(matrizSubst, conta);
+					var replace = null;
+					var functionExec = null;
+					var classLink = null;
+					if (item.cd_dicionario) {
+						functionExec = 'openDictionary(' + item.cd_dicionario + ', \'' + item.texto + '\');';
+						classLink = 'dictionary-link';
+					} else {
+						functionExec = 'openPronunciation(\'' + item.ds_expressao.trim() + '\');';					
+						classLink = 'pronunciation-link';					
+					}
+					//replace = me.format('<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.ds_expressao + '</span>', me.replaceAll(item.texto, "'", "\\'"), me.replaceAll(item.texto, "'", "\\'"));				
+					replace = '<span class="' + classLink + '" ng-click=\"' + functionExec + '\">' + item.texto + '</span>';
+					texto = me.replaceAll(texto, find, replace);		
+				}					
+
+				return texto;
+			}	
+		};
+
+	};
+
+})();	
+(function() {
 	'use strict';
 	
 	angular
@@ -1745,141 +1442,558 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 	};
 
 })();	
-angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModalSrv, DictionaryModalEnums) {
+(function() {
 
-	//use this control in the service	
-	dictionaryModalSrv.setController(this);
+      'use strict'
 
-	this.searchState = DictionaryModalEnums.SearchState.STOPPED; //will be fulfilled by DictionaryModalEnums.SearchState enum
-	this.searchValue = '';
+      angular
+            .module('pronunciation')
+            .service('pronunciationModalService', pronunciationModalService);
+      
+      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, AppConsts, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
+      	var vm = this;
+            vm.controller;      
 
-	this.gridDictionaryOptions = dictionaryModalSrv.getGridDictionaryOptions();
+            var expressionAdded = null;
+            
+            vm.setController = function(controller) {
+                  vm.controller = controller;
+            }
 
-	this.searchInputChange = dictionaryModalSrv.searchInputChange;
-	this.searchInputKeydown = dictionaryModalSrv.searchInputKeydown;
+      	vm.showModal = function(scope) {
+                  var deferred = $q.defer();
 
-	this.searchButtonClick = dictionaryModalSrv.searchButtonClick;
-	this.searchButtonAddClick = dictionaryModalSrv.searchButtonAddClick;
-	this.showSearchButton = dictionaryModalSrv.showSearchButton;
+                  uiDeniModalSrv.createWindow({
+                        scope: scope,
+                        title: 'Pronunciation',
+                        width: '550px',         
+                        height: '450px',
+                        position: uiDeniModalSrv.POSITION.CENTER,
+                        buttons: [uiDeniModalSrv.BUTTON.CLOSE],
+                        urlTemplate: 'src/app/shared/pronunciation/pronunciation-modal/pronunciation-modal.view.html',
+                        modal: true,
+                        listeners: {
 
-	this.showLoading = dictionaryModalSrv.showLoading;
+                        	onshow: function(objWindow) {
+            					
+                        	}
 
-});
+                        }
+                  }).show().then(function() {
+                        expressionService.loadedExpressions = dictionaryRestService.loadedExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
+                        deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
+                  });
 
-angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
+                  return deferred.promise;
+      	}	
 
-	//use this control in the service	
-	pronunciationModalSrv.setController(this);
+            vm.getGridPronunciationOptions = function() {
 
-	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
-	this.searchValue = '';
+                  return {
+                        keyField: 'cdPronuncia',
+                        rowHeight: '25px',
+                        data: pronunciationRestService.loadedExpressions,
+                        hideHeaders: true,
+                        columns: [
+                              {
+                                    name: 'dsExpressao',
+                                    width: '80%'
+                              },
+                              {
+                                    width: '10%',
+                                    action: {
+                                          mdIcon: 'headset',
+                                          tooltip: 'Listen the selected expression',
+                                          fn: function(record, column, imgActionColumn) {
+                                                pronunciationService.listenExpression(record.dsExpressao);                 
+                                          }
+                                    }                 
+                              },
+                              {
+                                    width: '10%',
+                                    action: {
+                                          mdIcon: 'delete_forever',
+                                          tooltip: 'Remove a expression from pronunciation',
+                                          fn: function(record, column, imgActionColumn) {
+                                                pronunciationRestService.del(record.cdPronuncia).then(function(serverResponse) {
 
-	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
+                                                      var deleteItemFn = function(data) {
+                                                            for (var i = data.length - 1; i >= 0; i--) {
+                                                                  if (data[i].cdPronuncia == record.cdPronuncia) {
+                                                                        data.splice(i, 1);
+                                                                        break;
+                                                                  }
+                                                            }
+                                                      }
 
-	this.searchInputChange = pronunciationModalSrv.searchInputChange;
-	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
+                                                      deleteItemFn(vm.controller.gridPronunciationOptions.data);
+                                                      deleteItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                                                      vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
 
-	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
-	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
-	this.showSearchButton = pronunciationModalSrv.showSearchButton;
+                                                });
+                                          }
+                                    }                 
+                              }
+                        ],
+                        listeners: {
+                              onafterload: function(data, gridOptions) {
+                                    if (expressionAdded) {
+                                          gridOptions.api.selectRow(expressionAdded);
+                                          expressionAdded = null;
+                                    }
+                              },
+                        }
+                  }
 
-	this.showLoading = pronunciationModalSrv.showLoading;
+            }
 
-});
+            vm.searchInputChange = function() {
+                  vm.controller.searchState = pronunciationModalEnums.SearchState.SEARCHING;
+            }
 
-angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemService, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
+            vm.searchInputKeydown = function() {
+                  if (event.keyCode == 13) {  //Return Key
+
+                        //Find a Record
+                        if (vm.controller.searchState == pronunciationModalEnums.SearchState.SEARCHING) {
+                              vm.searchButtonClick(vm.controller);
+
+                        //Add a Record    
+                        } else if (vm.controller.searchState == pronunciationModalEnums.SearchState.SEARCHED) {
+                              vm.searchButtonAddClick()
+                        }     
+                  }
+            }
+
+            vm.showSearchButton = function(button) {
+                  return (
+                              (button == 'search' && vm.controller.searchState == pronunciationModalEnums.SearchState.SEARCHING) ||
+                              (button == 'add' && vm.controller.searchState == pronunciationModalEnums.SearchState.SEARCHED)
+                         );
+            }
+
+            vm.searchButtonClick = function() {
+                  vm.controller.searchState = pronunciationModalEnums.SearchState.SEARCHED;            
+                  var searchInput = $('.pronunciation-modal .search-input');            
+                  vm.controller.gridPronunciationOptions.api.filter(searchInput.val());            
+            }
+
+            vm.searchButtonAddClick = function() {
+                  vm.controller.searchState = pronunciationModalEnums.SearchState.ADDED;            
+                  var searchInput = $('.pronunciation-modal .search-input');            
+                  var expressionAdd = searchInput.val();
+                  
+                  pronunciationRestService.add(expressionAdd, '').then(function(serverResponse) {
+                        expressionAdded = serverResponse.data.data[0];
+
+                        var insertItemFn = function(data) {
+                              var indexAdd = data.length;
+                              for (var i = data.length - 1; i >= 0; i--) {
+                                    if (expressionAdded.dsExpressao > data[i].dsExpressao) {
+                                          indexAdd = i;
+                                          break;
+                                    }
+                              }
+                              data.splice(indexAdd, 0, expressionAdded);                        
+                        }
+
+                        insertItemFn(vm.controller.gridPronunciationOptions.data);
+                        insertItemFn(vm.controller.gridPronunciationOptions.alldata);                  
+                        vm.controller.gridPronunciationOptions.api.loadData(vm.controller.gridPronunciationOptions.alldata);
+
+                        vm.controller.searchState = pronunciationModalEnums.SearchState.STOPPED;
+                  });
+            }
+
+
+            vm.showLoading = function() {
+                  return vm.controller.searchState == pronunciationModalEnums.SearchState.ADDED;
+            }
+
+
+      };
+
+})();
+(function() {
 	
-	var vm = this;
-	spacedRevisionModalSrv.setController(vm);
+	'use strict';
 
-	vm.showDefinitionContent = false;
-	vm.learnedRate = 60;
-	vm.expressions = [];
-	vm.currentExpression;
-	vm.currentExpressionIndex;	
-	vm.model = {
-		expression: {}
+	angular
+		.module('app')
+		.service('spacedRevisionModalService', spacedRevisionModalService);
+
+	function spacedRevisionModalService($rootScope, $filter, stringService, videoService, dictionaryService, pronunciationService, revisionRestService, uiDeniModalSrv, revisionService, spacedRevisionSelectExpressionsModalService) {
+		var vm = this;
+		vm.controller;
+
+		vm.setController = function(controller) {
+			vm.controller = controller;
+		}
+
+		vm.selectExpression = function(index) {
+			vm.controller.showDefinitionContent = false;
+			if (vm.controller.expressions.length > 0) {
+				vm.controller.currentExpressionIndex = index;
+				vm.controller.currentExpression = vm.controller.expressions[index];
+				if (vm.controller.currentExpression.t50dci) {
+					vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t50dci.dsExpressao;
+					vm.controller.model.expression.type = 'Dictionary';		
+					vm.controller.model.expression.resultType = 'menu';				
+				} else {
+					vm.controller.model.expression.dsExpressao = vm.controller.currentExpression.t51prn.dsExpressao;
+					vm.controller.model.expression.type = 'Pronuciation';		
+					vm.controller.model.expression.resultType = 'volume_up';				
+				}
+				vm.controller.model.expression.definition = '';
+			}	
+		}
+
+		vm.showResult = function(controller) {
+			//dictionary Result
+			if (controller.currentExpression.t50dci) {
+				//
+				if (event.ctrlKey) {
+					pronunciationService.listenExpression(controller.currentExpression.t50dci.dsExpressao);
+				}	
+
+				var dictionaryDefinitionViewer = $('.spaced-revision-modal .definition-detail-content-content dictionary-definition-viewer');
+				var element = angular.element(dictionaryDefinitionViewer);
+				var scope = element.scope();
+				scope.$$childTail.ctrl.cdDicionario = controller.currentExpression.t50dci.cdDicionario;
+				if (!scope.$$phase) {
+					scope.$apply();
+				}
+
+				vm.controller.showDefinitionContent = true;                              
+
+			//pronunciation Result
+			} else if (angular.isDefined(controller.currentExpression.t51prn.cdPronuncia)) {
+				pronunciationService.listenExpression(controller.currentExpression.t51prn.dsExpressao);
+			}
+
+		}
+
+		vm.markAsReviewed = function(cd_item) {
+			return revisionRestService.markAsReviewed(cd_item).then(function() {
+				uiDeniModalSrv.ghost('Spaced Revision', 'Item marked as reviewed successfuly!');
+			});
+		}
+
+		vm.selectExpressions = function() {
+			spacedRevisionSelectExpressionsModalService.showModal($rootScope.selectedCdItem).then(function(expressions) {
+				vm.controller.expressions = $filter('filter')(expressions, function(record, index, array) {
+					return record.blMostrar;
+				});
+			});
+		}	
+
+		vm.showModal = function(scope, cdItem) {
+			$rootScope.selectedCdItem = cdItem;
+			$rootScope.loading = true;
+		
+			revisionService.getExpressions(cdItem, true).then(function(response) {
+				$rootScope.loading = false;
+
+		        uiDeniModalSrv.createWindow({
+		            scope: $rootScope,
+		            title: 'Spaced Revision',
+		            width: '900px',         
+		            height: '600px',
+		            position: uiDeniModalSrv.POSITION.CENTER,
+		            buttons: [uiDeniModalSrv.BUTTON.CLOSE],
+		            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-modal/spaced-revision-modal.view.html',
+		            modal: true,
+		            listeners: {
+
+		            	onshow: function(objWindow) {
+							
+							revisionService.getItemInfo(cdItem).then(function(serverResponse) {
+								vm.controller.expressions = response;
+								vm.selectExpression(0);
+								vm.controller.element = $(objWindow);
+								
+								vm.controller.cdItem = cdItem;
+								vm.controller.itemImage = stringService.format('{0}item/image/get?cd_item={1}&time={2}', videoService.SERVER_URL, cdItem, (new Date()).getMilliseconds());
+							
+								vm.controller.dsItem = serverResponse.dsItem;
+								vm.controller.dsBreadCrumbPath = serverResponse.dsBreadCrumbPath;
+							});
+		            	}
+
+		            }
+		        }).show();
+
+		    });
+
+		}
+		
 	};
 
-	vm.model.navigatorStatus = '';	
-
-	vm.navigate = function(number) {
-		spacedRevisionModalSrv.selectExpression(vm.currentExpressionIndex + number);
-	}
+})();	
+(function() {
 	
-	vm.navigateFirst = function() {
-		spacedRevisionModalSrv.selectExpression(0);
-	}
+	'use strict';
 
-	vm.navigateLast = function() {
-		spacedRevisionModalSrv.selectExpression(vm.expressions.length - 1);
-	}	
+	angular
+		.module('app')
+		.service('spacedRevisionSelectExpressionsModalService', spacedRevisionSelectExpressionsModalService);
 
-	vm.showResult = function() {
-		spacedRevisionModalSrv.showResult(vm);
-	}
+	function spacedRevisionSelectExpressionsModalService($rootScope, $timeout, $filter, $q, revisionService, revisionRestService, uiDeniModalSrv) {
+		var vm = this;
+		vm.controller;
+		vm.expressions;
 
-	vm.markAsReviewed = function(cd_item) {
-		spacedRevisionModalSrv.markAsReviewed(cd_item);
-	}
+		vm.setController = function(controller) {
+			vm.controller = controller;
+		}
 
-	vm.selectExpressions = spacedRevisionModalSrv.selectExpressions;
+		vm.showModal = function(cdItem) {
+			var deferred = $q.defer();
 
-	/*
-	if (vm.cdItem) {
-		vm.itemImage = StringSrv.format('{0}item/image/get?cd_item={1}&time={2}', AppConsts.SERVER_URL, vm.cdItem, (new Date()).getMilliseconds());
+			$rootScope.loading = true;
+		
+			revisionService.getExpressions(cdItem, false).then(function(expressions) {
+				$rootScope.loading = false;
 
-		revisionSrv.getItemInfo(vm.cdItem).then(function(serverResponse) {
-			vm.dsItem = serverResponse.dsItem;
-			vm.dsBreadCrumbPath = serverResponse.dsBreadCrumbPath;
-		});
+				vm.expressions = expressions;			
 
-	} else {
-		new Error('Attributes passed in a wrong way!')
-	}
-	*/
+		        var modal = uiDeniModalSrv.createWindow({
+		            scope: $rootScope,
+		            title: 'Spaced Revision - Selecting Expressions',
+		            width: '750px',         
+		            height: '600px',
+		            position: uiDeniModalSrv.POSITION.CENTER,
+		            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+		            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.view.html',
+		            modal: true,
+		            listeners: {
 
-});
-'use strict'
+		            	onshow: function(objWindow) {
+		            	}
 
-angular.module('app').controller('SpacedRevisionSelectExpressionsModalCtrl', function(spacedRevisionSelectExpressionsModal) {
+		            }
+		        });
 
-	this.selectedExpressions = {};
+				modal.show().then(function(modalResponse) {
+					if (modalResponse.button == 'ok') {
+						revisionRestService.updExpressions(cdItem, vm.controller.expressions).then(function() {
+							deferred.resolve(vm.controller.expressions);
+						});
 
-	spacedRevisionSelectExpressionsModal.setController(this);
-	
-	this.expressions = spacedRevisionSelectExpressionsModal.getExpressions();
+					} else {
+						deferred.reject();
+					}
+				});
 
-	this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModal.filterExpressionsDicionary;
-	this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModal.filterExpressionsPronunciation;
+			});			
 
-});
-angular.module('app').controller('DictionaryModalEditCtrl', function(dictionaryModalEditSrv) {
 
-	//use this control in the service	
-	dictionaryModalEditSrv.setController(this);
+			return deferred.promise;
+		}
 
-	this.model = {};
+		vm.getExpressions = function() {
+			return vm.expressions;
+		}
 
-});
+		vm.filterExpressionsDicionary = function(expression) {
+			return expression.t50dci;
+		}
 
-angular.module('app').controller('DictionaryDefinitionViewCtrl', function($scope, dictionaryDefinitionViewSrv) {
-	
-	dictionaryDefinitionViewSrv.setController(this);
-	
-	this.currentDefinition = null;	
+		vm.filterExpressionsPronunciation = function(expression) {
+			return expression.t51prn;
+		}
 
-	this.editingDefinition = false;
+		/*
+		vm.addWords = function() {
 
-	this.definitionEditClick = dictionaryDefinitionViewSrv.definitionEditClick;
-	this.definitionSaveClick = dictionaryDefinitionViewSrv.definitionSaveClick;
-	this.definitionCancelClick = dictionaryDefinitionViewSrv.definitionCancelClick;
+			vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
+				return record.t50dci;
+			});
 
-	$scope.$watch('ctrl.cdDicionario', function(newValue, oldValue) {
-		dictionaryDefinitionViewSrv.refreshDefinition(newValue);	
-	});
+			vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
+				return record.t51prn;
+			});
 
-});
+
+		}
+
+		/*
+		vm.getNgModelExpression = function(expression) {
+			var ngModel;
+			if (expression.t50dci) {
+				ngModel = 'd' + expression.t50dci.cdDicionario;
+			} else {
+				ngModel = 'p' + expression.t51prn.cdPronuncia;
+			}
+
+			vm.controller.selectedExpressions[ngModel] = true;
+
+			return 'ctrl.selectedExpressions.' + ngModel;
+		}
+		*/
+
+	};
+
+})();	
+(function() {
+
+      'use strict';
+
+      angular
+            .module('app')
+            .service('dictionaryModalEditService', dictionaryModalEditService);
+
+      function dictionaryModalEditService($q, $interval, uiDeniModalSrv, dictionaryRestService) {
+            var vm = this;
+            vm.controller;      
+            
+            vm.setController = function(controller) {
+                  vm.controller = controller;
+            };
+
+      	vm.showModal = function(scope, recordToEdit) {
+                  var deferred = $q.defer();
+
+                  uiDeniModalSrv.createWindow({
+                        scope: scope,
+                        title: 'Dictionary - Editing',
+                        width: '400px',         
+                        height: '200px',
+                        position: uiDeniModalSrv.POSITION.CENTER,
+                        buttons: [uiDeniModalSrv.BUTTON.OK],
+                        urlTemplate: 'src/app/shared/dictionary/dictionary-modal/dictionary-modal-edit/dictionary-modal-edit.view.html',
+                        modal: true,
+                        listeners: {
+
+                        	onshow: function(wnd) {
+                                    var intervalPromise = $interval(function() {
+
+                                          if (vm.controller) {
+                                                $interval.cancel(intervalPromise);
+
+                                                vm.controller.model.dsExpression = recordToEdit.dsExpressao;
+                                                vm.controller.model.dsTags = recordToEdit.dsTags;    
+
+                                                $(wnd).keydown(function() {
+                                                      var key = event.which || event.keyCode;  // Use either which or keyCode, depending on browser support
+                                                      if ((key == 13) && (event.target.name == 'tagsEdit')) {  // 13 is the RETURN key
+                                                            wnd.close('ok');
+                                                      }
+                                                });
+                                          }
+
+                                    }, 100);
+                        	}
+
+                        }
+                  }).show().then(function(modalResponse) {
+                        if (modalResponse.button == 'ok') {
+                              dictionaryRestService.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
+                              deferred.resolve(vm.controller.model);
+                        }
+                  });
+
+                  return deferred.promise;
+      	};
+
+      };
+
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.service('dictionaryDefinitionViewerService', dictionaryDefinitionViewerService);
+
+	function dictionaryDefinitionViewerService(dictionaryRestService) {
+
+		var vm = this;
+		vm.cdDicionario = null;
+		vm.controller = null;
+
+		vm.setController = function(controller) {
+			vm.controller = controller;
+		}
+
+		var _updateDefinitionDiv = function(definition) {
+			var definitionEl = vm.controller.element.find('.definition');
+		    definitionEl.html('');
+
+		    if (definition) {
+			    var div = $(document.createElement('div'));
+			    div.html(definition);
+			    definitionEl.append(div);
+			}    
+		}
+
+		vm.refreshDefinition = function(cdDicionario) {
+			vm.controller.currentDefinition = '';
+			_updateDefinitionDiv('');
+			vm.cdDicionario = cdDicionario;		
+			if (cdDicionario) {
+				dictionaryRestService.definitionGet(cdDicionario).then(function(serverResponse) {
+					if (serverResponse.data.total > 0) {
+						var record = serverResponse.data.data[0];
+					    vm.controller.currentDefinition = record.txDefinicao;
+					    _updateDefinitionDiv(vm.controller.currentDefinition);
+					}
+				});
+			}	
+		}
+
+		vm.definitionEditClick = function() {
+			vm.controller.currentDefinitionBeforeEditing = vm.controller.currentDefinition;
+		    vm.controller.editingDefinition = true;
+		}
+
+		vm.definitionSaveClick = function() {
+		    dictionaryRestService.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
+				vm.controller.editingDefinition = false;                  
+				_updateDefinitionDiv(vm.controller.currentDefinition);
+		    });
+		}
+
+		vm.definitionCancelClick = function() {
+		    vm.controller.currentDefinition = vm.controller.currentDefinitionBeforeEditing;
+		    vm.controller.editingDefinition = false;
+		}
+
+
+	};
+
+})();		
+(function() {
+
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.controller('DictionaryModalController', DictionaryModalController);
+
+	function DictionaryModalController(dictionaryModalService, dictionaryModalEnums) {
+
+		//use this control in the service	
+		dictionaryModalService.setController(this);
+
+		this.searchState = dictionaryModalEnums.SearchState.STOPPED; //will be fulfilled by dictionaryModalEnums.SearchState enum
+		this.searchValue = '';
+
+		this.gridDictionaryOptions = dictionaryModalService.getGridDictionaryOptions();
+
+		this.searchInputChange = dictionaryModalService.searchInputChange;
+		this.searchInputKeydown = dictionaryModalService.searchInputKeydown;
+
+		this.searchButtonClick = dictionaryModalService.searchButtonClick;
+		this.searchButtonAddClick = dictionaryModalService.searchButtonAddClick;
+		this.showSearchButton = dictionaryModalService.showSearchButton;
+
+		this.showLoading = dictionaryModalService.showLoading;
+
+	};
+
+})();
 (function() {
 	'use strict';
 
@@ -1935,1152 +2049,1432 @@ angular.module('app').controller('DictionaryDefinitionViewCtrl', function($scope
 	};
 
 })();	
-angular.module('app').directive('dictionaryDefinitionView', function() {
+(function() {
 
-	return {
-		restrict: 'E',
-		scope: {},
-		bindToController: {
-			cdDicionario: '=?'
-		},
-		controller: 'DictionaryDefinitionViewCtrl',
-		controllerAs: 'ctrl',
-		templateUrl: 'src/app/shared/dictionary/directives/dictionary-definition-view/dictionary-definition-view.tpl.htm',
-		link: function(scope, element, attrs) {
-			scope.ctrl.element = $(element);	    
-		}	
-	}
+	'use strict'
 
-});
-'use strict';
+	angular
+		.module('pronunciation')
+		.controller('pronunciationModalController', pronunciationModalController);
 
-angular.module('app').service('homeSrv', function($timeout, $rootScope, generalService, categoryService, AppConsts, AppSrv, itemService, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, itemRestService) {
+	function pronunciationModalController(pronunciationModalService, pronunciationModalEnums) {
 
-	var vm = this;
-	var jsTreeInstance = null;
+		//use this control in the service	
+		pronunciationModalService.setController(this);
 
-	/**
-	 *
-	 *
-	 */
-	vm.addCategoryClick = function(scope, currentCategoryId) {
-		categoryService.add(scope, currentCategoryId).then(function(addedCategory) {
-			var newNode = { 
-				state: "open", 
-				id: addedCategory.cdCategoria,				
-				text: addedCategory.dsCategoria,
-				data: addedCategory
-			};
+		this.searchState = pronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by pronunciationModalEnums.SearchState enum
+		this.searchValue = '';
 
-			jsTreeInstance.create_node(currentCategoryId, newNode, 'last', function(addedNode) {
-				jsTreeInstance.deselect_all();
-				jsTreeInstance.select_node(addedNode);
-			});		
-		});
-	};	
+		this.gridPronunciationOptions = pronunciationModalService.getGridPronunciationOptions();
 
+		this.searchInputChange = pronunciationModalService.searchInputChange;
+		this.searchInputKeydown = pronunciationModalService.searchInputKeydown;
 
-	/**
-	 *
-	 *
-	 */
-	vm.editCategoryClick = function(scope, currentCategoryNode) {
-		categoryService.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
-			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
-		});
-	};
+		this.searchButtonClick = pronunciationModalService.searchButtonClick;
+		this.searchButtonAddClick = pronunciationModalService.searchButtonAddClick;
+		this.showSearchButton = pronunciationModalService.showSearchButton;
 
-	/**
-	 *
-	 *
-	 */
-	vm.delCategoryClick = function(currentCategoryNode) {
-		categoryService.del(currentCategoryNode.id).then(function(serverResponse) {
-			var parentNode = jsTreeInstance.get_node(currentCategoryNode.parent);
-			jsTreeInstance.delete_node([currentCategoryNode]);
-			jsTreeInstance.select_node(parentNode);
-		});
-	};
-
-	/**
-	 *
-	 *
-	 */
-	var _getTopParentNode = function(controller) {
-		if (controller.currentCategoryNode.parent == '#') {
-			return controller.currentCategoryNode.id;
-		} else {
-			return controller.currentCategoryNode.parents[controller.currentCategoryNode.parents.length - 2];
-		}	
-	};
-
-
-	/**
-	 *
-	 *
-	 */
-    vm.addNewItemButtonClick = function(controller, scope, event) {
-    	var topParentNode = _getTopParentNode(controller);
-    	var fnNewItem;
-
-		itemService.add(scope, topParentNode, controller.currentCategoryNode).then(function(addedItem) {
-			controller.gridOptions.api.reload().then(function(responseData) {
-				var objAdded = addedItem.data[0];
-				var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
-		        controller.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
-			});
-		});
-    };
-
-
-	/**
-	 *
-	 *
-	 */
-    var _setCurrentCategory = function(controller, nodeData) {
-    	controller.currentCategoryNode = nodeData.node;
-		AppSrv.currentCategory = controller.currentCategoryNode.id;
-
-    	var path = '<span class="categoryPathTitle">' + controller.currentCategoryNode.text + '</span>';
-
-    	var parentId = controller.currentCategoryNode.parent;
-    	while (parentId != '#') { //# means root node
-    		var parentObj = nodeData.instance.get_node(parentId);
-    		path = parentObj.text + " / " + path;
-
-    		var parentId = parentObj.parent;
-    	}
-
-		controller.categoryPath = path;
-    };	
-
-	/**
-	 *
-	 *
-	 */
-    vm.reloadDataGrid = function(controller) {
-
-		if (controller.currentCategoryNode) {
-	 		//Items
-	    	if (controller.currentNavItem == 'pageItems') {
-				controller.gridOptions.url = AppConsts.SERVER_URL + 'item/list?cd_categoria=' + controller.currentCategoryNode.id;
-	    	//Revisions
-	    	} else if (controller.currentNavItem == 'pageRevisions') {
-				controller.gridOptions.url = AppConsts.SERVER_URL + 'revision/list?pendente=true&days=5&cd_categoria=' + controller.currentCategoryNode.id;
-	    	//Favorites
-	    	} else {
-				controller.gridOptions.url = AppConsts.SERVER_URL + 'item/favorite/get?cd_categoria=' + controller.currentCategoryNode.id;
-	    	}
-					
-			controller.gridOptions.api.reload();
-		}	
-
-    };
-
-	/**
-	 *
-	 *
-	 */
-	vm.configureTreeView = function(controller, currentCategory) {
-
-	  	$('#categoryTreeview')
-			.on('loaded.jstree', function (e, data) {
-				jsTreeInstance = data.instance;
-				if (currentCategory) {
-					jsTreeInstance.select_node(currentCategory);
-				}	
-			})
-			.on('changed.jstree', function (e, data) {
-			  if (data.node) {
-					_setCurrentCategory(controller, data);
-					vm.reloadDataGrid(controller);			  
-			  }  
-			})
-			.jstree({
-				'core' : {
-					check_callback: true,
-					'data' : {
-						"url" : AppConsts.SERVER_URL + 'category/category/tree/list',				
-						//"url" : "//www.jstree.com/fiddle/",
-						"dataType" : "json" // needed only if you do not supply JSON headers
-					},
-				},
-				plugins : [
-					"wholerow"
-				],
-			});
+		this.showLoading = pronunciationModalService.showLoading;
 
 	};
 
-	/**
-	 *
-	 *
-	 */
-	vm.configureGridItems = function(controller, scope) {
-	    controller.gridOptions = {
-	    	hideHeaders: true,
-			colLines: false,
-	    	keyField: 'cdItem',
-	        rowHeight: '100px', //22px is default
-	        columns: [
-	        	{
-	        		header: 'Item',
-	        		name: 'cdItem',
-	        		width: 'calc(100% - 96px)',
-	        		renderer: function(value, record) {
-						var linkViewItem = null;
-						var topParentNode = _getTopParentNode(controller);
-						
-						if (topParentNode == AppEnums.CategoryType.TEXT) {
-							linkViewItem = '/text';
-						} else {
-							linkViewItem = '/video';						
-						}
-						var time = new Date();
-						var miliseconds = time.getMilliseconds();
-
-						var revise = record.blFazerRevisao ? 'check_box' : 'check_box_outline_blank';						
-						var reviseSelected = record.blFazerRevisao ? 'selected' : '';
-						
-						var favorite = record.blFavorite ? 'star' : 'star_border';
-						var favoriteSelected = record.blFavorite ? 'selected' : '';						
-
-	  					var cellTemplate = '<div class="cell-template">\n' +
-										   '    <img class="item-image"\n' +
-										   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
-										   '    />\n' +                                  
-										   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
-										   '    <div>{4}</div>\n' +									   
-										   '    <md-icon class="material-icons revise {6}"> {7} </md-icon>\n' +										   										   
-										   '    <md-icon class="material-icons favorite {8}"> {9} </md-icon>\n' +
-										   '<div>';
-
-	  					return StringSrv.format(cellTemplate, AppConsts.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, reviseSelected, revise, favoriteSelected, favorite);
-	        		}
-	        	},
-	        	{
-	        		width: '32px',
-		            action: {
-		                mdIcon: 'restore',
-		                tooltip: '',
-		                fn: function(record, column, imgActionColumn) {
-							spacedRevisionModalSrv.showModal(scope, record.cdItem);
-		                }
-		            }        		
-	        	},
-	        	{
-	        		width: '32px',
-		            action: {
-		                mdIcon: 'edit',
-		                tooltip: '',
-		                fn: function(record, column, imgActionColumn) {
-							var rowEl = $(imgActionColumn).closest('.ui-row');
-							var imgEl = rowEl.find('.item-image');
-
-							var config = {
-								description: record.dsItem,
-								imgSrc: imgEl.attr('src')
-							};
-
-							var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
-							wndDescriptionMorImage.show().then(function(response) {
-								if (response.button == 'ok') {								
-									var uriImage = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
-									itemRestService.upd(record.cdItem, AppSrv.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
-										controller.gridOptions.api.reload().then(function(responseData) {
-											imgEl.attr('src', response.data.image);								
-
-											var cdItemUpdated = responseUpd.data[0].cdItem;
-									        controller.gridOptions.api.findKey(cdItemUpdated, {inLine: true});						
-										});
-									});				
-								}
-							});
-		                }
-		            }        		
-	        	},
-	        	{
-	        		width: '32px',
-		            action: {
-		                mdIcon: 'delete_forever',
-		                tooltip: '',
-		                fn: function(record, column, imgActionColumn) {
-							itemService.del(record.cdItem).then(function() {
-								controller.gridOptions.api.reload();
-							});	                	
-		                }
-		            }        		
-	        	}
-
-	        ],
-	        listeners: {
-				onbeforeload: function(data, options) {
-					$rootScope.subTitle = '';
-				},
-
-	            onafterrepaintrow: function(rowIndex, elementRow) {
-					$timeout(function() {
-
-						elementRow.find('.material-icons.revise').click(function(event) {
-							var record = controller.gridOptions.api.getSelectedRow();
-							record.blFazerRevisao = !record.blFazerRevisao;
-
-							var revisionIcon = $(event.currentTarget);
-							if (revisionIcon.is('.selected')) {
-								revisionIcon.html('check_box_outline_blank');
-								revisionIcon.removeClass('selected');
-							} else {
-								revisionIcon.html('check_box');
-								revisionIcon.addClass('selected');
-							}	
-
-							itemService.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
-								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
-							});
-						});
-
-						elementRow.find('.material-icons.favorite').click(function(event) {
-							var record = controller.gridOptions.api.getSelectedRow();
-							record.blFavorite = !record.blFavorite;
-
-							var favoriteIcon = $(event.currentTarget);
-							if (favoriteIcon.is('.selected')) {
-								favoriteIcon.html('star_border');
-								favoriteIcon.removeClass('selected');
-							} else {
-								favoriteIcon.html('star');
-								favoriteIcon.addClass('selected');
-							}	
-
-							itemService.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
-								uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
-							});
-						});
-
-
-					}, 500);
-	            },
-
-	            onselectionchange: function(ctrl, element, rowIndex, record) {
-					$rootScope.subTitle = record.dsItem;
-					if (!scope.$$phase) {
-						scope.$apply();
-					}
-	            }
-			}			
-	    };		
-
-	};
-
-});
-angular.module('app').service('TextRestSrv', function(restService) {
-
-	var vm = this;
-
-	vm.list = function(cd_item) {
-		return restService.requestWithPromise('text/list', {'cd_item': cd_item});
-	}
-
-	vm.getContent = function(cd_texto) {
-		return restService.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
-	}
-
-	vm.setContent = function(cd_texto, content) {
-		var successfullyMessage = {
-			title: 'Texts',
-			message: 'text updated successfully!'
-		}
-		return restService.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
-	}
-
-
-});
-angular.module('TextMdl').service('TextSrv', function(AppSrv, TextRestSrv, StringSrv, generalService) {
-
-	var vm = this;
-
-	vm.setContent = function(controller, scope, content) {
-        var panelEditor = $('.text .text-content');                        
-		controller.content = content;
-        //controller.formatedContent = $sce.trustAsHtml(StringSrv.addLinksDictionaryAndPronunciation(controller.content));
-        controller.formatedContent = StringSrv.addLinksDictionaryAndPronunciation(controller.content);
-		generalService.insertHtmlWithController(panelEditor, controller.formatedContent, 'TextCtrl', scope);
-	}
-
-
-});
-angular.module('app').service('VideoRestSrv', function(restService) {
-
-	var vm = this;
-
-	vm.add = function(cd_categoria, tp_video, id_video, ds_item) {
-		var successfullyMessage = {
-			title: 'Videos',
-			message: 'Video added successfully!'
-		}
-		return restService.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
-	}
-
-	vm.get = function(cd_item) {
-		return restService.requestWithPromise('video/get', {'cd_item': cd_item});
-	}
-
-	vm.commentaries = {
-
-		set: function(cd_video, commentary) {
-			var successfullyMessage = {
-				title: 'Videos',
-				message: 'commentary updated successfully!'
-			}
-			return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
-		}
-
-	}
-
-
-});
-angular.module('VideoMdl').service('VideoSrv', function($rootScope, $timeout, $sce, $compile, $interval, $q, VideoRestSrv, AppConsts, StringSrv, AppSrv, videoModalImportSubtitleLyricsSrv, videoModalImportSubtitleSrtSrv, subtitleModalSrv) {
+})();
+(function() {
 	
-	var vm = this;
-	vm.controller;
+	'use strict';
 
-	vm.setController = function(controller) {
-		vm.controller = controller;
-	}
+	angular
+		.module('app')
+		.controller('SpacedRevisionController', SpacedRevisionController);
 
-	var _selectSubtitleInTime = function(controller, time) {
-		var data = controller.gridSubtitlesOptions.data;
-		for (var index = 0 ; index < data.length ; index++) {
-			var record = data[index];
-			if ((time >= record.nrStart) && (time <= record.nrEnd)) {
-				if (index != controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
-					controller.gridSubtitlesOptions.api.selectRow(index, true, false);
-				}	
-				break;
-			}
-		}
-	}
+	function SpacedRevisionController(stringService, restService, itemService, revisionService, dictionaryService, spacedRevisionModalService) {		
+		var vm = this;
+		spacedRevisionModalService.setController(vm);
 
-	var selectingSubtitle = false;
-	vm.configElementVideo = function(controller, cdItem) {
-		var deferred = $q.defer();
-
-		controller.onPlayerReady = function(API) {
-			controller.videoAPI = API;
-			controller.videoAPI.autoPlay = false;
-
-			var intervalPromise = $interval(function() {
-		        //controller.videoAPI.play();
-		        //controller.videoAPI.currentState = 'play';
-
-				if (angular.isDefined(controller.currentTime)) {
-					$interval.cancel(intervalPromise);
-				}
-
-	    	}, 1000);
+		vm.showDefinitionContent = false;
+		vm.learnedRate = 60;
+		vm.expressions = [];
+		vm.currentExpression;
+		vm.currentExpressionIndex;	
+		vm.model = {
+			expression: {}
 		};
 
-		controller.onUpdateTime = function(currentTime, totalTime) {
-			controller.currentTime = currentTime * 1000;
-			controller.totalTime = totalTime * 1000;
-			controller.timeLeft = controller.totalTime - controller.currentTime;
-			if (!selectingSubtitle) {
-				_selectSubtitleInTime(controller, currentTime);
-			}	
-		};		
+		vm.model.navigatorStatus = '';	
 
-		VideoRestSrv.get(cdItem).then(function(serverReturn) {
-			var t08vdo = serverReturn.data.data[0];
-			deferred.resolve(t08vdo);
+		vm.navigate = function(number) {
+			spacedRevisionModalService.selectExpression(vm.currentExpressionIndex + number);
+		}
+		
+		vm.navigateFirst = function() {
+			spacedRevisionModalService.selectExpression(0);
+		}
 
-			var videoUrl;
-			if (t08vdo.tpVideo == 'YOUTUBE') {
-				urlImage = "https://www.youtube.com/watch?v=" + t08vdo.idVideo;
-			} else {
-				urlImage = "https://googledrive.com/host/" + t08vdo.idVideo;
-			}
+		vm.navigateLast = function() {
+			spacedRevisionModalService.selectExpression(vm.expressions.length - 1);
+		}	
 
-			controller.videoConfig = {
-				//preload: "auto",
-				autoPlay: false,
-				sources: [
-					//{src: t08vdo.dsUrl},
-					{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
-				],
-				theme: {
-					url: "dist/videogular/videogular.css"
-				},
-				plugins: {
-					controls: {
-						autoHide: true,
-						autoHideTime: 5000
-					},
-					//poster: AppConsts.SERVER_URL + "item/image/get?cd_item=" + t08vdo.t05itm.cdItem + '&time=452'
-				}
-			};	
-			
-			/*
-            controller.videoConfig = {
-                preload: "auto",
-                "autoplay": true,
-                sources: [
-                    {src: $sce.trustAsResourceUrl(t08vdo.dsUrl), type: "video/mp4"},
-                ],
-                theme: {
-                    url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
-                }
-            };			
-			*/
+		vm.showResult = function() {
+			spacedRevisionModalService.showResult(vm);
+		}
+
+		vm.markAsReviewed = function(cd_item) {
+			spacedRevisionModalService.markAsReviewed(cd_item);
+		}
+
+		vm.selectExpressions = spacedRevisionModalService.selectExpressions;
+
+		/*
+		if (vm.cdItem) {
+			vm.itemImage = stringService.format('{0}item/image/get?cd_item={1}&time={2}', restService.SERVER_URL, vm.cdItem, (new Date()).getMilliseconds());
+
+			revisionService.getItemInfo(vm.cdItem).then(function(serverResponse) {
+				vm.dsItem = serverResponse.dsItem;
+				vm.dsBreadCrumbPath = serverResponse.dsBreadCrumbPath;
+			});
+
+		} else {
+			new Error('Attributes passed in a wrong way!')
+		}
+		*/
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
+		.controller('SpacedRevisionSelectExpressionsModalController', SpacedRevisionSelectExpressionsModalController);
+
+	function SpacedRevisionSelectExpressionsModalController(spacedRevisionSelectExpressionsModalService) {
+		this.selectedExpressions = {};
+
+		spacedRevisionSelectExpressionsModalService.setController(this);
+		
+		this.expressions = spacedRevisionSelectExpressionsModalService.getExpressions();
+
+		this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModalService.filterExpressionsDicionary;
+		this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModalService.filterExpressionsPronunciation;
+
+	};
+
+})();	
+(function() {
+
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.controller('DictionaryModalEditController', DictionaryModalEditController);
+
+	function DictionaryModalEditController(dictionaryModalEditService) {
+
+		//use this control in the service	
+		dictionaryModalEditService.setController(this);
+
+		this.model = {};
+
+	};
+
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.controller('dictionaryDefinitionViewerController', dictionaryDefinitionViewerController);
+
+	function dictionaryDefinitionViewerController($scope, dictionaryDefinitionViewerService) {
+		
+		dictionaryDefinitionViewerService.setController(this);
+		
+		this.currentDefinition = null;	
+
+		this.editingDefinition = false;
+
+		this.definitionEditClick = dictionaryDefinitionViewerService.definitionEditClick;
+		this.definitionSaveClick = dictionaryDefinitionViewerService.definitionSaveClick;
+		this.definitionCancelClick = dictionaryDefinitionViewerService.definitionCancelClick;
+
+		$scope.$watch('ctrl.cdDicionario', function(newValue, oldValue) {
+			dictionaryDefinitionViewerService.refreshDefinition(newValue);	
 		});
 
-		return deferred.promise;
-	}	
+	};
 
-	vm.configGridSubtitles = function(controller, cdItem) {	
+})();	
+(function() {
 
-		controller.gridSubtitlesOptions = {
-			keyField: 'cdItemSubtitle',
-			rowHeight: '37px',
-			url: AppConsts.SERVER_URL + '/subtitle/list?cd_item=' + cdItem,
-			hideHeaders: true,
-	        columns: [
-	        	{
-	            	name: 'nrStart',
-	            	width: '15%',
-	            	align: 'center',	            	
-	            	renderer: function(value, record) {
-	            		return StringSrv.doubleToStrTime(value);
-	            	}	
-	        	},
-	        	{
-	            	name: 'nrEnd',
-	            	width: '15%',
-	            	align: 'center',
-	            	renderer: function(value, record) {
-	            		return StringSrv.doubleToStrTime(value);
-	            	}	
-	        	},
-	        	{
-	            	name: 'dsTexto',
-	            	width: '80%',
-	            	renderer: function(value, record) {
-						var $div = $('<div>' + StringSrv.addLinksDictionaryAndPronunciation(value) + '</div>');
-						$compile($div)(controller.scope);
-	            		return $div;
-	            	}	
-	        	}
-	        ],
-	        listeners: {				
-				onselectionchange: function(ctrl, element, rowIndex, record) {
-					selectingSubtitle = true;
-					try {
-						controller.videoAPI.seekTime(record.nrStart);
-					} finally {	
-						//controller.videoAPI.pause();						
-						$timeout(function() {
-							selectingSubtitle = false;
-						}, 1500)
+	'use strict';
+
+	angular
+		.module('dictionary')
+		.directive('dictionaryDefinitionViewer', dictionaryDefinitionViewer);
+
+	function dictionaryDefinitionViewer() {
+		
+		return {
+			restrict: 'E',
+			scope: {},
+			bindToController: {
+				cdDicionario: '=?'
+			},
+			controller: 'dictionaryDefinitionViewerController',
+			controllerAs: 'ctrl',
+			templateUrl: 'src/app/shared/dictionary/directives/dictionary-definition-viewer/dictionary-definition-viewer.view.html',
+			link: function(scope, element, attrs) {
+				scope.ctrl.element = $(element);	    
+			}	
+		}
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
+		.service('homeService', homeService);
+
+	function homeService($timeout, $rootScope, generalService, categoryService, restService, itemService, stringService, spacedRevisionModalService, uiDeniModalSrv, itemRestService, textService) {
+
+		var vm = this;
+		var jsTreeInstance = null;
+
+		/**
+		 *
+		 *
+		 */
+		vm.addCategoryClick = function(scope, currentCategoryId) {
+			categoryService.add(scope, currentCategoryId).then(function(addedCategory) {
+				var newNode = { 
+					state: "open", 
+					id: addedCategory.cdCategoria,				
+					text: addedCategory.dsCategoria,
+					data: addedCategory
+				};
+
+				jsTreeInstance.create_node(currentCategoryId, newNode, 'last', function(addedNode) {
+					jsTreeInstance.deselect_all();
+					jsTreeInstance.select_node(addedNode);
+				});		
+			});
+		};	
+
+
+		/**
+		 *
+		 *
+		 */
+		vm.editCategoryClick = function(scope, currentCategoryNode) {
+			categoryService.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
+				jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
+			});
+		};
+
+		/**
+		 *
+		 *
+		 */
+		vm.delCategoryClick = function(currentCategoryNode) {
+			categoryService.del(currentCategoryNode.id).then(function(serverResponse) {
+				var parentNode = jsTreeInstance.get_node(currentCategoryNode.parent);
+				jsTreeInstance.delete_node([currentCategoryNode]);
+				jsTreeInstance.select_node(parentNode);
+			});
+		};
+
+		/**
+		 *
+		 *
+		 */
+		var _getTopParentNode = function(controller) {
+			if (controller.currentCategoryNode.parent == '#') {
+				return controller.currentCategoryNode.id;
+			} else {
+				return controller.currentCategoryNode.parents[controller.currentCategoryNode.parents.length - 2];
+			}	
+		};
+
+
+		/**
+		 *
+		 *
+		 */
+	    vm.addNewItemButtonClick = function(controller, scope, event) {
+	    	var topParentNode = _getTopParentNode(controller);
+	    	var fnNewItem;
+
+			itemService.add(scope, topParentNode, controller.currentCategoryNode).then(function(addedItem) {
+				controller.gridOptions.api.reload().then(function(responseData) {
+					var objAdded = addedItem.data[0];
+					var cdItemAdded = objAdded.cdItem || objAdded.t05itm.cdItem;
+			        controller.gridOptions.api.findKey(cdItemAdded, {inLine: true});						
+				});
+			});
+	    };
+
+
+		/**
+		 *
+		 *
+		 */
+	    var _setCurrentCategory = function(controller, nodeData) {
+	    	controller.currentCategoryNode = nodeData.node;
+			controller.currentCategory = controller.currentCategoryNode.id;
+
+	    	var path = '<span class="categoryPathTitle">' + controller.currentCategoryNode.text + '</span>';
+
+	    	var parentId = controller.currentCategoryNode.parent;
+	    	while (parentId != '#') { //# means root node
+	    		var parentObj = nodeData.instance.get_node(parentId);
+	    		path = parentObj.text + " / " + path;
+
+	    		var parentId = parentObj.parent;
+	    	}
+
+			controller.categoryPath = path;
+	    };	
+
+		/**
+		 *
+		 *
+		 */
+	    vm.reloadDataGrid = function(controller) {
+
+			if (controller.currentCategoryNode) {
+		 		//Items
+		    	if (controller.currentNavItem == 'pageItems') {
+					controller.gridOptions.url = restService.SERVER_URL + 'item/list?cd_categoria=' + controller.currentCategoryNode.id;
+		    	//Revisions
+		    	} else if (controller.currentNavItem == 'pageRevisions') {
+					controller.gridOptions.url = restService.SERVER_URL + 'revision/list?pendente=true&days=5&cd_categoria=' + controller.currentCategoryNode.id;
+		    	//Favorites
+		    	} else {
+					controller.gridOptions.url = restService.SERVER_URL + 'item/favorite/get?cd_categoria=' + controller.currentCategoryNode.id;
+		    	}
+						
+				controller.gridOptions.api.reload();
+			}	
+
+	    };
+
+		/**
+		 *
+		 *
+		 */
+		vm.configureTreeView = function(controller) {
+
+		  	$('#categoryTreeview')
+				.on('loaded.jstree', function (e, data) {
+					jsTreeInstance = data.instance;
+					if (controller.currentCategory) {
+						jsTreeInstance.select_node(controller.currentCategory);
 					}	
-				},
+				})
+				.on('changed.jstree', function (e, data) {
+				  if (data.node) {
+						_setCurrentCategory(controller, data);
+						vm.reloadDataGrid(controller);			  
+				  }  
+				})
+				.jstree({
+					'core' : {
+						check_callback: true,
+						'data' : {
+							"url" : restService.SERVER_URL + 'category/category/tree/list',				
+							//"url" : "//www.jstree.com/fiddle/",
+							"dataType" : "json" // needed only if you do not supply JSON headers
+						},
+					},
+					plugins : [
+						"wholerow"
+					],
+				});
 
-				onrowdblclick: function(recordDblClick, rowElementDblClick, rowIndexDblClick) {
-					vm.editSubtitleButtonClick();
+		};
+
+		/**
+		 *
+		 *
+		 */
+		vm.configureGridItems = function(controller, scope) {
+		    controller.gridOptions = {
+		    	hideHeaders: true,
+				colLines: false,
+		    	keyField: 'cdItem',
+		        rowHeight: '100px', //22px is default
+		        columns: [
+		        	{
+		        		header: 'Item',
+		        		name: 'cdItem',
+		        		width: 'calc(100% - 96px)',
+		        		renderer: function(value, record) {
+							var linkViewItem = null;
+							var topParentNode = _getTopParentNode(controller);
+							
+							if (topParentNode == textService.topParentNodeId) {
+								linkViewItem = '/text';
+							} else {
+								linkViewItem = '/video';						
+							}
+							var time = new Date();
+							var miliseconds = time.getMilliseconds();
+
+							var revise = record.blFazerRevisao ? 'check_box' : 'check_box_outline_blank';						
+							var reviseSelected = record.blFazerRevisao ? 'selected' : '';
+							
+							var favorite = record.blFavorite ? 'star' : 'star_border';
+							var favoriteSelected = record.blFavorite ? 'selected' : '';						
+
+		  					var cellTemplate = '<div class="cell-template">\n' +
+											   '    <img class="item-image"\n' +
+											   '        src="{0}item/image/get?cd_item={1}&time={5}" \n' +
+											   '    />\n' +                                  
+											   '    <div><a href="#{2}/{1}">{3}</a></div>\n' +
+											   '    <div>{4}</div>\n' +									   
+											   '    <md-icon class="material-icons revise {6}"> {7} </md-icon>\n' +										   										   
+											   '    <md-icon class="material-icons favorite {8}"> {9} </md-icon>\n' +
+											   '<div>';
+
+		  					return stringService.format(cellTemplate, restService.SERVER_URL, record.cdItem, linkViewItem, record.dsItem, 'blá blá blá blá', miliseconds, reviseSelected, revise, favoriteSelected, favorite);
+		        		}
+		        	},
+		        	{
+		        		width: '32px',
+			            action: {
+			                mdIcon: 'restore',
+			                tooltip: '',
+			                fn: function(record, column, imgActionColumn) {
+								spacedRevisionModalService.showModal(scope, record.cdItem);
+			                }
+			            }        		
+		        	},
+		        	{
+		        		width: '32px',
+			            action: {
+			                mdIcon: 'edit',
+			                tooltip: '',
+			                fn: function(record, column, imgActionColumn) {
+								var rowEl = $(imgActionColumn).closest('.ui-row');
+								var imgEl = rowEl.find('.item-image');
+
+								var config = {
+									description: record.dsItem,
+									imgSrc: imgEl.attr('src')
+								};
+
+								var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage(config);
+								wndDescriptionMorImage.show().then(function(response) {
+									if (response.button == 'ok') {								
+										var uriImage = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
+										itemRestService.upd(record.cdItem, controller.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
+											controller.gridOptions.api.reload().then(function(responseData) {
+												imgEl.attr('src', response.data.image);								
+
+												var cdItemUpdated = responseUpd.data[0].cdItem;
+										        controller.gridOptions.api.findKey(cdItemUpdated, {inLine: true});						
+											});
+										});				
+									}
+								});
+			                }
+			            }        		
+		        	},
+		        	{
+		        		width: '32px',
+			            action: {
+			                mdIcon: 'delete_forever',
+			                tooltip: '',
+			                fn: function(record, column, imgActionColumn) {
+								itemService.del(record.cdItem).then(function() {
+									controller.gridOptions.api.reload();
+								});	                	
+			                }
+			            }        		
+		        	}
+
+		        ],
+		        listeners: {
+					onbeforeload: function(data, options) {
+						$rootScope.subTitle = '';
+					},
+
+		            onafterrepaintrow: function(rowIndex, elementRow) {
+						$timeout(function() {
+
+							elementRow.find('.material-icons.revise').click(function(event) {
+								var record = controller.gridOptions.api.getSelectedRow();
+								record.blFazerRevisao = !record.blFazerRevisao;
+
+								var revisionIcon = $(event.currentTarget);
+								if (revisionIcon.is('.selected')) {
+									revisionIcon.html('check_box_outline_blank');
+									revisionIcon.removeClass('selected');
+								} else {
+									revisionIcon.html('check_box');
+									revisionIcon.addClass('selected');
+								}	
+
+								itemService.revision.set(record.cdItem, record.blFazerRevisao).then(function(blFazerRevisao) {
+									uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
+								});
+							});
+
+							elementRow.find('.material-icons.favorite').click(function(event) {
+								var record = controller.gridOptions.api.getSelectedRow();
+								record.blFavorite = !record.blFavorite;
+
+								var favoriteIcon = $(event.currentTarget);
+								if (favoriteIcon.is('.selected')) {
+									favoriteIcon.html('star_border');
+									favoriteIcon.removeClass('selected');
+								} else {
+									favoriteIcon.html('star');
+									favoriteIcon.addClass('selected');
+								}	
+
+								itemService.favorite.set(record.cdItem, record.blFavorite).then(function(blFavorite) {
+									uiDeniModalSrv.ghost('Items', 'Item updated successfuly!');
+								});
+							});
+
+
+						}, 500);
+		            },
+
+		            onselectionchange: function(ctrl, element, rowIndex, record) {
+						$rootScope.subTitle = record.dsItem;
+						if (!scope.$$phase) {
+							scope.$apply();
+						}
+		            }
+				}			
+		    };		
+
+		};
+
+	};
+
+})();	
+(function() {
+    
+    'use strict';
+
+    angular
+	    .module('app')
+	    .service('textRestService', textRestService);
+
+	function textRestService(restService) {
+		var vm = this;
+
+		vm.list = function(cd_item) {
+			return restService.requestWithPromise('text/list', {'cd_item': cd_item});
+		}
+
+		vm.getContent = function(cd_texto) {
+			return restService.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
+		}
+
+		vm.setContent = function(cd_texto, content) {
+			var successfullyMessage = {
+				title: 'Texts',
+				message: 'text updated successfully!'
+			}
+			return restService.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
+		}
+
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('text')
+		.service('textService', textService);
+
+	function textService(AppSrv, textRestService, stringService, generalService) {
+
+		var vm = this;
+		vm.topParentNodeId = 275; //t02ctg.cdCategoria from the top parent node
+
+		vm.setContent = function(controller, scope, content) {
+	        var panelEditor = $('.text .text-content');                        
+			controller.content = content;
+	        controller.formatedContent = stringService.addLinksDictionaryAndPronunciation(controller.content);
+			generalService.insertHtmlWithController(panelEditor, controller.formatedContent, 'textController', scope);
+		}
+
+
+	};
+
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('video')
+		.service('videoRestService', videoRestService);
+
+	function videoRestService(restService) {
+		var vm = this;
+
+		vm.add = function(cd_categoria, tp_video, id_video, ds_item) {
+			var successfullyMessage = {
+				title: 'Videos',
+				message: 'Video added successfully!'
+			}
+			return restService.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
+		}
+
+		vm.get = function(cd_item) {
+			return restService.requestWithPromise('video/get', {'cd_item': cd_item});
+		}
+
+		vm.commentaries = {
+
+			set: function(cd_video, commentary) {
+				var successfullyMessage = {
+					title: 'Videos',
+					message: 'commentary updated successfully!'
 				}
-	        }
+				return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
+			}
+
+		}
+
+
+	};
+
+})();		
+(function() {
+
+	'use strict';
+
+	angular
+		.module('video')
+		.service('videoService', videoService);
+
+	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, AppSrv, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService) {
+		var vm = this;
+		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
+		vm.controller;
+
+		vm.setController = function(controller) {
+			vm.controller = controller;
+		}
+
+		var _selectSubtitleInTime = function(controller, time) {
+			var data = controller.gridSubtitlesOptions.data;
+			for (var index = 0 ; index < data.length ; index++) {
+				var record = data[index];
+				if ((time >= record.nrStart) && (time <= record.nrEnd)) {
+					if (index != controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
+						controller.gridSubtitlesOptions.api.selectRow(index, true, false);
+					}	
+					break;
+				}
+			}
+		}
+
+		var selectingSubtitle = false;
+		vm.configElementVideo = function(controller, cdItem) {
+			var deferred = $q.defer();
+
+			controller.onPlayerReady = function(API) {
+				controller.videoAPI = API;
+				controller.videoAPI.autoPlay = false;
+
+				var intervalPromise = $interval(function() {
+			        //controller.videoAPI.play();
+			        //controller.videoAPI.currentState = 'play';
+
+					if (angular.isDefined(controller.currentTime)) {
+						$interval.cancel(intervalPromise);
+					}
+
+		    	}, 1000);
+			};
+
+			controller.onUpdateTime = function(currentTime, totalTime) {
+				controller.currentTime = currentTime * 1000;
+				controller.totalTime = totalTime * 1000;
+				controller.timeLeft = controller.totalTime - controller.currentTime;
+				if (!selectingSubtitle) {
+					_selectSubtitleInTime(controller, currentTime);
+				}	
+			};		
+
+			videoRestService.get(cdItem).then(function(serverReturn) {
+				var t08vdo = serverReturn.data.data[0];
+				deferred.resolve(t08vdo);
+
+				var urlImage;
+				if (t08vdo.tpVideo == 'YOUTUBE') {
+					urlImage = "https://www.youtube.com/watch?v=" + t08vdo.idVideo;
+				} else {
+					urlImage = "https://googledrive.com/host/" + t08vdo.idVideo;
+				}
+
+				controller.videoConfig = {
+					//preload: "auto",
+					autoPlay: false,
+					sources: [
+						//{src: t08vdo.dsUrl},
+						{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
+					],
+					theme: {
+						url: "dist/videogular/videogular.css"
+					},
+					plugins: {
+						controls: {
+							autoHide: true,
+							autoHideTime: 5000
+						},
+						//poster: restService.SERVER_URL + "item/image/get?cd_item=" + t08vdo.t05itm.cdItem + '&time=452'
+					}
+				};	
+				
+				/*
+	            controller.videoConfig = {
+	                preload: "auto",
+	                "autoplay": true,
+	                sources: [
+	                    {src: $sce.trustAsResourceUrl(t08vdo.dsUrl), type: "video/mp4"},
+	                ],
+	                theme: {
+	                    url: "http://www.videogular.com/styles/themes/default/latest/videogular.css"
+	                }
+	            };			
+				*/
+			});
+
+			return deferred.promise;
+		}	
+
+		vm.configGridSubtitles = function(controller, cdItem) {	
+
+			controller.gridSubtitlesOptions = {
+				keyField: 'cdItemSubtitle',
+				rowHeight: '37px',
+				url: restService.SERVER_URL + '/subtitle/list?cd_item=' + cdItem,
+				hideHeaders: true,
+		        columns: [
+		        	{
+		            	name: 'nrStart',
+		            	width: '15%',
+		            	align: 'center',	            	
+		            	renderer: function(value, record) {
+		            		return stringService.doubleToStrTime(value);
+		            	}	
+		        	},
+		        	{
+		            	name: 'nrEnd',
+		            	width: '15%',
+		            	align: 'center',
+		            	renderer: function(value, record) {
+		            		return stringService.doubleToStrTime(value);
+		            	}	
+		        	},
+		        	{
+		            	name: 'dsTexto',
+		            	width: '80%',
+		            	renderer: function(value, record) {
+							var $div = $('<div>' + stringService.addLinksDictionaryAndPronunciation(value) + '</div>');
+							$compile($div)(controller.scope);
+		            		return $div;
+		            	}	
+		        	}
+		        ],
+		        listeners: {				
+					onselectionchange: function(ctrl, element, rowIndex, record) {
+						selectingSubtitle = true;
+						try {
+							controller.videoAPI.seekTime(record.nrStart);
+						} finally {	
+							//controller.videoAPI.pause();						
+							$timeout(function() {
+								selectingSubtitle = false;
+							}, 1500)
+						}	
+					},
+
+					onrowdblclick: function(recordDblClick, rowElementDblClick, rowIndexDblClick) {
+						vm.editSubtitleButtonClick();
+					}
+		        }
+		    };
+
+
+		};
+
+		vm.configWYSIWYG = function(controller, cdItem) {
+
+			var fnExecSaveButton = function() {
+				videoRestService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
+			}
+
+			var fnExecCancelButton = function() {
+		    	videoRestService.get(cdItem).then(function(serverResponse) {
+		    		controller.t08vdo = serverResponse.data.data[0];
+		    	});
+			}
+
+			controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
+		};
+
+		vm.editSubtitleButtonClick = function() {
+			subtitleModalService.edit(vm.controller.scope, vm.controller).then(function(subtitleUpdated) {
+				vm.controller.gridSubtitlesOptions.api.reload().then(function() {
+					vm.controller.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
+				});
+			});
+		}
+
+	    vm.importSubtitleFromLyrics = function() {
+	    	videoModalImportSubtitleLyricsService.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+	    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+	    	});
+	    };
+
+	    vm.importSubtitleFromSrtFile = function() {
+	    	videoModalImportSubtitleSrtService.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
+	    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
+	    	});
 	    };
 
 
 	};
 
-	vm.configWYSIWYG = function(controller, cdItem) {
+})();
+(function() {
+	
+	'use strict';
 
-		var fnExecSaveButton = function() {
-			VideoRestSrv.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
+	angular
+		.module('app')
+		.service('subtitleRestService', subtitleRestService);
+
+	function subtitleRestService(restService) {
+		var vm = this;
+
+		vm.list = function(cd_item) {
+			return restService.requestWithPromise('subtitle/list', {'cd_item': cd_item});
 		}
 
-		var fnExecCancelButton = function() {
-	    	VideoRestSrv.get(cdItem).then(function(serverResponse) {
-	    		controller.t08vdo = serverResponse.data.data[0];
-	    	});
+		vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
+			var successfullyMessage = {
+				title: 'Inserting',
+				message: 'Subtitle added successfully!'
+			}
+			return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
 		}
 
-		controller.options = AppSrv.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
+		vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Subtitle updated successfully!'
+			}
+			return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
+		}
+
+		vm.incASecond = function(cd_item_subtitle) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Subtitle updated successfully!'
+			}
+			return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+		}
+
+		vm.decASecond = function(cd_item_subtitle) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Subtitle updated successfully!'
+			}
+			return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+		}
+
+		vm.del = function(cd_item_subtitle) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Subtitle deleted successfully!'
+			}
+			return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
+		}
+
+
 	};
 
-	vm.editSubtitleButtonClick = function() {
-		subtitleModalSrv.edit(vm.controller.scope, vm.controller).then(function(subtitleUpdated) {
-			vm.controller.gridSubtitlesOptions.api.reload().then(function() {
-				vm.controller.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
-			});
-		});
-	}
+})();
 
-    vm.importSubtitleFromLyrics = function() {
-    	videoModalImportSubtitleLyricsSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
-    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
-    	});
-    };
+(function() {
 
-    vm.importSubtitleFromSrtFile = function() {
-    	videoModalImportSubtitleSrtSrv.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
-    		vm.controller.gridSubtitlesOptions.api.loadData(subtilesAdded);
-    	});
-    };
+  'use strict';
 
+  angular
+    .module('video')
+    .service('videoModalImportSubtitleLyricsService', videoModalImportSubtitleLyricsService);
 
-});
-angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, restService, uiDeniModalSrv) {
+  function videoModalImportSubtitleLyricsService($rootScope, $q, restService, uiDeniModalSrv) {
 
-	var vm = this;
-  vm.cdItem;
-	vm.controller;
+  	var vm = this;
+    vm.cdItem;
+  	vm.controller;
 
-	vm.setController = function(controller, scope) {
-		vm.controller = controller;
-    vm.controller.cdItem = vm.cdItem;
-	}
+  	vm.setController = function(controller, scope) {
+  		vm.controller = controller;
+      vm.controller.cdItem = vm.cdItem;
+  	}
 
-	vm.showModal = function(cdItem) {
-      vm.cdItem = cdItem;
-      var deferred = $q.defer();
+  	vm.showModal = function(cdItem) {
+        vm.cdItem = cdItem;
+        var deferred = $q.defer();
 
-      var wndImportSubtitle = uiDeniModalSrv.createWindow({
-            scope: $rootScope,
-            title: 'Importing Subtitle from a text (often lyrics of musics)',
-            width: '550px',         
-            height: '500px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.tpl.htm',
-            modal: true,
-            listeners: {
+        var wndImportSubtitle = uiDeniModalSrv.createWindow({
+              scope: $rootScope,
+              title: 'Importing Subtitle from a text (often lyrics of musics)',
+              width: '550px',         
+              height: '500px',
+              position: uiDeniModalSrv.POSITION.CENTER,
+              buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+              urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.view.html',
+              modal: true,
+              listeners: {
 
-            	onshow: function(objWindow) {
-            	}
+              	onshow: function(objWindow) {
+              	}
 
+              }
+        });
+
+        wndImportSubtitle.show().then(function(modalResponse) {
+
+          if (modalResponse.button == 'ok') {
+            var successfullyMessage = {
+              title: 'Updating',
+              message: 'Item updated successfully!'
             }
-      });
 
-      wndImportSubtitle.show().then(function(modalResponse) {
+            var textArea = $(wndImportSubtitle).find('textarea');
+            lyrics = textArea.val();
 
-        if (modalResponse.button == 'ok') {
-          var successfullyMessage = {
-            title: 'Updating',
-            message: 'Item updated successfully!'
+            restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+              deferred.resolve(serverReturn.data);
+            });   
           }
 
-          var textArea = $(wndImportSubtitle).find('textarea');
-          lyrics = textArea.val();
+        });
 
-          restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
-            deferred.resolve(serverReturn.data);
-          });   
-        }
+        return deferred.promise;
+  	};
 
-      });
-
-      return deferred.promise;
-	};
-
-});
-angular.module('app').service('SubtitleRestSrv', function(restService) {
-
-	var vm = this;
-
-	vm.list = function(cd_item) {
-		return restService.requestWithPromise('subtitle/list', {'cd_item': cd_item});
-	}
-
-	vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Subtitle added successfully!'
-		}
-		return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-	}
-
-	vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-	}
-
-	vm.incASecond = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-	}
-
-	vm.decASecond = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-	}
-
-	vm.del = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Subtitle deleted successfully!'
-		}
-		return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
-	}
-
-
-});
-angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $http, $rootScope, AppConsts, uiDeniModalSrv, Upload) {
-
-	var vm = this;
-  vm.cdItem;
-	vm.controller;
-
-	vm.setController = function(controller, scope) {
-		vm.controller = controller;
-    vm.controller.cdItem = vm.cdItem;
-
-    scope.$watch('ctrl.strFile', function (newValue, oldValue) {
-        vm.controller.strFile = newValue;
-    });
-	}
-
-	vm.showModal = function(cdItem) {
-      vm.cdItem = cdItem;
-      var deferred = $q.defer();
-
-      var wndImportSubtitle = uiDeniModalSrv.createWindow({
-            scope: $rootScope,
-            title: 'Importing Subtitle (.srt)',
-            width: '600px',         
-            height: '230px',
-            position: uiDeniModalSrv.POSITION.CENTER,
-            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-            urlTemplate: 'src/app/components/video/video-modal-import-subtitle-srt/video-modal-import-subtitle-srt.tpl.htm',
-            modal: true,
-            listeners: {
-
-            	onshow: function(objWindow) {
-            	}
-
-            }
-      });
-
-      wndImportSubtitle.show().then(function(modalResponse) {
-
-        if (modalResponse.button == 'ok') {
-          if ((vm.controller.strFile) && (!vm.controller.strFile.$error)) {
-
-            var fileInput = $(wndImportSubtitle).find('input[type=file]');
-             var fd = new FormData();
-             fd.append('cdItem', vm.cdItem);
-             fd.append('file', vm.controller.strFile);
-
-             $http.post(AppConsts.SERVER_URL + 'subtitle/importsrt', fd, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-             })
-          
-             .success(function(serverResponseAddSubtitle){
-                uiDeniModalSrv.ghost("Subtitles", "Subtitles imported successfully!");
-                deferred.resolve(serverResponseAddSubtitle.data);
-             })
-          
-             .error(function(reason){
-                deferred.reject(reason);
-             });
-
-          }
-        }
-        
-      });
-
-      return deferred.promise;
-	};
-
-  vm.uploaderOnAfterAddingFile = function(fileItem) {
-    vm.controller.file = fileItem.file; 
-    //var spanFileName = $('.video-modal-import-subtitle-srt .select-file-drag-and-drop .filename');
-    //spanFileName.html(fileItem.file.name);
   };
+
+})();  
+(function() {
+
+    'use strict';
+
+  angular
+    .module('video')
+    .service('videoModalImportSubtitleSrtService', videoModalImportSubtitleSrtService);
+
+    function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv, Upload) {
+
+  	var vm = this;
+    vm.cdItem;
+  	vm.controller;
+
+  	vm.setController = function(controller, scope) {
+  		vm.controller = controller;
+      vm.controller.cdItem = vm.cdItem;
+
+      scope.$watch('ctrl.strFile', function (newValue, oldValue) {
+          vm.controller.strFile = newValue;
+      });
+  	}
+
+  	vm.showModal = function(cdItem) {
+        vm.cdItem = cdItem;
+        var deferred = $q.defer();
+
+        var wndImportSubtitle = uiDeniModalSrv.createWindow({
+              scope: $rootScope,
+              title: 'Importing Subtitle (.srt)',
+              width: '600px',         
+              height: '230px',
+              position: uiDeniModalSrv.POSITION.CENTER,
+              buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+              urlTemplate: 'src/app/components/video/video-modal-import-subtitle-srt/video-modal-import-subtitle-srt.view.html',
+              modal: true,
+              listeners: {
+
+              	onshow: function(objWindow) {
+              	}
+
+              }
+        });
+
+        wndImportSubtitle.show().then(function(modalResponse) {
+
+          if (modalResponse.button == 'ok') {
+            if ((vm.controller.strFile) && (!vm.controller.strFile.$error)) {
+
+              var fileInput = $(wndImportSubtitle).find('input[type=file]');
+               var fd = new FormData();
+               fd.append('cdItem', vm.cdItem);
+               fd.append('file', vm.controller.strFile);
+
+               $http.post(restService.SERVER_URL + 'subtitle/importsrt', fd, {
+                  transformRequest: angular.identity,
+                  headers: {'Content-Type': undefined}
+               })
+            
+               .success(function(serverResponseAddSubtitle){
+                  uiDeniModalSrv.ghost("Subtitles", "Subtitles imported successfully!");
+                  deferred.resolve(serverResponseAddSubtitle.data);
+               })
+            
+               .error(function(reason){
+                  deferred.reject(reason);
+               });
+
+            }
+          }
+          
+        });
+
+        return deferred.promise;
+  	};
+
+    vm.uploaderOnAfterAddingFile = function(fileItem) {
+      vm.controller.file = fileItem.file; 
+      //var spanFileName = $('.video-modal-import-subtitle-srt .select-file-drag-and-drop .filename');
+      //spanFileName.html(fileItem.file.name);
+    };
+  	
+
+  };
+
+})();  
+(function() {
 	
+	'use strict';
 
-});
-angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
-	var vm = this;
+	angular
+		.module('video')
+		.service('subtitleModalService', subtitleModalService);
 
-	var EnumOperation = {
-		ADDING: 1,
-		EDITING: 2
+	function subtitleModalService($q, uiDeniModalSrv, stringService, subtitleRestService) {
+		var vm = this;
+
+		var EnumOperation = {
+			ADDING: 1,
+			EDITING: 2
+		};
+
+		var _getSubtitleModal = function(scope, controller, operation) {
+			var deferred = $q.defer();
+
+			controller.subtitleModalData = {};
+
+			var record = controller.gridSubtitlesOptions.api.getSelectedRow();
+
+			if (operation == EnumOperation.EDITING) { //Editing
+				var record = controller.gridSubtitlesOptions.api.getSelectedRow();
+				controller.subtitleModalData.start = stringService.doubleToStrTime(record.nrStart);
+				controller.subtitleModalData.end = stringService.doubleToStrTime(record.nrEnd);
+				controller.subtitleModalData.text = record.dsTexto;			
+			} else { //Adding
+				if (record) {
+					controller.subtitleModalData.start = stringService.doubleToStrTime(record.nrStart + 1);
+					controller.subtitleModalData.end = stringService.doubleToStrTime(record.nrStart + 2);
+				} else {
+					//initial value (fake value)
+					controller.subtitleModalData.start = stringService.doubleToStrTime(1);
+					controller.subtitleModalData.end = stringService.doubleToStrTime(10);
+				}
+			}
+
+			var modal = uiDeniModalSrv.createWindow({
+				scope: scope,
+				title: 'Subtitles',
+				width: '450px',			
+				height: '230px',
+				position: uiDeniModalSrv.POSITION.CENTER,
+				buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
+				urlTemplate: 'src/app/components/video/subtitle/modals/subtitle-modal.view.html',
+				modal: true,
+		        listeners: {
+		        	onshow: function(objWindowShowed) {
+		        		//alert('show...');
+		        	},
+		        }	
+			});
+
+			modal.show().then(function(msgResponse) {
+				if (msgResponse.button == 'ok') {
+					var fn;
+
+					controller.subtitleModalData.start = stringService.strTimeToDouble(controller.subtitleModalData.start);
+					controller.subtitleModalData.end = stringService.strTimeToDouble(controller.subtitleModalData.end);				
+
+					console.log(controller.subtitleModalData);
+					if (operation == EnumOperation.EDITING) { //Editing
+						subtitleRestService.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
+							deferred.resolve(responseServer.data[0]);
+						});
+					} else { //Adding
+						subtitleRestService.add(controller.t08vdo.cdVideo, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
+							deferred.resolve(responseServer.data[0]);
+						});
+					}
+
+				} else {
+					deferred.reject('');
+				}
+			}); 
+
+			return deferred.promise;
+		}	
+
+		vm.add = function(scope, controller) {
+			return _getSubtitleModal(scope, controller, EnumOperation.ADDING);
+		}
+
+		vm.edit = function(scope, controller) {
+			return _getSubtitleModal(scope, controller, EnumOperation.EDITING);
+		}
+
 	};
 
-	var _getSubtitleModal = function(scope, controller, operation) {
-		var deferred = $q.defer();
-
-		controller.subtitleModalData = {};
-
-		var record = controller.gridSubtitlesOptions.api.getSelectedRow();
-
-		if (operation == EnumOperation.EDITING) { //Editing
-			var record = controller.gridSubtitlesOptions.api.getSelectedRow();
-			controller.subtitleModalData.start = StringSrv.doubleToStrTime(record.nrStart);
-			controller.subtitleModalData.end = StringSrv.doubleToStrTime(record.nrEnd);
-			controller.subtitleModalData.text = record.dsTexto;			
-		} else { //Adding
-			if (record) {
-				controller.subtitleModalData.start = StringSrv.doubleToStrTime(record.nrStart + 1);
-				controller.subtitleModalData.end = StringSrv.doubleToStrTime(record.nrStart + 2);
-			} else {
-				//initial value (fake value)
-				controller.subtitleModalData.start = StringSrv.doubleToStrTime(1);
-				controller.subtitleModalData.end = StringSrv.doubleToStrTime(10);
-			}
-		}
-
-		var modal = uiDeniModalSrv.createWindow({
-			scope: scope,
-			title: 'Subtitles',
-			width: '450px',			
-			height: '230px',
-			position: uiDeniModalSrv.POSITION.CENTER,
-			buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
-			urlTemplate: 'src/app/components/video/subtitle/modals/subtitle-modal.tpl.htm',
-			modal: true,
-	        listeners: {
-	        	onshow: function(objWindowShowed) {
-	        		//alert('show...');
-	        	},
-	        }	
-		});
-
-		modal.show().then(function(msgResponse) {
-			if (msgResponse.button == 'ok') {
-				var fn;
-
-				controller.subtitleModalData.start = StringSrv.strTimeToDouble(controller.subtitleModalData.start);
-				controller.subtitleModalData.end = StringSrv.strTimeToDouble(controller.subtitleModalData.end);				
-
-				console.log(controller.subtitleModalData);
-				if (operation == EnumOperation.EDITING) { //Editing
-					SubtitleRestSrv.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
-						deferred.resolve(responseServer.data[0]);
-					});
-				} else { //Adding
-					SubtitleRestSrv.add(controller.t08vdo.cdVideo, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
-						deferred.resolve(responseServer.data[0]);
-					});
-				}
-
-			} else {
-				deferred.reject('');
-			}
-		}); 
-
-		return deferred.promise;
-	}	
-
-	vm.add = function(scope, controller) {
-		return _getSubtitleModal(scope, controller, EnumOperation.ADDING);
-	}
-
-	vm.edit = function(scope, controller) {
-		return _getSubtitleModal(scope, controller, EnumOperation.EDITING);
-	}
-
-});
-angular.module('app').controller('HomeCtrl', function($scope, $rootScope, $routeParams, homeSrv, AppEnums, AppSrv) {
+})();	
+(function() {
 	
-	var vm = this;
+	'use strict';
 
-	vm.categoryPath = null;		
+	angular
+		.module('app')
+		.controller('homeController', homeController);
 
-	AppSrv.createHamburgerButton(['show-xs', 'hide-gt-xs'], AppEnums.Side.LEFT);
-
-	vm.currentNavItem = "pageItems";
-	vm.currentCategoryNode = null; //Category Node
-	
-	$.jstree.defaults.core.themes.variant = "large";	
-
-	vm.addCategoryClick = function() {
-		homeSrv.addCategoryClick($scope, vm.currentCategoryNode.id);
-	}	
-
-	vm.editCategoryClick = function() {
-		homeSrv.editCategoryClick($scope, vm.currentCategoryNode);
-	}	
-
-	vm.delCategoryClick = function() {
-		homeSrv.delCategoryClick(vm.currentCategoryNode);
-	}
-
-    vm.addNewItemButtonClick = function(event) {
-    	homeSrv.addNewItemButtonClick(vm, $scope, event);
-    }	
-
-	homeSrv.configureTreeView(vm, AppSrv.currentCategory || $routeParams.cdCategoria);
-
-	homeSrv.configureGridItems(vm, $scope);
+	function homeController($scope, $rootScope, $routeParams, homeService, generalService) {
 		
-    $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
-    	vm.currentNavItem = newCurrentNavItem;
-    	if (newCurrentNavItem) {
-    		homeSrv.reloadDataGrid(vm);
-    	}
-    });
+		var vm = this;
+		vm.categoryPath = null;		
+		vm.currentCategory = null; //Category Id	
 
-});
-'use strict';
+		generalService.createHamburgerButton(['show-xs', 'hide-gt-xs'], generalService.SideEnum.LEFT);
 
-angular.module('TextMdl').controller('TextCtrl', function($scope, $rootScope, $routeParams, dictionarySrv, dictionaryModalSrv, pronunciationSrv, pronunciationModalSrv, AppSrv, TextRestSrv, TextSrv, generalService, StringSrv, uiDeniModalSrv, spacedRevisionModalSrv, itemRestService) {
-     
-    var vm = this;
+		vm.currentNavItem = "pageItems";
+		vm.currentCategoryNode = null; //Category Node
+		
+		$.jstree.defaults.core.themes.variant = "large";	
 
-    vm.editing = false;
-    vm.params = $routeParams;
-    vm.texts = [];
-    vm.selectedIndex = -1;
-    vm.contentStored = ''; //used by cancel button to rescue the previous value
-    vm.content = '';
-    vm.formatedContent = '';     
-    vm.t05itm = null;
-    vm.t07txt = null;
+		vm.addCategoryClick = function() {
+			homeService.addCategoryClick($scope, vm.currentCategoryNode.id);
+		};	
 
-    itemRestService.get(vm.params.cdItem).then(function(serverResponse) {
-        vm.t05itm = serverResponse.data.data[0];
-        $rootScope.subTitle = vm.t05itm.dsItem;
-    });
+		vm.editCategoryClick = function() {
+			homeService.editCategoryClick($scope, vm.currentCategoryNode);
+		};	
 
-    TextRestSrv.list(vm.params.cdItem).then(function(serverResponse) {
-    	vm.texts = serverResponse.data.data;
-        vm.selectedIndex = 0;     	
-    });
-
-    vm.dictionaryModalClick = function() {
-        dictionaryModalSrv.showModal($rootScope).then(function(dictionaryData) {
-            TextSrv.setContent(vm, $scope, vm.content);
-        });
-    };
-
-    vm.pronunciationModalClick = function() {
-        pronunciationModalSrv.showModal($rootScope).then(function(pronunciationData) {
-            TextSrv.setContent(vm, $scope, vm.content);
-        });
-    };
-
-    $scope.$watch('ctrl.selectedIndex', function(current, old){
-        if ((angular.isDefined(current)) && (current !== old)) {
-        	if (vm.texts.length > 0) {
-                $rootScope.loading = true;
-    	    	vm.t07txt = vm.texts[current];
-
-    			TextRestSrv.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
-    				generalService.getAllExpressions().then(function(response) {
-                        TextSrv.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
-                        $rootScope.loading = false;
-    				});
-    			});
-    		}	
-        }
-    });    
-
-    vm.editClick = function() {
-        vm.contentStored = vm.content;
-        vm.editing = true;
-    };
-
-    vm.saveClick = function() {
-        TextRestSrv.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
-            TextSrv.setContent(vm, $scope, serverResponse.data[0].txConteudo);
-            vm.editing = false;             
-        });
-    };
-
-    vm.cancelClick = function() {
-        vm.content = vm.contentStored;          
-        vm.editing = false;
-    };
-
-    vm.listenSelectedTextClick = function() {
-        var selection = window.getSelection();
-        if (selection) {
-            pronunciationSrv.listenExpression(selection.toString().trim());
-        }
-    };
-
-    vm.spacedRevisionClick = function() {
-        spacedRevisionModalSrv.showModal($scope, vm.params.cdItem);
-    }
-
-    $scope.openDictionary = function(cdDicionario, dsExpressao) {
-        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
-    };    
-
-    $scope.openPronunciation = function(dsExpressao) {
-        pronunciationSrv.listenExpression(dsExpressao);
-    };     
-
-});
-'use strict';
-
-angular.module('VideoMdl').controller('VideoCtrl', function($scope, $rootScope, $routeParams, $sce, generalService, itemRestService, VideoSrv, subtitleModalSrv, SubtitleRestSrv, uiDeniModalSrv, pronunciationSrv, pronunciationModalSrv, dictionarySrv, dictionaryModalSrv, pronunciationSrv, spacedRevisionModalSrv) {
-	var vm = this;
-	VideoSrv.setController(this);
-	vm.scope = $scope;
-
-
-	$scope.name = "VideoCtrl";
-	$scope.params = $routeParams;	
-	vm.t05itm = null;
-	vm.cdItem = $scope.params.cdItem;
-	vm.commentaries = '';
-	vm.initialCommentaries = '';
-
-	itemRestService.get($scope.params.cdItem).then(function(serverResponse) {
-		vm.t05itm = serverResponse.data.data[0];
-		$rootScope.subTitle = vm.t05itm.dsItem;
-	});
-
-    VideoSrv.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
-		vm.t08vdo = t08vdo;
-		//vm.commentaries = t08vdo.txComentarios;
-	});
-
-	VideoSrv.configGridSubtitles(vm, $scope.params.cdItem);		
-	VideoSrv.configWYSIWYG(vm, $scope.params.cdItem);	
-	generalService.getAllExpressions().then(function(response) {
-		vm.gridSubtitlesOptions.api.repaint();
-	});
-
-	vm.dictionaryModalClick = function() {
-		dictionaryModalSrv.showModal($rootScope).then(function(dictionaryData) {dictionarySrv
-			vm.gridSubtitlesOptions.api.repaint();
-		});
-	}
-
-	vm.pronunciationModalClick = function() {
-		pronunciationModalSrv.showModal($rootScope).then(function(pronunciationData) {
-			vm.gridSubtitlesOptions.api.repaint();
-		});
-	}
-
-	vm.addSubtitleButtonClick = function() {
-		subtitleModalSrv.add($scope, vm).then(function(subtitleAdded) {
-			vm.gridSubtitlesOptions.api.reload().then(function() {
-				vm.gridSubtitlesOptions.api.findKey(subtitleAdded.cdItemSubtitle, {inLine: true});
-			});
-		});
-	}
-
-	vm.editSubtitleButtonClick = VideoSrv.editSubtitleButtonClick;
-
-	/*
-	vm.editSubtitleButtonClick = function() {
-		subtitleModalSrv.edit($scope, vm).then(function(subtitleUpdated) {
-			vm.gridSubtitlesOptions.api.reload().then(function() {
-				vm.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
-			});
-		});
-	}
-	*/
-
-	vm.delSubtitleButtonClick = function() {
-		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-		SubtitleRestSrv.del(record.cdItemSubtitle).then(function() {
-			vm.gridSubtitlesOptions.api.reload();
-		});
-	}
-
-	var _incrementOneSecond = function(increment) {
-		$rootScope.loading = true;
-		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-		var cdItemSubtitle = record.cdItemSubtitle;
-		record.nrStart = record.nrStart + increment;
-		record.nrEnd = record.nrEnd + increment;		
-
-		var fn;
-		if (increment > 0) {
-			fn = SubtitleRestSrv.incASecond;
-		} else {
-			fn = SubtitleRestSrv.decASecond;
+		vm.delCategoryClick = function() {
+			homeService.delCategoryClick(vm.currentCategoryNode);
 		}
 
-		fn(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
-			$rootScope.loading = false;
-			uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
-			vm.gridSubtitlesOptions.api.repaint();
-			vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});
+	    vm.addNewItemButtonClick = function(event) {
+	    	homeService.addNewItemButtonClick(vm, $scope, event);
+	    };	
+
+		homeService.configureTreeView(vm, vm.currentCategory || $routeParams.cdCategoria);
+
+		homeService.configureGridItems(vm, $scope);
+			
+	    $scope.$watch('ctrl.currentNavItem', function(newCurrentNavItem, oldCurrentNavItem) {
+	    	vm.currentNavItem = newCurrentNavItem;
+	    	if (newCurrentNavItem) {
+	    		homeService.reloadDataGrid(vm);
+	    	}
+	    });
+
+	}
+
+})();	
+(function() {
+    
+    'use strict';
+
+    angular
+        .module('text')
+        .controller('textController', textController);
+
+    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, AppSrv, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+         
+        var vm = this;
+
+        vm.editing = false;
+        vm.params = $routeParams;
+        vm.texts = [];
+        vm.selectedIndex = -1;
+        vm.contentStored = ''; //used by cancel button to rescue the previous value
+        vm.content = '';
+        vm.formatedContent = '';     
+        vm.t05itm = null;
+        vm.t07txt = null;
+
+        itemRestService.get(vm.params.cdItem).then(function(serverResponse) {
+            vm.t05itm = serverResponse.data.data[0];
+            $rootScope.subTitle = vm.t05itm.dsItem;
+        });
+
+        textRestService.list(vm.params.cdItem).then(function(serverResponse) {
+        	vm.texts = serverResponse.data.data;
+            vm.selectedIndex = 0;     	
+        });
+
+        vm.dictionaryModalClick = function() {
+            dictionaryModalService.showModal($rootScope).then(function(dictionaryData) {
+                textService.setContent(vm, $scope, vm.content);
+            });
+        };
+
+        vm.pronunciationModalClick = function() {
+            pronunciationModalService.showModal($rootScope).then(function(pronunciationData) {
+                textService.setContent(vm, $scope, vm.content);
+            });
+        };
+
+        $scope.$watch('ctrl.selectedIndex', function(current, old){
+            if ((angular.isDefined(current)) && (current !== old)) {
+            	if (vm.texts.length > 0) {
+                    $rootScope.loading = true;
+        	    	vm.t07txt = vm.texts[current];
+
+        			textRestService.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
+        				generalService.getAllExpressions().then(function(response) {
+                            textService.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
+                            $rootScope.loading = false;
+        				});
+        			});
+        		}	
+            }
+        });    
+
+        vm.editClick = function() {
+            vm.contentStored = vm.content;
+            vm.editing = true;
+        };
+
+        vm.saveClick = function() {
+            textRestService.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
+                textService.setContent(vm, $scope, serverResponse.data[0].txConteudo);
+                vm.editing = false;             
+            });
+        };
+
+        vm.cancelClick = function() {
+            vm.content = vm.contentStored;          
+            vm.editing = false;
+        };
+
+        vm.listenSelectedTextClick = function() {
+            var selection = window.getSelection();
+            if (selection) {
+                pronunciationService.listenExpression(selection.toString().trim());
+            }
+        };
+
+        vm.spacedRevisionClick = function() {
+            spacedRevisionModalService.showModal($scope, vm.params.cdItem);
+        }
+
+        $scope.openDictionary = function(cdDicionario, dsExpressao) {
+            dictionaryService.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
+        };    
+
+        $scope.openPronunciation = function(dsExpressao) {
+            pronunciationService.listenExpression(dsExpressao);
+        };     
+
+    };
+
+})();    
+(function() {
+
+	'use strict';
+
+	angular
+		.module('video')
+		.controller('videoController', videoController);
+
+	function videoController($scope, $rootScope, $routeParams, $sce, generalService, itemRestService, videoService, subtitleModalService, subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, dictionaryModalService, spacedRevisionModalService) {
+		var vm = this;
+		videoService.setController(vm);
+		vm.scope = $scope;
+
+
+		$scope.name = "videoController";
+		$scope.params = $routeParams;	
+		vm.t05itm = null;
+		vm.cdItem = $scope.params.cdItem;
+		vm.commentaries = '';
+		vm.initialCommentaries = '';
+
+		itemRestService.get($scope.params.cdItem).then(function(serverResponse) {
+			vm.t05itm = serverResponse.data.data[0];
+			$rootScope.subTitle = vm.t05itm.dsItem;
 		});
-	}
 
-	vm.decreaseOneSecondButtonClick = function() {
-		_incrementOneSecond(-1);
-	}
+	    videoService.configElementVideo(vm, $scope.params.cdItem).then(function(t08vdo) {
+			vm.t08vdo = t08vdo;
+			//vm.commentaries = t08vdo.txComentarios;
+		});
 
-	vm.incrementOneSecondButtonClick = function() {
-		_incrementOneSecond(1);
-	}
+		videoService.configGridSubtitles(vm, $scope.params.cdItem);		
+		videoService.configWYSIWYG(vm, $scope.params.cdItem);	
+		generalService.getAllExpressions().then(function(response) {
+			vm.gridSubtitlesOptions.api.repaint();
+		});
 
-	vm.listenButtonClick = function() {
-		var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-		pronunciationSrv.listenExpression(record.dsTexto);
-	}
+		vm.dictionaryModalClick = function() {
+			dictionaryModalService.showModal($rootScope).then(function(dictionaryData) {
+				vm.gridSubtitlesOptions.api.repaint();
+			});
+		};
 
-    vm.spacedRevisionClick = function() {
-        spacedRevisionModalSrv.showModal($scope, vm.cdItem);
-    }
+		vm.pronunciationModalClick = function() {
+			pronunciationModalService.showModal($rootScope).then(function(pronunciationData) {
+				vm.gridSubtitlesOptions.api.repaint();
+			});
+		};
 
-    $scope.openDictionary = function(cdDicionario, dsExpressao) {
-        dictionarySrv.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
-    }     
+		vm.addSubtitleButtonClick = function() {
+			subtitleModalService.add($scope, vm).then(function(subtitleAdded) {
+				vm.gridSubtitlesOptions.api.reload().then(function() {
+					vm.gridSubtitlesOptions.api.findKey(subtitleAdded.cdItemSubtitle, {inLine: true});
+				});
+			});
+		};
 
-	$scope.openPronunciation = function(dsExpressao) {
-        pronunciationSrv.listenExpression(dsExpressao);
-    }
+		vm.editSubtitleButtonClick = videoService.editSubtitleButtonClick;
 
-    vm.importSubtitleFromLyrics = VideoSrv.importSubtitleFromLyrics;
-    vm.importSubtitleFromSrtFile = VideoSrv.importSubtitleFromSrtFile;
+		/*
+		vm.editSubtitleButtonClick = function() {
+			subtitleModalService.edit($scope, vm).then(function(subtitleUpdated) {
+				vm.gridSubtitlesOptions.api.reload().then(function() {
+					vm.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
+				});
+			});
+		}
+		*/
 
-});
-angular.module('app').controller('VideoModalImportSubtitleLyricsCtrl', function(videoModalImportSubtitleLyricsSrv) {
+		vm.delSubtitleButtonClick = function() {
+			var record = vm.gridSubtitlesOptions.api.getSelectedRow();
+			subtitleRestService.del(record.cdItemSubtitle).then(function() {
+				vm.gridSubtitlesOptions.api.reload();
+			});
+		};
 
-	videoModalImportSubtitleLyricsSrv.setController(this);    
+		var _incrementOneSecond = function(increment) {
+			$rootScope.loading = true;
+			var record = vm.gridSubtitlesOptions.api.getSelectedRow();
+			var cdItemSubtitle = record.cdItemSubtitle;
+			record.nrStart = record.nrStart + increment;
+			record.nrEnd = record.nrEnd + increment;		
 
-});
-angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($scope, Upload, AppConsts, videoModalImportSubtitleSrtSrv) {
+			var fn;
+			if (increment > 0) {
+				fn = subtitleRestService.incASecond;
+			} else {
+				fn = subtitleRestService.decASecond;
+			}
 
-	videoModalImportSubtitleSrtSrv.setController(this, $scope);    
+			fn(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {
+				$rootScope.loading = false;
+				uiDeniModalSrv.ghost('Subtitle', 'Subtitle time is update successfully');				
+				vm.gridSubtitlesOptions.api.repaint();
+				vm.gridSubtitlesOptions.api.findKey(cdItemSubtitle, {inLine: true});
+			});
+		};
 
-});
-//CONSTANTS
-angular.module('app').constant('AppConsts', {
-	SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
-	//SERVER_URL: 'http://localhost:8087/denienglish/', //Local
-});
-//ENUMERATIONS
-angular.module('app').constant('AppEnums', {
-	CategoryType: {
-		TEXT: 275,
-		VIDEO: 276
-	},
-	Side: {
-		LEFT: 1,
-		RIGHT: 2
-	}
-});	
+		vm.decreaseOneSecondButtonClick = function() {
+			_incrementOneSecond(-1);
+		};
+
+		vm.incrementOneSecondButtonClick = function() {
+			_incrementOneSecond(1);
+		};
+
+		vm.listenButtonClick = function() {
+			var record = vm.gridSubtitlesOptions.api.getSelectedRow();
+			pronunciationService.listenExpression(record.dsTexto);
+		};
+
+	    vm.spacedRevisionClick = function() {
+	        spacedRevisionModalService.showModal($scope, vm.cdItem);
+	    };
+
+	    $scope.openDictionary = function(cdDicionario, dsExpressao) {
+	        dictionaryService.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
+	    };    
+
+		$scope.openPronunciation = function(dsExpressao) {
+	        pronunciationService.listenExpression(dsExpressao);
+	    };
+
+	    vm.importSubtitleFromLyrics = videoService.importSubtitleFromLyrics;
+	    vm.importSubtitleFromSrtFile = videoService.importSubtitleFromSrtFile;
+
+	};
+
+})();	
+(function() {
+
+	'use strict';
+
+	angular
+		.module('video')
+		.controller('videoModalImportSubtitleLyricsController', videoModalImportSubtitleLyricsController);
+
+	function videoModalImportSubtitleLyricsController(videoModalImportSubtitleLyricsService) {
+		videoModalImportSubtitleLyricsService.setController(this);    
+	};
+
+})();	
+(function() {
+
+    'use strict';
+
+	angular
+		.module('video')
+		.controller('VideoModalImportSubtitleSrtController', VideoModalImportSubtitleSrtController);
+
+	function VideoModalImportSubtitleSrtController($scope, videoModalImportSubtitleSrtService) {
+		videoModalImportSubtitleSrtService.setController(this, $scope);    
+	};
+
+})();	
 angular.module('app').config(function($routeProvider) {
 	
     $routeProvider
         .when("/:cdCategoria?", {
-            templateUrl : "src/app/components/home/home.htm",
-            controller: "HomeCtrl",
+            templateUrl : "src/app/components/home/home.view.html",
+            controller: "homeController",
             controllerAs: "ctrl"
         })
         .when("/text/:cdItem", {
-            templateUrl : "src/app/components/text/text.htm",
-            controller: "TextCtrl",
+            templateUrl : "src/app/components/text/text.view.html",
+            controller: "textController",
             controllerAs: "ctrl"
         })
         /*
@@ -3091,8 +3485,8 @@ angular.module('app').config(function($routeProvider) {
         })
         */
         .when("/video/:cdItem", {
-            templateUrl : "src/app/components/video/video.htm",
-            controller: "VideoCtrl",
+            templateUrl : "src/app/components/video/video.view.html",
+            controller: "videoController",
             controllerAs: "ctrl"
         }).
     	otherwise({
@@ -3102,46 +3496,10 @@ angular.module('app').config(function($routeProvider) {
 });
 'use strict';
 
-angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums, AppConsts, uiDeniModalSrv) {
+angular.module('app').service('AppSrv', function($q, $resource, $http, uiDeniModalSrv) {
 
 	var vm = this;
-	vm.currentCategory = null; //Category Id	
-	
-	vm.allExpressions = []; //All Expressions (Dictionary plus Pronunciations)
-	vm.dictionaryExpressions = [];
-	vm.pronunciationExpressions = [];	
 	vm.auxiliarMenu = [];
-
-	/**
-	 * className is waiting for a array of String considering: hide-x, hide-gt-xs, hide-sm, hide-md...
-	 * side is waiting for AppEnums.Side.LEFT | AppEnums.Side.RIGHT
-	 * reference: https://material.angularjs.org/latest/layout/options
-	 */
-	vm.createHamburgerButton = function(classArray, side) {
-		var hamburgerIconButton = $(document.createElement('button'));
-		hamburgerIconButton.addClass("md-button");		
-		hamburgerIconButton.addClass("md-icon-button");
-		hamburgerIconButton.addClass("md-ink-ripple");
-
-		for (var index = 0 ; index < classArray.length ; index++) {
-			var className = classArray[index];
-			hamburgerIconButton.attr(className, "");
-			hamburgerIconButton.addClass(className);	
-		}
-
-		var hamburgerIconButtonImg = $(document.createElement('img'));
-		hamburgerIconButtonImg.attr('src', 'src/assets/images/hamburger.png');
-		hamburgerIconButtonImg.addClass("hamburger-button");
-		hamburgerIconButton.append(hamburgerIconButtonImg);
-
-		var mainToobar = $('.md-toolbar-tools-main');
-
-		if (side === AppEnums.Side.LEFT) {
-			mainToobar.prepend(hamburgerIconButton);
-		} else {
-			mainToobar.append(hamburgerIconButton);			
-		}	
-	};
 
 	/**
 	 *
@@ -3158,18 +3516,18 @@ angular.module('app').service('AppSrv', function($q, $resource, $http, AppEnums,
 	vm.getConfigWYSIWYG = function(fnExecSaveButton, fnExecCancelButton) {
 
 		var saveButton = function () {
-		  var ui = $.summernote.ui;
-		  
-		  // create button
-		  var button = ui.button({
-		    contents: '<i class="glyphicon glyphicon-floppy-save"/>',
-		    tooltip: 'save changes',
-		    click: function () {
-				fnExecSaveButton();
-		    }
-		  });
+			var ui = $.summernote.ui;
 
-		  return button.render();   // return button as jquery object 
+			// create button
+			var button = ui.button({
+				contents: '<i class="glyphicon glyphicon-floppy-save"/>',
+				tooltip: 'save changes',
+				click: function () {
+					fnExecSaveButton();
+				}
+			});
+
+			return button.render();   // return button as jquery object 
 		};
 
 

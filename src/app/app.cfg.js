@@ -2,13 +2,13 @@ angular.module('app').config(function($routeProvider) {
 	
     $routeProvider
         .when("/:cdCategoria?", {
-            templateUrl : "src/app/components/home/home.htm",
-            controller: "HomeCtrl",
+            templateUrl : "src/app/components/home/home.view.html",
+            controller: "homeController",
             controllerAs: "ctrl"
         })
         .when("/text/:cdItem", {
-            templateUrl : "src/app/components/text/text.htm",
-            controller: "TextCtrl",
+            templateUrl : "src/app/components/text/text.view.html",
+            controller: "textController",
             controllerAs: "ctrl"
         })
         /*
@@ -19,8 +19,8 @@ angular.module('app').config(function($routeProvider) {
         })
         */
         .when("/video/:cdItem", {
-            templateUrl : "src/app/components/video/video.htm",
-            controller: "VideoCtrl",
+            templateUrl : "src/app/components/video/video.view.html",
+            controller: "videoController",
             controllerAs: "ctrl"
         }).
     	otherwise({

@@ -5,7 +5,7 @@
 		.module('item')
 		.service('itemService', itemService);
 
-	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, AppEnums, VideoRestSrv, AppConsts) {
+	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, videoRestService, restService, textService) {
 		var vm = this;
 
 		/**
@@ -18,7 +18,7 @@
 			wndDescriptionMorImage.show().then(function(response) {
 				if (response.button == 'ok') {
 					var imageURI = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 150, 150, 0.5);
-					itemRestService.add(AppEnums.CategoryType.TEXT, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
+					itemRestService.add(textService.topParentNodeId, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
 						deferred.resolve(responseAdd);
 					});				
 				} else {
@@ -48,7 +48,7 @@
 															  );  
 
 			    if (scope.newVideoItemModal.canShowImagePreview) {
-					return AppConsts.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
+					return restService.SERVER_URL + 'item/image/getlink?tp_video=' + scope.newVideoItemModal.tp_video + '&id_video=' + scope.newVideoItemModal.id_video
 				} 
 				return null;
 
@@ -66,7 +66,7 @@
 
 		 	newVideoItemModalService.showModal(scope).then(function(response) {
 		 		$rootScope.loading = true;
-		 		VideoRestSrv.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
+		 		videoRestService.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
 	 				deferred.resolve(serverResponse);
 	 				$rootScope.loading = false;
 		 		});
@@ -82,7 +82,7 @@
 		 vm.add = function(scope, categoryType, parentCategory) {
 
 		 	//text
-		 	if (categoryType == AppEnums.CategoryType.TEXT) {
+		 	if (categoryType == textService.topParentNodeId) {
 		 		return _addItemText(scope, parentCategory);
 
 		 	//video

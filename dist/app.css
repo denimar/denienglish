@@ -415,7 +415,7 @@ label {
       color: black; }
       .dictionary-modal .grid-container .gridDictionary .material-icons:hover {
         color: red !important; }
-  .dictionary-modal .dictionary-definition-view {
+  .dictionary-modal .dictionary-definition-viewer {
     height: 310px;
     border: solid 1px #99bce8; }
 
@@ -600,31 +600,31 @@ label {
 .dictionary-modal-edit {
   padding: 30px 10px 4px 10px; }
 
-.dictionary-definition-view-container {
+.dictionary-definition-viewer-container {
   height: 100%;
   width: 100%;
   box-sizing: border-box; }
-  .dictionary-definition-view-container .definition {
+  .dictionary-definition-viewer-container .definition {
     overflow: auto;
     box-sizing: border-box;
     padding: 4px; }
-  .dictionary-definition-view-container .editor-summernote-container {
+  .dictionary-definition-viewer-container .editor-summernote-container {
     box-sizing: border-box;
     height: 100%; }
-    .dictionary-definition-view-container .editor-summernote-container .note-editor {
+    .dictionary-definition-viewer-container .editor-summernote-container .note-editor {
       height: 100%;
       box-sizing: border-box;
       border-width: 0px; }
-      .dictionary-definition-view-container .editor-summernote-container .note-editor .note-editing-area {
+      .dictionary-definition-viewer-container .editor-summernote-container .note-editor .note-editing-area {
         box-sizing: border-box;
         height: calc(100% - 41px);
         overflow-y: auto; }
-        .dictionary-definition-view-container .editor-summernote-container .note-editor .note-editing-area .panel-body {
+        .dictionary-definition-viewer-container .editor-summernote-container .note-editor .note-editing-area .panel-body {
           box-sizing: border-box;
           height: 100%; }
-      .dictionary-definition-view-container .editor-summernote-container .note-editor .note-statusbar {
+      .dictionary-definition-viewer-container .editor-summernote-container .note-editor .note-statusbar {
         display: none; }
-  .dictionary-definition-view-container .definition-toolbar {
+  .dictionary-definition-viewer-container .definition-toolbar {
     height: 30px;
     max-height: 30px;
     min-height: 30px;
@@ -633,5 +633,5 @@ label {
     box-sizing: border-box;
     background-color: #FAFAFA;
     margin: 2px; }
-    .dictionary-definition-view-container .definition-toolbar .definition-toolbar-buttons .material-icons {
+    .dictionary-definition-viewer-container .definition-toolbar .definition-toolbar-buttons .material-icons {
       cursor: pointer; }

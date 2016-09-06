@@ -3,6 +3,6 @@
 angular
 	.module('category', [
 		'ngResource', 
-		'routinesMdl', 
+		'routines', 
 		'uiDeniModalMdl'
 	]);

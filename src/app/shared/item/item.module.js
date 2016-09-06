@@ -3,6 +3,10 @@
 angular
 	.module('item', [
 		'ngResource', 		
-		'routinesMdl', 
+		'video',
+		'expression',
+		'pronunciation',		
+		'dictionary',
+		'routines', 
 		'uiDeniModalMdl'		
 	]);

@@ -3,23 +3,23 @@
 	'use strict';
 
 	angular
-		.module('routinesMdl')
+		.module('routines')
 		.service('generalService', generalService);
 
-	function generalService($q, $sce, $compile, DictionaryRestSrv, PronunciationRestSrv, AppSrv) {
+	function generalService($q, $sce, $compile, dictionaryRestService, pronunciationRestService, expressionService) {
 		var vm = this;
+		vm.SideEnum = {
+			LEFT: 1,
+			RIGHT: 2
+		};
 
 		vm.getAllExpressions = function() {
 			var deferred = $q.defer();
 
-			DictionaryRestSrv.list().then(function(responseDictionary) {
-				AppSrv.dictionaryExpressions = responseDictionary.data.data;
-		
-				PronunciationRestSrv.list().then(function(responsePronunciation) {
-					AppSrv.pronunciationExpressions = responsePronunciation.data.data;	
-
-					AppSrv.allExpressions = AppSrv.dictionaryExpressions.concat(AppSrv.pronunciationExpressions);
-					deferred.resolve(AppSrv.allExpressions);
+			dictionaryRestService.list().then(function(dictionaryResponseData) {
+				pronunciationRestService.list().then(function(pronunciationResponseData) {
+					expressionService.loadedExpressions = dictionaryResponseData.concat(pronunciationResponseData);
+					deferred.resolve(expressionService.loadedExpressions);
 				}, function(reasonPronunciation) {
 					console.error(reasonPronunciation);
 				});
@@ -31,6 +31,37 @@
 
 			return deferred.promise;
 		};
+
+		/**
+		 * className is waiting for a array of String considering: hide-x, hide-gt-xs, hide-sm, hide-md...
+		 * side is waiting for generalService.SideEnum.LEFT | generalService.SideEnum.RIGHT
+		 * reference: https://material.angularjs.org/latest/layout/options
+		 */
+		vm.createHamburgerButton = function(classArray, side) {
+			var hamburgerIconButton = $(document.createElement('button'));
+			hamburgerIconButton.addClass("md-button");		
+			hamburgerIconButton.addClass("md-icon-button");
+			hamburgerIconButton.addClass("md-ink-ripple");
+
+			for (var index = 0 ; index < classArray.length ; index++) {
+				var className = classArray[index];
+				hamburgerIconButton.attr(className, "");
+				hamburgerIconButton.addClass(className);	
+			}
+
+			var hamburgerIconButtonImg = $(document.createElement('img'));
+			hamburgerIconButtonImg.attr('src', 'src/assets/images/hamburger.png');
+			hamburgerIconButtonImg.addClass("hamburger-button");
+			hamburgerIconButton.append(hamburgerIconButtonImg);
+
+			var mainToobar = $('.md-toolbar-tools-main');
+
+			if (side === vm.SideEnum.LEFT) {
+				mainToobar.prepend(hamburgerIconButton);
+			} else {
+				mainToobar.append(hamburgerIconButton);			
+			}	
+		};		
 
 		/**
 		 * Insert into a element a specific html and binding it with a controller

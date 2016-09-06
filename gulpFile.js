@@ -33,45 +33,44 @@ gulp.task('scripts', function() {
   gulp.src('')
 
   	//MODULES AT FIRST
-	.pipe(addsrc.append('src/app/shared/**/*mdl.js'))  
+	//.pipe(addsrc.append('src/app/shared/**/*mdl.js'))  
 	.pipe(addsrc.append('src/app/shared/**/*.module.js'))  	
-	.pipe(addsrc.append('src/app/components/**/*mdl.js'))  	
+	//.pipe(addsrc.append('src/app/components/**/*mdl.js'))  	
 	.pipe(addsrc.append('src/app/components/**/*.module.js'))  		
 	.pipe(addsrc.append('src/app/app.mdl.js'))
 
 	//SHARED FOLDER
-	.pipe(addsrc.append('src/app/shared/**/*fltr.js'))  	
-	.pipe(addsrc.append('src/app/shared/**/*cnst.js'))  		
+	//.pipe(addsrc.append('src/app/shared/**/*fltr.js'))  	
+	//.pipe(addsrc.append('src/app/shared/**/*cnst.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*enum.js'))  			
-	.pipe(addsrc.append('src/app/shared/**/*val.js'))  		
-	.pipe(addsrc.append('src/app/shared/**/*srv.js'))  		
+	//.pipe(addsrc.append('src/app/shared/**/*val.js'))  		
+	//.pipe(addsrc.append('src/app/shared/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*.service.js'))	
-	.pipe(addsrc.append('src/app/shared/**/*ctrl.js'))  		
+	//.pipe(addsrc.append('src/app/shared/**/*ctrl.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*.controller.js')) 	
-	.pipe(addsrc.append('src/app/shared/**/*drv.js'))
+	//.pipe(addsrc.append('src/app/shared/**/*drv.js'))
 	.pipe(addsrc.append('src/app/shared/**/*.directive.js'))	
   
 	//COMPONENTS FOLDER
-	.pipe(addsrc.append('src/app/components/**/*fltr.js'))  	
-	.pipe(addsrc.append('src/app/components/**/*cnst.js'))  	
+	//.pipe(addsrc.append('src/app/components/**/*fltr.js'))  	
+	//.pipe(addsrc.append('src/app/components/**/*cnst.js'))  	
 	.pipe(addsrc.append('src/app/components/**/*enum.js'))  			
-	.pipe(addsrc.append('src/app/components/**/*val.js'))  		
-	.pipe(addsrc.append('src/app/components/**/*srv.js'))  		
+	//.pipe(addsrc.append('src/app/components/**/*val.js'))  		
+	//.pipe(addsrc.append('src/app/components/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*.service.js'))  			
-	.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  	
+	//.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  	
 	.pipe(addsrc.append('src/app/components/**/*.controller.js')) 	
-	.pipe(addsrc.append('src/app/components/**/*drv.js'))  		
+	//.pipe(addsrc.append('src/app/components/**/*drv.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*.directive.js'))		
 
 	//REST FOLDER
-	.pipe(addsrc.append('src/app/rest/*srv.js'))  	
-	.pipe(addsrc.append('src/app/rest/*.service.js'))  		
+	//.pipe(addsrc.append('src/app/rest/*srv.js'))  	
+	//.pipe(addsrc.append('src/app/rest/*.service.js'))  		
 
 	//APP FOLDER
 	.pipe(addsrc.append('src/app/app.cnst.js'))
-	.pipe(addsrc.append('src/app/app.enum.js')) 
 	.pipe(addsrc.append('src/app/app.cfg.js')) 
-	.pipe(addsrc.append('src/app/app.srv.js')) 		
+	//.pipe(addsrc.append('src/app/app.srv.js')) 		
 	.pipe(addsrc.append('src/app/app.ctrl.js'))
 
 	//	
