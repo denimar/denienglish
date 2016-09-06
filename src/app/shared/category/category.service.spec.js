@@ -1,6 +1,6 @@
 describe('category', function () {
 
-	var $injector = angular.injector(['categoryMdl']);
+	var $injector = angular.injector(['category']);
 	var scope;
 	var fakeCategory = {cdCategoria: 1, dsCategoria: '_Catecory-Testing'};
 	
