@@ -29,7 +29,12 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 	};
 
 	vm.del = function(cd_categoria) {
-		return categoryRestSrv.del(cd_categoria);		
+		var deferred = $q.defer();
+		categoryRestSrv.del(cd_categoria).then(function(serverResponse) {
+			deferred.resolve(serverResponse.data.data[0]);
+		});
+		return deferred.promise;			
 	};
+
 
 });
