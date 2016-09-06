@@ -24,7 +24,7 @@ gulp.task('scripts', function() {
 		*cnst.js  - Constants
 		*enum.js  - Enumerations
 		*val.js   - Values
-		*srv.js   - Services
+		*Service.js   - Services
 		*cfg.js   - Config (Route)
 		*drv.js   - Directives
 		*ctrl.js  - Controllers
@@ -34,7 +34,9 @@ gulp.task('scripts', function() {
 
   	//MODULES AT FIRST
 	.pipe(addsrc.append('src/app/shared/**/*mdl.js'))  
+	.pipe(addsrc.append('src/app/shared/**/*.module.js'))  	
 	.pipe(addsrc.append('src/app/components/**/*mdl.js'))  	
+	.pipe(addsrc.append('src/app/components/**/*.module.js'))  		
 	.pipe(addsrc.append('src/app/app.mdl.js'))
 
 	//SHARED FOLDER
@@ -43,6 +45,7 @@ gulp.task('scripts', function() {
 	.pipe(addsrc.append('src/app/shared/**/*enum.js'))  			
 	.pipe(addsrc.append('src/app/shared/**/*val.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*srv.js'))  		
+	.pipe(addsrc.append('src/app/shared/**/*.service.js'))	
 	.pipe(addsrc.append('src/app/shared/**/*ctrl.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*drv.js'))  			
   
@@ -52,11 +55,13 @@ gulp.task('scripts', function() {
 	.pipe(addsrc.append('src/app/components/**/*enum.js'))  			
 	.pipe(addsrc.append('src/app/components/**/*val.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*srv.js'))  		
+	.pipe(addsrc.append('src/app/components/**/*.service.js'))  			
 	.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*drv.js'))  		
 
 	//REST FOLDER
 	.pipe(addsrc.append('src/app/rest/*srv.js'))  	
+	.pipe(addsrc.append('src/app/rest/*.service.js'))  		
 
 	//APP FOLDER
 	.pipe(addsrc.append('src/app/app.cnst.js'))

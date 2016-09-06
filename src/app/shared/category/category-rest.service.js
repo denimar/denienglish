@@ -1,6 +1,10 @@
 'use strict';
 
-angular.module('categoryMdl').service('categoryRestSrv', function(restSrv) {
+angular
+	.module('category')
+	.service('categoryRestService', categoryRestService);
+
+function categoryRestService(restSrv) {
 
 	var vm = this;
 
@@ -29,4 +33,4 @@ angular.module('categoryMdl').service('categoryRestSrv', function(restSrv) {
 	};
 
 
-});
+};

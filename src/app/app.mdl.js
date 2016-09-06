@@ -12,7 +12,7 @@ angular.module('app', [
 	'ui-deni-grid',
 	'uiDeniModalMdl',
 
-	'categoryMdl',
+	'category',
 	'routinesMdl',
 
 	"com.2fdevs.videogular",

@@ -1,4 +1,4 @@
-angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
+angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
 	
 	var vm = this;
 	spacedRevisionModalSrv.setController(vm);

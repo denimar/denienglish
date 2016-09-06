@@ -1,6 +1,10 @@
 'use strict';
 
-angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
+angular
+	.module('category')
+	.service('categoryService', categoryService);
+
+function categoryService($q, categoryRestService, uiDeniModalSrv) {
 
 	var vm = this;
 
@@ -8,7 +12,7 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 		var deferred = $q.defer();
 
 		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-			categoryRestSrv.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+			categoryRestService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
 				deferred.resolve(serverResponse.data.data[0]);
 			});
 		});
@@ -20,7 +24,7 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 		var deferred = $q.defer();
 
 		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-			categoryRestSrv.rename(cd_categoria, enteredText).then(function(serverResponse) {
+			categoryRestService.rename(cd_categoria, enteredText).then(function(serverResponse) {
 				deferred.resolve(serverResponse.data.data[0].dsCategoria);
 			});
 		});
@@ -30,11 +34,11 @@ angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSr
 
 	vm.del = function(cd_categoria) {
 		var deferred = $q.defer();
-		categoryRestSrv.del(cd_categoria).then(function(serverResponse) {
+		categoryRestService.del(cd_categoria).then(function(serverResponse) {
 			deferred.resolve(serverResponse.data.data[0]);
 		});
 		return deferred.promise;			
 	};
 
 
-});
+};

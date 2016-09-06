@@ -1,9 +1,8 @@
-angular.module('categoryMdl', [
-	'ngResource',
-	'routinesMdl',
-	'uiDeniModalMdl'
-]);
 angular.module('routinesMdl', []);
+'use strict';
+
+angular
+	.module('category', ['ngResource', 'routinesMdl', 'uiDeniModalMdl']);
 angular.module('TextMdl', []);
 angular.module('VideoMdl', []);
 'use strict';
@@ -20,7 +19,7 @@ angular.module('app', [
 	'ui-deni-grid',
 	'uiDeniModalMdl',
 
-	'categoryMdl',
+	'category',
 	'routinesMdl',
 
 	"com.2fdevs.videogular",
@@ -61,79 +60,6 @@ angular.module('app').constant('PronunciationModalEnums', {
 	},
 
 });	
-'use strict';
-
-angular.module('categoryMdl').service('categoryRestSrv', function(restSrv) {
-
-	var vm = this;
-
-	vm.add = function(cd_categoria_pai, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Adding',
-			message: 'Category added successfully!'
-		};
-		return restSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
-	};
-
-	vm.rename = function(cd_categoria, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Editing',
-			message: 'Category renamed successfully!'
-		};
-		return restSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-	};
-
-	vm.del = function(cd_categoria) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Category deleted successfully!'
-		};
-		return restSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-	};
-
-
-});
-
-'use strict';
-
-angular.module('categoryMdl').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.add = function(scope, cd_categoria_pai) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-			categoryRestSrv.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0]);
-			});
-		});
-
-		return deferred.promise;		
-	};
-
-	vm.rename = function(scope, cd_categoria, ds_categoria) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-			categoryRestSrv.rename(cd_categoria, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0].dsCategoria);
-			});
-		});
-
-		return deferred.promise;		
-	};
-
-	vm.del = function(cd_categoria) {
-		var deferred = $q.defer();
-		categoryRestSrv.del(cd_categoria).then(function(serverResponse) {
-			deferred.resolve(serverResponse.data.data[0]);
-		});
-		return deferred.promise;			
-	};
-
-
-});
 'use strict';
 
 angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
@@ -1599,6 +1525,87 @@ angular.module('app').service('dictionaryDefinitionViewSrv', function(Dictionary
 
 
 });
+'use strict';
+
+angular
+	.module('category')
+	.service('categoryRestService', categoryRestService);
+
+function categoryRestService(restSrv) {
+
+	var vm = this;
+
+	vm.add = function(cd_categoria_pai, ds_categoria) {
+		var successfullyMessage = {
+			title: 'Adding',
+			message: 'Category added successfully!'
+		};
+		return restSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+	};
+
+	vm.rename = function(cd_categoria, ds_categoria) {
+		var successfullyMessage = {
+			title: 'Editing',
+			message: 'Category renamed successfully!'
+		};
+		return restSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+	};
+
+	vm.del = function(cd_categoria) {
+		var successfullyMessage = {
+			title: 'Deleting',
+			message: 'Category deleted successfully!'
+		};
+		return restSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+	};
+
+
+};
+
+'use strict';
+
+angular
+	.module('category')
+	.service('categoryService', categoryService);
+
+function categoryService($q, categoryRestService, uiDeniModalSrv) {
+
+	var vm = this;
+
+	vm.add = function(scope, cd_categoria_pai) {
+		var deferred = $q.defer();
+
+		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
+			categoryRestService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0]);
+			});
+		});
+
+		return deferred.promise;		
+	};
+
+	vm.rename = function(scope, cd_categoria, ds_categoria) {
+		var deferred = $q.defer();
+
+		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
+			categoryRestService.rename(cd_categoria, enteredText).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0].dsCategoria);
+			});
+		});
+
+		return deferred.promise;		
+	};
+
+	vm.del = function(cd_categoria) {
+		var deferred = $q.defer();
+		categoryRestService.del(cd_categoria).then(function(serverResponse) {
+			deferred.resolve(serverResponse.data.data[0]);
+		});
+		return deferred.promise;			
+	};
+
+
+};
 angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModalSrv, DictionaryModalEnums) {
 
 	//use this control in the service	
@@ -1707,7 +1714,7 @@ angular.module('app').controller('PronunciationModalCtrl', function(pronunciatio
 
 });
 
-angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
+angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
 	
 	var vm = this;
 	spacedRevisionModalSrv.setController(vm);
@@ -1819,7 +1826,7 @@ angular.module('app').directive('dictionaryDefinitionView', function() {
 });
 'use strict';
 
-angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
+angular.module('app').service('homeSrv', function($timeout, $rootScope, categoryService, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
 
 	var vm = this;
 	var jsTreeInstance = null;
@@ -1829,7 +1836,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	 *
 	 */
 	vm.addCategoryClick = function(scope, currentCategoryId) {
-		categorySrv.add(scope, currentCategoryId).then(function(addedCategory) {
+		categoryService.add(scope, currentCategoryId).then(function(addedCategory) {
 			var newNode = { 
 				state: "open", 
 				id: addedCategory.cdCategoria,				
@@ -1850,7 +1857,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	 *
 	 */
 	vm.editCategoryClick = function(scope, currentCategoryNode) {
-		categorySrv.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
+		categoryService.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
 			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
 		});
 	};
@@ -1860,7 +1867,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	 *
 	 */
 	vm.delCategoryClick = function(currentCategoryNode) {
-		categorySrv.del(currentCategoryNode.id).then(function(serverResponse) {
+		categoryService.del(currentCategoryNode.id).then(function(serverResponse) {
 			var parentNode = jsTreeInstance.get_node(currentCategoryNode.parent);
 			jsTreeInstance.delete_node([currentCategoryNode]);
 			jsTreeInstance.select_node(parentNode);

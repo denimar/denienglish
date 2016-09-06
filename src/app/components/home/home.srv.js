@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app').service('homeSrv', function($timeout, $rootScope, categorySrv, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
+angular.module('app').service('homeSrv', function($timeout, $rootScope, categoryService, AppConsts, AppSrv, itemSrv, AppEnums, StringSrv, spacedRevisionModalSrv, uiDeniModalSrv, ItemRestSrv) {
 
 	var vm = this;
 	var jsTreeInstance = null;
@@ -10,7 +10,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	 *
 	 */
 	vm.addCategoryClick = function(scope, currentCategoryId) {
-		categorySrv.add(scope, currentCategoryId).then(function(addedCategory) {
+		categoryService.add(scope, currentCategoryId).then(function(addedCategory) {
 			var newNode = { 
 				state: "open", 
 				id: addedCategory.cdCategoria,				
@@ -31,7 +31,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	 *
 	 */
 	vm.editCategoryClick = function(scope, currentCategoryNode) {
-		categorySrv.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
+		categoryService.rename(scope, currentCategoryNode.id, currentCategoryNode.text).then(function(renamedCategory) {
 			jsTreeInstance.rename_node(currentCategoryNode, renamedCategory);
 		});
 	};
@@ -41,7 +41,7 @@ angular.module('app').service('homeSrv', function($timeout, $rootScope, category
 	 *
 	 */
 	vm.delCategoryClick = function(currentCategoryNode) {
-		categorySrv.del(currentCategoryNode.id).then(function(serverResponse) {
+		categoryService.del(currentCategoryNode.id).then(function(serverResponse) {
 			var parentNode = jsTreeInstance.get_node(currentCategoryNode.parent);
 			jsTreeInstance.delete_node([currentCategoryNode]);
 			jsTreeInstance.select_node(parentNode);
