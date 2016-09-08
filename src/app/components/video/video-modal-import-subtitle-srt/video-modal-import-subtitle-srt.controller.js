@@ -8,6 +8,6 @@
 
 	function VideoModalImportSubtitleSrtController($scope, videoModalImportSubtitleSrtService) {
 		videoModalImportSubtitleSrtService.setController(this, $scope);    
-	};
+	}
 
 })();	

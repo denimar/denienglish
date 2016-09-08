@@ -9,8 +9,8 @@
   function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv) {
 
   	var vm = this;
-    vm.cdItem;
-  	vm.controller;
+    vm.cdItem = null;
+  	vm.controller = null;
 
   	vm.setController = function(controller, scope) {
   		vm.controller = controller;
@@ -19,7 +19,7 @@
       scope.$watch('ctrl.strFile', function (newValue, oldValue) {
           vm.controller.strFile = newValue;
       });
-  	}
+  	};
 
   	vm.showModal = function(cdItem) {
         vm.cdItem = cdItem;
@@ -44,7 +44,7 @@
 
         wndImportSubtitle.show().then(function(modalResponse) {
 
-          if (modalResponse.button == 'ok') {
+          if (modalResponse.button === 'ok') {
             if ((vm.controller.strFile) && (!vm.controller.strFile.$error)) {
 
               var fileInput = $(wndImportSubtitle).find('input[type=file]');
@@ -58,7 +58,7 @@
                })
             
                .success(function(serverResponseAddSubtitle){
-                  uiDeniModalSrv.ghost("Subtitles", "Subtitles imported successfully!");
+                  uiDeniModalSrv.ghost('Subtitles', 'Subtitles imported successfully!');
                   deferred.resolve(serverResponseAddSubtitle.data);
                })
             
@@ -74,6 +74,6 @@
         return deferred.promise;
   	};
 
-  };
+  }
 
 })();  

@@ -6,7 +6,9 @@
         .module('text')
         .controller('textController', textController);
 
-    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, 
+        pronunciationModalService, textRestService, textService, generalService, stringService, 
+        uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
          
         var vm = this;
 
@@ -84,7 +86,7 @@
 
         vm.spacedRevisionClick = function() {
             spacedRevisionModalService.showModal($scope, vm.params.cdItem);
-        }
+        };
 
         $scope.openDictionary = function(cdDicionario, dsExpressao) {
             dictionaryService.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
@@ -94,6 +96,6 @@
             pronunciationService.listenExpression(dsExpressao);
         };     
 
-    };
+    }
 
 })();    

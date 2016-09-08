@@ -8,6 +8,6 @@
 
 	function videoModalImportSubtitleLyricsController(videoModalImportSubtitleLyricsService) {
 		videoModalImportSubtitleLyricsService.setController(this);    
-	};
+	}
 
 })();	

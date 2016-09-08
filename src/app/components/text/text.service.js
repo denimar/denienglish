@@ -16,9 +16,9 @@
 			controller.content = content;
 	        controller.formatedContent = stringService.addLinksDictionaryAndPronunciation(controller.content);
 			generalService.insertHtmlWithController(panelEditor, controller.formatedContent, 'textController', scope);
-		}
+		};
 
 
-	};
+	}
 
 })();

@@ -2308,7 +2308,7 @@ angular.module('app').config(function($compileProvider){
 		vm.addCategoryClick = function(scope, currentCategoryId) {
 			categoryService.add(scope, currentCategoryId).then(function(addedCategory) {
 				var newNode = { 
-					state: "open", 
+					state: 'open', 
 					id: addedCategory.cdCategoria,				
 					text: addedCategory.dsCategoria,
 					data: addedCategory
@@ -2628,24 +2628,24 @@ angular.module('app').config(function($compileProvider){
 	function textRestService(restService) {
 		var vm = this;
 
-		vm.list = function(cd_item) {
-			return restService.requestWithPromise('text/list', {'cd_item': cd_item});
-		}
+		vm.list = function(cdItem) {
+			return restService.requestWithPromise('text/list', {'cd_item': cdItem});
+		};
 
-		vm.getContent = function(cd_texto) {
-			return restService.requestWithPromise('text/content/get', {'cd_texto': cd_texto});
-		}
+		vm.getContent = function(cdTexto) {
+			return restService.requestWithPromise('text/content/get', {'cd_texto': cdTexto});
+		};
 
-		vm.setContent = function(cd_texto, content) {
+		vm.setContent = function(cdTexto, content) {
 			var successfullyMessage = {
 				title: 'Texts',
 				message: 'text updated successfully!'
-			}
-			return restService.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cd_texto, 'tx_conteudo': content}, successfullyMessage);
-		}
+			};
+			return restService.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cdTexto, 'tx_conteudo': content}, successfullyMessage);
+		};
 
 
-	};
+	}
 
 })();	
 (function() {
@@ -2666,10 +2666,10 @@ angular.module('app').config(function($compileProvider){
 			controller.content = content;
 	        controller.formatedContent = stringService.addLinksDictionaryAndPronunciation(controller.content);
 			generalService.insertHtmlWithController(panelEditor, controller.formatedContent, 'textController', scope);
-		}
+		};
 
 
-	};
+	}
 
 })();
 (function() {
@@ -2683,32 +2683,32 @@ angular.module('app').config(function($compileProvider){
 	function videoRestService(restService) {
 		var vm = this;
 
-		vm.add = function(cd_categoria, tp_video, id_video, ds_item) {
+		vm.add = function(cdCategoria, tpVideo, idVideo, dsItem) {
 			var successfullyMessage = {
 				title: 'Videos',
 				message: 'Video added successfully!'
-			}
-			return restService.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cd_categoria, 'tp_video': tp_video, 'id_video': id_video, 'ds_item': ds_item}, successfullyMessage);
-		}
+			};
+			return restService.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cdCategoria, 'tp_video': tpVideo, 'id_video': idVideo, 'ds_item': dsItem}, successfullyMessage);
+		};
 
-		vm.get = function(cd_item) {
-			return restService.requestWithPromise('video/get', {'cd_item': cd_item});
-		}
+		vm.get = function(cdItem) {
+			return restService.requestWithPromise('video/get', {'cd_item': cdItem});
+		};
 
 		vm.commentaries = {
 
-			set: function(cd_video, commentary) {
+			set: function(cdVideo, commentary) {
 				var successfullyMessage = {
 					title: 'Videos',
 					message: 'commentary updated successfully!'
-				}
-				return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cd_video}, {'txCommentaries': commentary}, successfullyMessage);
+				};
+				return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cdVideo}, {'txCommentaries': commentary}, successfullyMessage);
 			}
 
-		}
+		};
 
 
-	};
+	}
 
 })();		
 (function() {
@@ -2722,24 +2722,24 @@ angular.module('app').config(function($compileProvider){
 	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
 		var vm = this;
 		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
-		vm.controller;
+		vm.controller = null;
 
 		vm.setController = function(controller) {
 			vm.controller = controller;
-		}
+		};
 
 		var _selectSubtitleInTime = function(controller, time) {
 			var data = controller.gridSubtitlesOptions.data;
 			for (var index = 0 ; index < data.length ; index++) {
 				var record = data[index];
 				if ((time >= record.nrStart) && (time <= record.nrEnd)) {
-					if (index != controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
+					if (index !== controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
 						controller.gridSubtitlesOptions.api.selectRow(index, true, false);
 					}	
 					break;
 				}
 			}
-		}
+		};
 
 		var selectingSubtitle = false;
 		vm.configElementVideo = function(controller, cdItem) {
@@ -2774,10 +2774,10 @@ angular.module('app').config(function($compileProvider){
 				deferred.resolve(t08vdo);
 
 				var urlImage;
-				if (t08vdo.tpVideo == 'YOUTUBE') {
-					urlImage = "https://www.youtube.com/watch?v=" + t08vdo.idVideo;
+				if (t08vdo.tpVideo === 'YOUTUBE') {
+					urlImage = 'https://www.youtube.com/watch?v=' + t08vdo.idVideo;
 				} else {
-					urlImage = "https://googledrive.com/host/" + t08vdo.idVideo;
+					urlImage = 'https://googledrive.com/host/' + t08vdo.idVideo;
 				}
 
 				controller.videoConfig = {
@@ -2785,10 +2785,10 @@ angular.module('app').config(function($compileProvider){
 					autoPlay: false,
 					sources: [
 						//{src: t08vdo.dsUrl},
-						{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
+						{src: $sce.trustAsResourceUrl(urlImage), type: 'video/mp4'},
 					],
 					theme: {
-						url: "dist/videogular/videogular.css"
+						url: 'dist/videogular/videogular.css'
 					},
 					plugins: {
 						controls: {
@@ -2814,7 +2814,7 @@ angular.module('app').config(function($compileProvider){
 			});
 
 			return deferred.promise;
-		}	
+		};	
 
 		vm.configGridSubtitles = function(controller, cdItem) {	
 
@@ -2859,7 +2859,7 @@ angular.module('app').config(function($compileProvider){
 							//controller.videoAPI.pause();						
 							$timeout(function() {
 								selectingSubtitle = false;
-							}, 1500)
+							}, 1500);
 						}	
 					},
 
@@ -2876,13 +2876,13 @@ angular.module('app').config(function($compileProvider){
 
 			var fnExecSaveButton = function() {
 				videoRestService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
-			}
+			};
 
 			var fnExecCancelButton = function() {
 		    	videoRestService.get(cdItem).then(function(serverResponse) {
 		    		controller.t08vdo = serverResponse.data.data[0];
 		    	});
-			}
+			};
 
 			controller.options = generalService.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
 		};
@@ -2893,7 +2893,7 @@ angular.module('app').config(function($compileProvider){
 					vm.controller.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
 				});
 			});
-		}
+		};
 
 	    vm.importSubtitleFromLyrics = function() {
 	    	videoModalImportSubtitleLyricsService.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
@@ -2908,7 +2908,7 @@ angular.module('app').config(function($compileProvider){
 	    };
 
 
-	};
+	}
 
 })();
 (function() {
@@ -2922,52 +2922,52 @@ angular.module('app').config(function($compileProvider){
 	function subtitleRestService(restService) {
 		var vm = this;
 
-		vm.list = function(cd_item) {
-			return restService.requestWithPromise('subtitle/list', {'cd_item': cd_item});
-		}
+		vm.list = function(cdItem) {
+			return restService.requestWithPromise('subtitle/list', {'cd_item': cdItem});
+		};
 
-		vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
+		vm.add = function(cdVideo, nrStart, nrEnd, dsTexto) {
 			var successfullyMessage = {
 				title: 'Inserting',
 				message: 'Subtitle added successfully!'
-			}
-			return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cdVideo, 'nr_start': nrStart, 'nr_end': nrEnd, 'ds_texto': dsTexto}, successfullyMessage);		
+		};
 
-		vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
+		vm.upd = function(cdItemSubtitle, nrStart, nrEnd, dsTexto) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
-			}
-			return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cdItemSubtitle, 'nr_start': nrStart, 'nr_end': nrEnd, 'ds_texto': dsTexto}, successfullyMessage);		
+		};
 
-		vm.incASecond = function(cd_item_subtitle) {
+		vm.incASecond = function(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
-			}
-			return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage);		
+		};
 
-		vm.decASecond = function(cd_item_subtitle) {
+		vm.decASecond = function(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
-			}
-			return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage);		
+		};
 
-		vm.del = function(cd_item_subtitle) {
+		vm.del = function(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Subtitle deleted successfully!'
-			}
-			return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
-		}
+			};
+			return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage, 'Confirm deleting?');
+		};
 
 
-	};
+	}
 
 })();
 
@@ -2982,13 +2982,13 @@ angular.module('app').config(function($compileProvider){
   function videoModalImportSubtitleLyricsService($rootScope, $q, restService, uiDeniModalSrv) {
 
   	var vm = this;
-    vm.cdItem;
-  	vm.controller;
+    vm.cdItem = null;
+  	vm.controller = null;
 
   	vm.setController = function(controller, scope) {
   		vm.controller = controller;
       vm.controller.cdItem = vm.cdItem;
-  	}
+  	};
 
   	vm.showModal = function(cdItem) {
         vm.cdItem = cdItem;
@@ -3013,14 +3013,14 @@ angular.module('app').config(function($compileProvider){
 
         wndImportSubtitle.show().then(function(modalResponse) {
 
-          if (modalResponse.button == 'ok') {
+          if (modalResponse.button === 'ok') {
             var successfullyMessage = {
               title: 'Updating',
               message: 'Item updated successfully!'
-            }
+            };
 
             var textArea = $(wndImportSubtitle).find('textarea');
-            lyrics = textArea.val();
+            var lyrics = textArea.val();
 
             restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
               deferred.resolve(serverReturn.data);
@@ -3032,7 +3032,7 @@ angular.module('app').config(function($compileProvider){
         return deferred.promise;
   	};
 
-  };
+  }
 
 })();  
 (function() {
@@ -3046,8 +3046,8 @@ angular.module('app').config(function($compileProvider){
   function videoModalImportSubtitleSrtService($q, $http, $rootScope, restService, uiDeniModalSrv) {
 
   	var vm = this;
-    vm.cdItem;
-  	vm.controller;
+    vm.cdItem = null;
+  	vm.controller = null;
 
   	vm.setController = function(controller, scope) {
   		vm.controller = controller;
@@ -3056,7 +3056,7 @@ angular.module('app').config(function($compileProvider){
       scope.$watch('ctrl.strFile', function (newValue, oldValue) {
           vm.controller.strFile = newValue;
       });
-  	}
+  	};
 
   	vm.showModal = function(cdItem) {
         vm.cdItem = cdItem;
@@ -3081,7 +3081,7 @@ angular.module('app').config(function($compileProvider){
 
         wndImportSubtitle.show().then(function(modalResponse) {
 
-          if (modalResponse.button == 'ok') {
+          if (modalResponse.button === 'ok') {
             if ((vm.controller.strFile) && (!vm.controller.strFile.$error)) {
 
               var fileInput = $(wndImportSubtitle).find('input[type=file]');
@@ -3095,7 +3095,7 @@ angular.module('app').config(function($compileProvider){
                })
             
                .success(function(serverResponseAddSubtitle){
-                  uiDeniModalSrv.ghost("Subtitles", "Subtitles imported successfully!");
+                  uiDeniModalSrv.ghost('Subtitles', 'Subtitles imported successfully!');
                   deferred.resolve(serverResponseAddSubtitle.data);
                })
             
@@ -3111,7 +3111,7 @@ angular.module('app').config(function($compileProvider){
         return deferred.promise;
   	};
 
-  };
+  }
 
 })();  
 (function() {
@@ -3137,8 +3137,7 @@ angular.module('app').config(function($compileProvider){
 
 			var record = controller.gridSubtitlesOptions.api.getSelectedRow();
 
-			if (operation == EnumOperation.EDITING) { //Editing
-				var record = controller.gridSubtitlesOptions.api.getSelectedRow();
+			if (operation === EnumOperation.EDITING) { //Editing
 				controller.subtitleModalData.start = stringService.doubleToStrTime(record.nrStart);
 				controller.subtitleModalData.end = stringService.doubleToStrTime(record.nrEnd);
 				controller.subtitleModalData.text = record.dsTexto;			
@@ -3170,14 +3169,14 @@ angular.module('app').config(function($compileProvider){
 			});
 
 			modal.show().then(function(msgResponse) {
-				if (msgResponse.button == 'ok') {
+				if (msgResponse.button === 'ok') {
 					var fn;
 
 					controller.subtitleModalData.start = stringService.strTimeToDouble(controller.subtitleModalData.start);
 					controller.subtitleModalData.end = stringService.strTimeToDouble(controller.subtitleModalData.end);				
 
 					console.log(controller.subtitleModalData);
-					if (operation == EnumOperation.EDITING) { //Editing
+					if (operation === EnumOperation.EDITING) { //Editing
 						subtitleRestService.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
 							deferred.resolve(responseServer.data[0]);
 						});
@@ -3193,17 +3192,17 @@ angular.module('app').config(function($compileProvider){
 			}); 
 
 			return deferred.promise;
-		}	
+		};	
 
 		vm.add = function(scope, controller) {
 			return _getSubtitleModal(scope, controller, EnumOperation.ADDING);
-		}
+		};
 
 		vm.edit = function(scope, controller) {
 			return _getSubtitleModal(scope, controller, EnumOperation.EDITING);
-		}
+		};
 
-	};
+	}
 
 })();	
 (function() {
@@ -3222,10 +3221,10 @@ angular.module('app').config(function($compileProvider){
 
 		generalService.createHamburgerButton(['show-xs', 'hide-gt-xs'], generalService.SideEnum.LEFT);
 
-		vm.currentNavItem = "pageItems";
+		vm.currentNavItem = 'pageItems';
 		vm.currentCategoryNode = null; //Category Node
 		
-		$.jstree.defaults.core.themes.variant = "large";	
+		$.jstree.defaults.core.themes.variant = 'large';	
 
 		vm.addCategoryClick = function() {
 			homeService.addCategoryClick($scope, vm.currentCategoryNode.id);
@@ -3237,7 +3236,7 @@ angular.module('app').config(function($compileProvider){
 
 		vm.delCategoryClick = function() {
 			homeService.delCategoryClick(vm.currentCategoryNode);
-		}
+		};
 
 	    vm.addNewItemButtonClick = function(event) {
 	    	homeService.addNewItemButtonClick(vm, $scope, event);
@@ -3265,7 +3264,9 @@ angular.module('app').config(function($compileProvider){
         .module('text')
         .controller('textController', textController);
 
-    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, pronunciationModalService, textRestService, textService, generalService, stringService, uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+    function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, 
+        pronunciationModalService, textRestService, textService, generalService, stringService, 
+        uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
          
         var vm = this;
 
@@ -3343,7 +3344,7 @@ angular.module('app').config(function($compileProvider){
 
         vm.spacedRevisionClick = function() {
             spacedRevisionModalService.showModal($scope, vm.params.cdItem);
-        }
+        };
 
         $scope.openDictionary = function(cdDicionario, dsExpressao) {
             dictionaryService.openDictionaryDefinitionView($rootScope, cdDicionario, dsExpressao);
@@ -3353,7 +3354,7 @@ angular.module('app').config(function($compileProvider){
             pronunciationService.listenExpression(dsExpressao);
         };     
 
-    };
+    }
 
 })();    
 (function() {
@@ -3364,13 +3365,17 @@ angular.module('app').config(function($compileProvider){
 		.module('video')
 		.controller('videoController', videoController);
 
-	function videoController($scope, $rootScope, $routeParams, $sce, generalService, itemRestService, videoService, subtitleModalService, subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, dictionaryModalService, spacedRevisionModalService) {
+	function videoController(
+		$scope, $rootScope, $routeParams, generalService, itemRestService, videoService, subtitleModalService, 
+		subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, 
+		dictionaryModalService, spacedRevisionModalService) {
+
 		var vm = this;
 		videoService.setController(vm);
 		vm.scope = $scope;
 
 
-		$scope.name = "videoController";
+		$scope.name = 'videoController';
 		$scope.params = $routeParams;	
 		vm.t05itm = null;
 		vm.cdItem = $scope.params.cdItem;
@@ -3482,7 +3487,7 @@ angular.module('app').config(function($compileProvider){
 	    vm.importSubtitleFromLyrics = videoService.importSubtitleFromLyrics;
 	    vm.importSubtitleFromSrtFile = videoService.importSubtitleFromSrtFile;
 
-	};
+	}
 
 })();	
 (function() {
@@ -3495,7 +3500,7 @@ angular.module('app').config(function($compileProvider){
 
 	function videoModalImportSubtitleLyricsController(videoModalImportSubtitleLyricsService) {
 		videoModalImportSubtitleLyricsService.setController(this);    
-	};
+	}
 
 })();	
 (function() {
@@ -3508,33 +3513,33 @@ angular.module('app').config(function($compileProvider){
 
 	function VideoModalImportSubtitleSrtController($scope, videoModalImportSubtitleSrtService) {
 		videoModalImportSubtitleSrtService.setController(this, $scope);    
-	};
+	}
 
 })();	
 angular.module('app').config(function($routeProvider) {
 	
     $routeProvider
-        .when("/:cdCategoria?", {
-            templateUrl : "src/app/components/home/home.view.html",
-            controller: "homeController",
-            controllerAs: "ctrl"
+        .when('/:cdCategoria?', {
+            templateUrl : 'src/app/components/home/home.view.html',
+            controller: 'homeController',
+            controllerAs: 'ctrl'
         })
-        .when("/text/:cdItem", {
-            templateUrl : "src/app/components/text/text.view.html",
-            controller: "textController",
-            controllerAs: "ctrl"
+        .when('/text/:cdItem', {
+            templateUrl : 'src/app/components/text/text.view.html',
+            controller: 'textController',
+            controllerAs: 'ctrl'
         })
         /*
-        .when("/text/:cdItem", {
-            templateUrl : "app/shared/spaced-revision/teste.htm",
-            controller: "TesteCtrl",
-            controllerAs: "ctrl"
+        .when('/text/:cdItem', {
+            templateUrl : 'app/shared/spaced-revision/teste.htm',
+            controller: 'TesteCtrl',
+            controllerAs: 'ctrl'
         })
         */
-        .when("/video/:cdItem", {
-            templateUrl : "src/app/components/video/video.view.html",
-            controller: "videoController",
-            controllerAs: "ctrl"
+        .when('/video/:cdItem', {
+            templateUrl : 'src/app/components/video/video.view.html',
+            controller: 'videoController',
+            controllerAs: 'ctrl'
         }).
     	otherwise({
     		redirectTo: '/'

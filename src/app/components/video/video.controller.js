@@ -6,13 +6,17 @@
 		.module('video')
 		.controller('videoController', videoController);
 
-	function videoController($scope, $rootScope, $routeParams, $sce, generalService, itemRestService, videoService, subtitleModalService, subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, dictionaryModalService, spacedRevisionModalService) {
+	function videoController(
+		$scope, $rootScope, $routeParams, generalService, itemRestService, videoService, subtitleModalService, 
+		subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, 
+		dictionaryModalService, spacedRevisionModalService) {
+
 		var vm = this;
 		videoService.setController(vm);
 		vm.scope = $scope;
 
 
-		$scope.name = "videoController";
+		$scope.name = 'videoController';
 		$scope.params = $routeParams;	
 		vm.t05itm = null;
 		vm.cdItem = $scope.params.cdItem;
@@ -124,6 +128,6 @@
 	    vm.importSubtitleFromLyrics = videoService.importSubtitleFromLyrics;
 	    vm.importSubtitleFromSrtFile = videoService.importSubtitleFromSrtFile;
 
-	};
+	}
 
 })();	

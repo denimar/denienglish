@@ -14,10 +14,10 @@
 
 		generalService.createHamburgerButton(['show-xs', 'hide-gt-xs'], generalService.SideEnum.LEFT);
 
-		vm.currentNavItem = "pageItems";
+		vm.currentNavItem = 'pageItems';
 		vm.currentCategoryNode = null; //Category Node
 		
-		$.jstree.defaults.core.themes.variant = "large";	
+		$.jstree.defaults.core.themes.variant = 'large';	
 
 		vm.addCategoryClick = function() {
 			homeService.addCategoryClick($scope, vm.currentCategoryNode.id);
@@ -29,7 +29,7 @@
 
 		vm.delCategoryClick = function() {
 			homeService.delCategoryClick(vm.currentCategoryNode);
-		}
+		};
 
 	    vm.addNewItemButtonClick = function(event) {
 	    	homeService.addNewItemButtonClick(vm, $scope, event);

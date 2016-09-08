@@ -9,24 +9,24 @@
 	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
 		var vm = this;
 		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
-		vm.controller;
+		vm.controller = null;
 
 		vm.setController = function(controller) {
 			vm.controller = controller;
-		}
+		};
 
 		var _selectSubtitleInTime = function(controller, time) {
 			var data = controller.gridSubtitlesOptions.data;
 			for (var index = 0 ; index < data.length ; index++) {
 				var record = data[index];
 				if ((time >= record.nrStart) && (time <= record.nrEnd)) {
-					if (index != controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
+					if (index !== controller.gridSubtitlesOptions.api.getSelectedRowIndex()) {
 						controller.gridSubtitlesOptions.api.selectRow(index, true, false);
 					}	
 					break;
 				}
 			}
-		}
+		};
 
 		var selectingSubtitle = false;
 		vm.configElementVideo = function(controller, cdItem) {
@@ -61,10 +61,10 @@
 				deferred.resolve(t08vdo);
 
 				var urlImage;
-				if (t08vdo.tpVideo == 'YOUTUBE') {
-					urlImage = "https://www.youtube.com/watch?v=" + t08vdo.idVideo;
+				if (t08vdo.tpVideo === 'YOUTUBE') {
+					urlImage = 'https://www.youtube.com/watch?v=' + t08vdo.idVideo;
 				} else {
-					urlImage = "https://googledrive.com/host/" + t08vdo.idVideo;
+					urlImage = 'https://googledrive.com/host/' + t08vdo.idVideo;
 				}
 
 				controller.videoConfig = {
@@ -72,10 +72,10 @@
 					autoPlay: false,
 					sources: [
 						//{src: t08vdo.dsUrl},
-						{src: $sce.trustAsResourceUrl(urlImage), type: "video/mp4"},
+						{src: $sce.trustAsResourceUrl(urlImage), type: 'video/mp4'},
 					],
 					theme: {
-						url: "dist/videogular/videogular.css"
+						url: 'dist/videogular/videogular.css'
 					},
 					plugins: {
 						controls: {
@@ -101,7 +101,7 @@
 			});
 
 			return deferred.promise;
-		}	
+		};	
 
 		vm.configGridSubtitles = function(controller, cdItem) {	
 
@@ -146,7 +146,7 @@
 							//controller.videoAPI.pause();						
 							$timeout(function() {
 								selectingSubtitle = false;
-							}, 1500)
+							}, 1500);
 						}	
 					},
 
@@ -163,13 +163,13 @@
 
 			var fnExecSaveButton = function() {
 				videoRestService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
-			}
+			};
 
 			var fnExecCancelButton = function() {
 		    	videoRestService.get(cdItem).then(function(serverResponse) {
 		    		controller.t08vdo = serverResponse.data.data[0];
 		    	});
-			}
+			};
 
 			controller.options = generalService.getConfigWYSIWYG(fnExecSaveButton, fnExecCancelButton);
 		};
@@ -180,7 +180,7 @@
 					vm.controller.gridSubtitlesOptions.api.findKey(subtitleUpdated.cdItemSubtitle, {inLine: true});
 				});
 			});
-		}
+		};
 
 	    vm.importSubtitleFromLyrics = function() {
 	    	videoModalImportSubtitleLyricsService.showModal(vm.controller.cdItem).then(function(subtilesAdded) {
@@ -195,6 +195,6 @@
 	    };
 
 
-	};
+	}
 
 })();

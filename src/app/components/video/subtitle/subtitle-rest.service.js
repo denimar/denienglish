@@ -9,51 +9,51 @@
 	function subtitleRestService(restService) {
 		var vm = this;
 
-		vm.list = function(cd_item) {
-			return restService.requestWithPromise('subtitle/list', {'cd_item': cd_item});
-		}
+		vm.list = function(cdItem) {
+			return restService.requestWithPromise('subtitle/list', {'cd_item': cdItem});
+		};
 
-		vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
+		vm.add = function(cdVideo, nrStart, nrEnd, dsTexto) {
 			var successfullyMessage = {
 				title: 'Inserting',
 				message: 'Subtitle added successfully!'
-			}
-			return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cdVideo, 'nr_start': nrStart, 'nr_end': nrEnd, 'ds_texto': dsTexto}, successfullyMessage);		
+		};
 
-		vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
+		vm.upd = function(cdItemSubtitle, nrStart, nrEnd, dsTexto) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
-			}
-			return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cdItemSubtitle, 'nr_start': nrStart, 'nr_end': nrEnd, 'ds_texto': dsTexto}, successfullyMessage);		
+		};
 
-		vm.incASecond = function(cd_item_subtitle) {
+		vm.incASecond = function(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
-			}
-			return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage);		
+		};
 
-		vm.decASecond = function(cd_item_subtitle) {
+		vm.decASecond = function(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
-			}
-			return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-		}
+			};
+			return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage);		
+		};
 
-		vm.del = function(cd_item_subtitle) {
+		vm.del = function(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Subtitle deleted successfully!'
-			}
-			return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
-		}
+			};
+			return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage, 'Confirm deleting?');
+		};
 
 
-	};
+	}
 
 })();

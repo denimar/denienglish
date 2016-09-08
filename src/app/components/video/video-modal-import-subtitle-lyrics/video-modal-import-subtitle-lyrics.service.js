@@ -9,13 +9,13 @@
   function videoModalImportSubtitleLyricsService($rootScope, $q, restService, uiDeniModalSrv) {
 
   	var vm = this;
-    vm.cdItem;
-  	vm.controller;
+    vm.cdItem = null;
+  	vm.controller = null;
 
   	vm.setController = function(controller, scope) {
   		vm.controller = controller;
       vm.controller.cdItem = vm.cdItem;
-  	}
+  	};
 
   	vm.showModal = function(cdItem) {
         vm.cdItem = cdItem;
@@ -40,14 +40,14 @@
 
         wndImportSubtitle.show().then(function(modalResponse) {
 
-          if (modalResponse.button == 'ok') {
+          if (modalResponse.button === 'ok') {
             var successfullyMessage = {
               title: 'Updating',
               message: 'Item updated successfully!'
-            }
+            };
 
             var textArea = $(wndImportSubtitle).find('textarea');
-            lyrics = textArea.val();
+            var lyrics = textArea.val();
 
             restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
               deferred.resolve(serverReturn.data);
@@ -59,6 +59,6 @@
         return deferred.promise;
   	};
 
-  };
+  }
 
 })();  

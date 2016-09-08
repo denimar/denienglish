@@ -18,7 +18,7 @@
 		vm.addCategoryClick = function(scope, currentCategoryId) {
 			categoryService.add(scope, currentCategoryId).then(function(addedCategory) {
 				var newNode = { 
-					state: "open", 
+					state: 'open', 
 					id: addedCategory.cdCategoria,				
 					text: addedCategory.dsCategoria,
 					data: addedCategory
