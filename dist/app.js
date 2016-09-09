@@ -1,16 +1,16 @@
 'use strict';
 
 angular
-	.module('dictionary', [
-		
-	]);
-'use strict';
-
-angular
 	.module('category', [
 		'ngResource', 
 		'routines', 
 		'uiDeniModalMdl'
+	]);
+'use strict';
+
+angular
+	.module('dictionary', [
+		
 	]);
 (function() {
 
@@ -128,6 +128,99 @@ angular.module('app').config(function($compileProvider){
 		});	
 
 })();
+(function () {
+	'use strict';
+
+	angular
+		.module('category')
+		.factory('categoryDataService', categoryDataService);
+
+	function categoryDataService(restService) {
+		
+		return {
+			add: categoryAdd,
+			rename: categoryRename,
+			del: categoryDel
+		}
+
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
+
+		function categoryAdd(cd_categoria_pai, ds_categoria) {
+			var successfullyMessage = {
+				title: 'Adding',
+				message: 'Category added successfully!'
+			};
+			return restService.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+		};
+
+		function categoryRename(cd_categoria, ds_categoria) {
+			var successfullyMessage = {
+				title: 'Editing',
+				message: 'Category renamed successfully!'
+			};
+			return restService.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+		};
+
+		function categoryDel(cd_categoria) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Category deleted successfully!'
+			};
+			return restService.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+		};
+
+	}	
+
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('category')
+		.service('categoryService', categoryService);
+
+	function categoryService($q, categoryDataService, uiDeniModalSrv) {
+		var vm = this;
+
+		vm.add = function(scope, cd_categoria_pai) {
+			var deferred = $q.defer();
+
+			uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
+				categoryDataService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+					deferred.resolve(serverResponse.data.data[0]);
+				});
+			});
+
+			return deferred.promise;		
+		};
+
+		vm.rename = function(scope, cd_categoria, ds_categoria) {
+			var deferred = $q.defer();
+
+			uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
+				categoryDataService.rename(cd_categoria, enteredText).then(function(serverResponse) {
+					deferred.resolve(serverResponse.data.data[0].dsCategoria);
+				});
+			});
+
+			return deferred.promise;		
+		};
+
+		vm.del = function(cd_categoria) {
+			var deferred = $q.defer();
+			categoryDataService.del(cd_categoria).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0]);
+			});
+			return deferred.promise;			
+		};
+
+
+	};
+
+})();	
 (function() {
 
 	'use strict';
@@ -279,99 +372,6 @@ angular.module('app').config(function($compileProvider){
 		    }
 
 		};	
-
-	};
-
-})();	
-(function () {
-	'use strict';
-
-	angular
-		.module('category')
-		.factory('categoryDataService', categoryDataService);
-
-	function categoryDataService(restService) {
-		
-		return {
-			add: categoryAdd,
-			rename: categoryRename,
-			del: categoryDel
-		}
-
-		/***************************************************
-		 IMPLEMENTATION ************************************
-		****************************************************/
-
-		function categoryAdd(cd_categoria_pai, ds_categoria) {
-			var successfullyMessage = {
-				title: 'Adding',
-				message: 'Category added successfully!'
-			};
-			return restService.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
-		};
-
-		function categoryRename(cd_categoria, ds_categoria) {
-			var successfullyMessage = {
-				title: 'Editing',
-				message: 'Category renamed successfully!'
-			};
-			return restService.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-		};
-
-		function categoryDel(cd_categoria) {
-			var successfullyMessage = {
-				title: 'Deleting',
-				message: 'Category deleted successfully!'
-			};
-			return restService.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-		};
-
-	}	
-
-})();
-(function() {
-
-	'use strict';
-
-	angular
-		.module('category')
-		.service('categoryService', categoryService);
-
-	function categoryService($q, categoryDataService, uiDeniModalSrv) {
-		var vm = this;
-
-		vm.add = function(scope, cd_categoria_pai) {
-			var deferred = $q.defer();
-
-			uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-				categoryDataService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
-					deferred.resolve(serverResponse.data.data[0]);
-				});
-			});
-
-			return deferred.promise;		
-		};
-
-		vm.rename = function(scope, cd_categoria, ds_categoria) {
-			var deferred = $q.defer();
-
-			uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-				categoryDataService.rename(cd_categoria, enteredText).then(function(serverResponse) {
-					deferred.resolve(serverResponse.data.data[0].dsCategoria);
-				});
-			});
-
-			return deferred.promise;		
-		};
-
-		vm.del = function(cd_categoria) {
-			var deferred = $q.defer();
-			categoryDataService.del(cd_categoria).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0]);
-			});
-			return deferred.promise;			
-		};
-
 
 	};
 
@@ -2091,49 +2091,6 @@ angular.module('app').config(function($compileProvider){
 
 	function newVideoItemModalController($sce) {
 		var vm = this;
-
-		var _getDataURLImagemObjeto = function(videoElement, width, height, quality) {
-			var originalWiddh = 0;
-			var originalHeight = 0;	
-			if (videoElement instanceof HTMLImageElement) { //Imagem
-				originalWiddh = videoElement.naturalWidth;
-				originalHeight = videoElement.naturalHeight;		
-			} else {
-				originalWiddh = videoElement.videoWidth;
-				originalHeight = videoElement.videoHeight;		
-			}	
-			
-			var canvas = document.createElement('canvas');
-			var newWidth = width;
-			var newHeight = height;
-			
-			var xPerc = 1;
-			if (originalHeight > originalWiddh) {
-				xPerc = newWidth / originalWiddh;							
-				newHeight = xPerc * originalHeight;
-			} else {
-				xPerc = newHeight / originalHeight;
-				newWidth = xPerc * originalWiddh;							
-			}
-			
-			canvas.width  = newWidth;
-			canvas.height = newHeight;
-			var ctx = canvas.getContext('2d');
-
-			ctx.drawImage(videoElement, 0, 0, originalWiddh, originalHeight, 0, 0, newWidth, newHeight);
-
-			return canvas.toDataURL("image/jpeg", quality);
-		}
-
-		vm.capturePosterFromVideo = function() {
-			var videoElement = $('.video-preview').get(0);
-				
-			var imageUrl = _getDataURLImagemObjeto(videoElement, 150, 150, 0.5);
-
-			//var imageUrl = _getDataURLImagemObjeto(videoElement, 150, 150, 0.5);
-			console.log(imageUrl);
-		}
-
 	};
 
 })();	
