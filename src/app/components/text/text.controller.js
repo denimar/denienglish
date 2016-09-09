@@ -7,8 +7,8 @@
         .controller('textController', textController);
 
     function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, 
-        pronunciationModalService, textRestService, textService, generalService, stringService, 
-        uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+        pronunciationModalService, textDataService, textService, generalService, stringService, 
+        uiDeniModalSrv, spacedRevisionModalService, itemDataService) {
          
         var vm = this;
 
@@ -22,12 +22,12 @@
         vm.t05itm = null;
         vm.t07txt = null;
 
-        itemRestService.get(vm.params.cdItem).then(function(serverResponse) {
+        itemDataService.get(vm.params.cdItem).then(function(serverResponse) {
             vm.t05itm = serverResponse.data.data[0];
             $rootScope.subTitle = vm.t05itm.dsItem;
         });
 
-        textRestService.list(vm.params.cdItem).then(function(serverResponse) {
+        textDataService.list(vm.params.cdItem).then(function(serverResponse) {
         	vm.texts = serverResponse.data.data;
             vm.selectedIndex = 0;     	
         });
@@ -50,7 +50,7 @@
                     $rootScope.loading = true;
         	    	vm.t07txt = vm.texts[current];
 
-        			textRestService.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
+        			textDataService.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
         				generalService.getAllExpressions().then(function(response) {
                             textService.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
                             $rootScope.loading = false;
@@ -66,7 +66,7 @@
         };
 
         vm.saveClick = function() {
-            textRestService.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
+            textDataService.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
                 textService.setContent(vm, $scope, serverResponse.data[0].txConteudo);
                 vm.editing = false;             
             });

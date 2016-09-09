@@ -6,7 +6,7 @@
             .module('pronunciation')
             .service('pronunciationModalService', pronunciationModalService);
       
-      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
+      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, pronunciationRestService, pronunciationService, dictionaryDataService, expressionService) {
       	var vm = this;
             vm.controller;      
 
@@ -36,7 +36,7 @@
 
                         }
                   }).show().then(function() {
-                        expressionService.loadedExpressions = dictionaryRestService.loadedExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
+                        expressionService.loadedExpressions = dictionaryDataService.cachedExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
                         deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
                   });
 

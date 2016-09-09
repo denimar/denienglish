@@ -13,7 +13,7 @@ describe('item', function () {
 			callbackFn(fakeCallback);
 		}
 	};
-	var itemRestService;
+	var itemDataService;
 	
 	beforeEach(inject(function(_$rootScope_) {
 		scope = _$rootScope_;
@@ -22,10 +22,10 @@ describe('item', function () {
 		spyOn(restService, 'requestWithPromise').and.returnValue(thenCallback);		
 		spyOn(restService, 'requestWithPromisePayLoad').and.returnValue(thenCallback);				
 
-		itemRestService = $injector.get('itemRestService');	
+		itemDataService = $injector.get('itemDataService');	
 
-		var videoRestService = $injector.get('videoRestService');	
-		spyOn(videoRestService, 'add').and.returnValue(thenCallback);		
+		var videoDataService = $injector.get('videoDataService');	
+		spyOn(videoDataService, 'add').and.returnValue(thenCallback);		
 
 	}));
 
@@ -73,7 +73,7 @@ describe('item', function () {
 			
 			var generalService = $injector.get('generalService');
 			spyOn(generalService, 'getDataURLImagemObjeto').and.returnValue('');
-			spyOn(itemRestService, 'add').and.returnValue(thenCallback);		
+			spyOn(itemDataService, 'add').and.returnValue(thenCallback);		
 
 
 			itemService.add(scope, textService.topParentNodeId, 0).then(function(serverResponse) {
@@ -85,7 +85,7 @@ describe('item', function () {
 		});
 
 		it("del", function (done) {
-			spyOn(itemRestService, 'del').and.returnValue(thenCallback);		
+			spyOn(itemDataService, 'del').and.returnValue(thenCallback);		
 
 			itemService.del(0).then(function(serverResponse) {
 				var record = serverResponse.data.data[0];
@@ -96,7 +96,7 @@ describe('item', function () {
 		});
 
 		it("favorite.set", function (done) {
-			spyOn(itemRestService.favorite, 'set').and.returnValue(thenCallback);
+			spyOn(itemDataService.favorite, 'set').and.returnValue(thenCallback);
 
 			itemService.favorite.set(0, true).then(function(blFavorite) {
 				expect(blFavorite).toBe(true);
@@ -105,7 +105,7 @@ describe('item', function () {
 		});
 
 		it("favorite.get", function (done) {
-			spyOn(itemRestService.favorite, 'get').and.returnValue(thenCallback);
+			spyOn(itemDataService.favorite, 'get').and.returnValue(thenCallback);
 
 			itemService.favorite.get(0).then(function(blFavorite) {
 				expect(blFavorite).toBe(true);
@@ -114,7 +114,7 @@ describe('item', function () {
 		});
 
 		it("revision.set", function (done) {
-			spyOn(itemRestService.revision, 'set').and.returnValue(thenCallback);
+			spyOn(itemDataService.revision, 'set').and.returnValue(thenCallback);
 
 			itemService.revision.set(0, true).then(function(blFazerRevisao) {
 				expect(blFazerRevisao).toBe(true);
@@ -123,7 +123,7 @@ describe('item', function () {
 		});
 
 		it("revision.get", function (done) {
-			spyOn(itemRestService.revision, 'get').and.returnValue(thenCallback);
+			spyOn(itemDataService.revision, 'get').and.returnValue(thenCallback);
 
 			itemService.revision.get(0).then(function(blFazerRevisao) {
 				expect(blFazerRevisao).toBe(true);
@@ -133,46 +133,46 @@ describe('item', function () {
 
 	});	
 
-	describe('itemRestService', function () {
+	describe('itemDataService', function () {
 
 		it("list", function() {
-			expect(itemRestService.list()).toBe(thenCallback);
+			expect(itemDataService.list()).toBe(thenCallback);
 		});
 
 		it("get", function() {
-			expect(itemRestService.get()).toBe(thenCallback);			
+			expect(itemDataService.get()).toBe(thenCallback);			
 		});
 
 		it("add", function() {
-			expect(itemRestService.add()).toBe(thenCallback);			
+			expect(itemDataService.add()).toBe(thenCallback);			
 		});
 
 		it("upd", function() {
-			expect(itemRestService.upd()).toBe(thenCallback);			
+			expect(itemDataService.upd()).toBe(thenCallback);			
 		});
 
 		it("del", function() {
-			expect(itemRestService.del()).toBe(thenCallback);			
+			expect(itemDataService.del()).toBe(thenCallback);			
 		});
 
 		it("favorite.set", function() {
-			spyOn(itemRestService.favorite, 'set').and.returnValue(thenCallback);			
-			expect(itemRestService.favorite.set()).toBe(thenCallback);			
+			spyOn(itemDataService.favorite, 'set').and.returnValue(thenCallback);			
+			expect(itemDataService.favorite.set()).toBe(thenCallback);			
 		});
 
 		it("favorite.get", function() {
-			spyOn(itemRestService.favorite, 'get').and.returnValue(thenCallback);
-			expect(itemRestService.favorite.get()).toBe(thenCallback);			
+			spyOn(itemDataService.favorite, 'get').and.returnValue(thenCallback);
+			expect(itemDataService.favorite.get()).toBe(thenCallback);			
 		});
 
 		it("revision.set", function() {
-			spyOn(itemRestService.revision, 'set').and.returnValue(thenCallback);			
-			expect(itemRestService.revision.set()).toBe(thenCallback);			
+			spyOn(itemDataService.revision, 'set').and.returnValue(thenCallback);			
+			expect(itemDataService.revision.set()).toBe(thenCallback);			
 		});
 
 		it("revision.get", function() {
-			spyOn(itemRestService.revision, 'get').and.returnValue(thenCallback);
-			expect(itemRestService.revision.get()).toBe(thenCallback);			
+			spyOn(itemDataService.revision, 'get').and.returnValue(thenCallback);
+			expect(itemDataService.revision.get()).toBe(thenCallback);			
 		});
 
 	});	

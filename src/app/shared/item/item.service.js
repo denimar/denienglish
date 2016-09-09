@@ -5,7 +5,7 @@
 		.module('item')
 		.service('itemService', itemService);
 
-	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, videoRestService, restService, textService) {
+	function itemService($rootScope, $q, itemDataService, generalService, uiDeniModalSrv, newVideoItemModalService, videoDataService, restService, textService) {
 		var vm = this;
 
 		/**
@@ -18,7 +18,7 @@
 			wndDescriptionMorImage.show().then(function(response) {
 				if (response.button == 'ok') {
 					var imageURI = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 150, 150, 0.5);
-					itemRestService.add(textService.topParentNodeId, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
+					itemDataService.add(textService.topParentNodeId, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
 						deferred.resolve(responseAdd);
 					});				
 				} else {
@@ -66,7 +66,7 @@
 
 		 	newVideoItemModalService.showModal(scope).then(function(response) {
 		 		$rootScope.loading = true;
-		 		videoRestService.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
+		 		videoDataService.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
 	 				deferred.resolve(serverResponse);
 	 				$rootScope.loading = false;
 		 		});
@@ -96,7 +96,7 @@
 		 *
 		 */
 		vm.del = function(cd_item) {
-			return itemRestService.del(cd_item);
+			return itemDataService.del(cd_item);
 		}
 
 		/**
@@ -106,7 +106,7 @@
 
 			set: function(cd_item, bl_favorite) {
 				var deferred = $q.defer();
-				itemRestService.favorite.set(cd_item, bl_favorite).then(function(serverReturn) {
+				itemDataService.favorite.set(cd_item, bl_favorite).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFavorite);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -116,7 +116,7 @@
 
 			get: function(cd_item) {
 				var deferred = $q.defer();
-				itemRestService.favorite.get(cd_item).then(function(serverReturn) {
+				itemDataService.favorite.get(cd_item).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFavorite);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -133,7 +133,7 @@
 
 			set: function(cd_item, bl_fazer_revisao) {
 				var deferred = $q.defer();
-				itemRestService.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
+				itemDataService.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -143,7 +143,7 @@
 
 			get: function(cd_item) {
 				var deferred = $q.defer();
-				itemRestService.revision.get(cd_item).then(function(serverReturn) {
+				itemDataService.revision.get(cd_item).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
 				}, function(reason) {
 					deferred.reject(reason);

@@ -6,7 +6,7 @@
 		.module('dictionary')
 		.service('dictionaryDefinitionViewerService', dictionaryDefinitionViewerService);
 
-	function dictionaryDefinitionViewerService(dictionaryRestService) {
+	function dictionaryDefinitionViewerService(dictionaryDataService) {
 
 		var vm = this;
 		vm.cdDicionario = null;
@@ -32,7 +32,7 @@
 			_updateDefinitionDiv('');
 			vm.cdDicionario = cdDicionario;		
 			if (cdDicionario) {
-				dictionaryRestService.definitionGet(cdDicionario).then(function(serverResponse) {
+				dictionaryDataService.definitionGet(cdDicionario).then(function(serverResponse) {
 					if (serverResponse.data.total > 0) {
 						var record = serverResponse.data.data[0];
 					    vm.controller.currentDefinition = record.txDefinicao;
@@ -48,7 +48,7 @@
 		}
 
 		vm.definitionSaveClick = function() {
-		    dictionaryRestService.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
+		    dictionaryDataService.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
 				vm.controller.editingDefinition = false;                  
 				_updateDefinitionDiv(vm.controller.currentDefinition);
 		    });

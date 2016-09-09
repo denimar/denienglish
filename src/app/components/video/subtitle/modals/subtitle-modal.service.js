@@ -6,7 +6,7 @@
 		.module('video')
 		.service('subtitleModalService', subtitleModalService);
 
-	function subtitleModalService($q, uiDeniModalSrv, stringService, subtitleRestService) {
+	function subtitleModalService($q, uiDeniModalSrv, stringService, subtitleDataService) {
 		var vm = this;
 
 		var EnumOperation = {
@@ -61,11 +61,11 @@
 
 					console.log(controller.subtitleModalData);
 					if (operation === EnumOperation.EDITING) { //Editing
-						subtitleRestService.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
+						subtitleDataService.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
 							deferred.resolve(responseServer.data[0]);
 						});
 					} else { //Adding
-						subtitleRestService.add(controller.t08vdo.cdVideo, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
+						subtitleDataService.add(controller.t08vdo.cdVideo, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
 							deferred.resolve(responseServer.data[0]);
 						});
 					}

@@ -6,7 +6,7 @@
             .module('app')
             .service('dictionaryModalEditService', dictionaryModalEditService);
 
-      function dictionaryModalEditService($q, $interval, uiDeniModalSrv, dictionaryRestService) {
+      function dictionaryModalEditService($q, $interval, uiDeniModalSrv, dictionaryDataService) {
             var vm = this;
             vm.controller;      
             
@@ -51,7 +51,7 @@
                         }
                   }).show().then(function(modalResponse) {
                         if (modalResponse.button == 'ok') {
-                              dictionaryRestService.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
+                              dictionaryDataService.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
                               deferred.resolve(vm.controller.model);
                         }
                   });

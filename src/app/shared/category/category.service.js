@@ -6,14 +6,14 @@
 		.module('category')
 		.service('categoryService', categoryService);
 
-	function categoryService($q, categoryRestService, uiDeniModalSrv) {
+	function categoryService($q, categoryDataService, uiDeniModalSrv) {
 		var vm = this;
 
 		vm.add = function(scope, cd_categoria_pai) {
 			var deferred = $q.defer();
 
 			uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-				categoryRestService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+				categoryDataService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
 					deferred.resolve(serverResponse.data.data[0]);
 				});
 			});
@@ -25,7 +25,7 @@
 			var deferred = $q.defer();
 
 			uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-				categoryRestService.rename(cd_categoria, enteredText).then(function(serverResponse) {
+				categoryDataService.rename(cd_categoria, enteredText).then(function(serverResponse) {
 					deferred.resolve(serverResponse.data.data[0].dsCategoria);
 				});
 			});
@@ -35,7 +35,7 @@
 
 		vm.del = function(cd_categoria) {
 			var deferred = $q.defer();
-			categoryRestService.del(cd_categoria).then(function(serverResponse) {
+			categoryDataService.del(cd_categoria).then(function(serverResponse) {
 				deferred.resolve(serverResponse.data.data[0]);
 			});
 			return deferred.promise;			

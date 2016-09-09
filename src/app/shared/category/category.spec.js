@@ -59,16 +59,16 @@ describe('category', function () {
 			
 	});
 
-	describe('categoryRestService', function () {
+	describe('categoryDataService', function () {
 
-		var categoryRestService;
+		var categoryDataService;
 
 		beforeEach(function() {
-			categoryRestService = $injector.get('categoryRestService');					
+			categoryDataService = $injector.get('categoryDataService');					
 		});	
 
 		it("add", function (done) {
-	        categoryRestService.add(fakeCategory.cdCategoria, fakeCategory.dsCategoria).then(function(serverResponse) {
+	        categoryDataService.add(fakeCategory.cdCategoria, fakeCategory.dsCategoria).then(function(serverResponse) {
 	        	var addedRecord = serverResponse.data.data[0];
 	            expect(addedRecord.dsCategoria).toBe(fakeCategory.dsCategoria);
 	            done();
@@ -76,7 +76,7 @@ describe('category', function () {
 		});		
 
 		it("rename", function (done) {
-	        categoryRestService.rename(fakeCategory.cdCategoria, fakeCategory.dsCategoria).then(function(serverResponse) {
+	        categoryDataService.rename(fakeCategory.cdCategoria, fakeCategory.dsCategoria).then(function(serverResponse) {
 	        	var renamedRecord = serverResponse.data.data[0];
 	            expect(renamedRecord.dsCategoria).toBe(fakeCategory.dsCategoria);
 	            done();
@@ -84,7 +84,7 @@ describe('category', function () {
 		});		
 
 		it("del", function (done) {
-	        categoryRestService.del(fakeCategory.cdCategoria).then(function(serverResponse) {
+	        categoryDataService.del(fakeCategory.cdCategoria).then(function(serverResponse) {
 	        	var deletedRecord = serverResponse.data.data[0];
 	            expect(deletedRecord.dsCategoria).toBe(fakeCategory.dsCategoria);
 	            done();

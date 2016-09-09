@@ -6,7 +6,7 @@
 		.module('video')
 		.service('videoService', videoService);
 
-	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
+	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoDataService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
 		var vm = this;
 		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
 		vm.controller = null;
@@ -56,7 +56,7 @@
 				}	
 			};		
 
-			videoRestService.get(cdItem).then(function(serverReturn) {
+			videoDataService.get(cdItem).then(function(serverReturn) {
 				var t08vdo = serverReturn.data.data[0];
 				deferred.resolve(t08vdo);
 
@@ -162,11 +162,11 @@
 		vm.configWYSIWYG = function(controller, cdItem) {
 
 			var fnExecSaveButton = function() {
-				videoRestService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
+				videoDataService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
 			};
 
 			var fnExecCancelButton = function() {
-		    	videoRestService.get(cdItem).then(function(serverResponse) {
+		    	videoDataService.get(cdItem).then(function(serverResponse) {
 		    		controller.t08vdo = serverResponse.data.data[0];
 		    	});
 			};

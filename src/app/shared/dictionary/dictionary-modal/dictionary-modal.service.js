@@ -7,7 +7,7 @@
             .service('dictionaryModalService', dictionaryModalService);
 
 
-      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
+      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, dictionaryDataService, dictionaryModalEditService, pronunciationRestService, expressionService) {
       	var vm = this;
             vm.controller;      
 
@@ -58,7 +58,7 @@
                   return {
                         keyField: 'cdDicionario',
                         rowHeight: '25px',
-                        data: dictionaryRestService.loadedExpressions,
+                        data: dictionaryDataService.cachedExpressions,
                         hideHeaders: true,
                         columns: [
                               {
@@ -85,7 +85,7 @@
                                           mdIcon: 'delete_forever',
                                           tooltip: 'Remove a expression from dictionary',
                                           fn: function(record, column, imgActionColumn) {
-                                                dictionaryRestService.del(record.cdDicionario).then(function(serverResponse) {
+                                                dictionaryDataService.del(record.cdDicionario).then(function(serverResponse) {
 
                                                       var deleteItemFn = function(data) {
                                                             for (var i = data.length - 1; i >= 0; i--) {
@@ -174,7 +174,7 @@
                   var searchInput = $('.dictionary-modal .search-input');            
                   var expressionAdd = searchInput.val();
                   
-                  dictionaryRestService.add(expressionAdd, '').then(function(serverResponse) {
+                  dictionaryDataService.add(expressionAdd, '').then(function(serverResponse) {
                         expressionAdded = serverResponse.data.data[0];
 
                         var insertItemFn = function(data) {

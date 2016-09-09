@@ -7,8 +7,8 @@
 		.controller('videoController', videoController);
 
 	function videoController(
-		$scope, $rootScope, $routeParams, generalService, itemRestService, videoService, subtitleModalService, 
-		subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, 
+		$scope, $rootScope, $routeParams, generalService, itemDataService, videoService, subtitleModalService, 
+		subtitleDataService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, 
 		dictionaryModalService, spacedRevisionModalService) {
 
 		var vm = this;
@@ -23,7 +23,7 @@
 		vm.commentaries = '';
 		vm.initialCommentaries = '';
 
-		itemRestService.get($scope.params.cdItem).then(function(serverResponse) {
+		itemDataService.get($scope.params.cdItem).then(function(serverResponse) {
 			vm.t05itm = serverResponse.data.data[0];
 			$rootScope.subTitle = vm.t05itm.dsItem;
 		});
@@ -73,7 +73,7 @@
 
 		vm.delSubtitleButtonClick = function() {
 			var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-			subtitleRestService.del(record.cdItemSubtitle).then(function() {
+			subtitleDataService.del(record.cdItemSubtitle).then(function() {
 				vm.gridSubtitlesOptions.api.reload();
 			});
 		};
@@ -87,9 +87,9 @@
 
 			var fn;
 			if (increment > 0) {
-				fn = subtitleRestService.incASecond;
+				fn = subtitleDataService.incASecond;
 			} else {
-				fn = subtitleRestService.decASecond;
+				fn = subtitleDataService.decASecond;
 			}
 
 			fn(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {

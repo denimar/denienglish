@@ -3,13 +3,21 @@
 
 	angular
 		.module('category')
-		.service('categoryRestService', categoryRestService);
+		.factory('categoryDataService', categoryDataService);
 
-	function categoryRestService(restService) {
+	function categoryDataService(restService) {
+		
+		return {
+			add: categoryAdd,
+			rename: categoryRename,
+			del: categoryDel
+		}
 
-		var vm = this;
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
 
-		vm.add = function(cd_categoria_pai, ds_categoria) {
+		function categoryAdd(cd_categoria_pai, ds_categoria) {
 			var successfullyMessage = {
 				title: 'Adding',
 				message: 'Category added successfully!'
@@ -17,7 +25,7 @@
 			return restService.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
 		};
 
-		vm.rename = function(cd_categoria, ds_categoria) {
+		function categoryRename(cd_categoria, ds_categoria) {
 			var successfullyMessage = {
 				title: 'Editing',
 				message: 'Category renamed successfully!'
@@ -25,7 +33,7 @@
 			return restService.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
 		};
 
-		vm.del = function(cd_categoria) {
+		function categoryDel(cd_categoria) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Category deleted successfully!'
@@ -33,7 +41,6 @@
 			return restService.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
 		};
 
-
-	};
+	}	
 
 })();

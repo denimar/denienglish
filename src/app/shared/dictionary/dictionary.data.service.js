@@ -4,26 +4,42 @@
 
 	angular
 		.module('dictionary')
-		.service('dictionaryRestService', dictionaryRestService);
+		.factory('dictionaryDataService', dictionaryDataService);
 
-	function dictionaryRestService($q, restService) {
+	function dictionaryDataService($q, restService) {
+		return {
+			cachedExpressions: [],
+			list: dictionaryList,
+			add: dictionaryAdd,
+			upd: dictionaryUpd,
+			del: dictionaryDel,
+			learnedToogle: dictionaryLearnedToogle,
+			definitionSet: dictionaryDefinitionSet,
+			definitionGet: dictionaryDefinitionGet
+		}
 
-		var vm = this;
-		vm.loadedExpressions = [];
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
 
-		vm.list = function() {
+		function dictionaryList(ignoreCache) {
 			var deferred = $q.defer();
+			var vm = this;
 
-			restService.requestWithPromise('dictionary/list').then(function(dictionaryResponse) {
-				vm.loadedExpressions = dictionaryResponse.data.data;
-				deferred.resolve(vm.loadedExpressions);
-			});
+			if (ignoreCache || vm.cachedExpressions.length === 0) {
+				restService.requestWithPromise('dictionary/list').then(function(dictionaryResponse) {
+					vm.cachedExpressions = dictionaryResponse.data.data;
+					deferred.resolve(vm.cachedExpressions);
+				});
+			} else {
+				deferred.resolve(vm.cachedExpressions);				
+			}	
 
 			return deferred.promise;
 		}
 
 
-		vm.add = function(ds_expressao, ds_tags) {
+		function dictionaryAdd(ds_expressao, ds_tags) {
 			var successfullyMessage = {
 				title: 'Inserting',
 				message: 'Expression added successfully!'
@@ -31,7 +47,7 @@
 			return restService.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
 		};
 
-		vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
+		function dictionaryUpd(cd_dicionario, ds_expressao, ds_tags) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Expression updated successfully!'
@@ -39,7 +55,7 @@
 			return restService.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
 		}	
 
-		vm.del = function(cd_dicionario) {
+		function dictionaryDel(cd_dicionario) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Expression deleted successfully!'
@@ -48,7 +64,7 @@
 		};
 
 
-		vm.learnedToogle = function(cd_dicionario) {
+		function dictionaryLearnedToogle(cd_dicionario) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Expression updated successfully!'
@@ -56,7 +72,7 @@
 			return restService.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
 		};
 
-		vm.definitionSet = function(cd_dicionario, definition) {
+		function dictionaryDefinitionSet(cd_dicionario, definition) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Expression updated successfully!'
@@ -64,10 +80,10 @@
 			return restService.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
 		};
 
-		vm.definitionGet = function(cd_dicionario) {
+		function dictionaryDefinitionGet(cd_dicionario) {
 			return restService.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
 		};	
 
 	};
 
-})();	
+})();

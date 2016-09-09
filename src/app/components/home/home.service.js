@@ -6,7 +6,7 @@
 		.module('app')
 		.service('homeService', homeService);
 
-	function homeService($timeout, $rootScope, generalService, categoryService, restService, itemService, stringService, spacedRevisionModalService, uiDeniModalSrv, itemRestService, textService) {
+	function homeService($timeout, $rootScope, generalService, categoryService, restService, itemService, stringService, spacedRevisionModalService, uiDeniModalSrv, itemDataService, textService) {
 
 		var vm = this;
 		var jsTreeInstance = null;
@@ -238,7 +238,7 @@
 								wndDescriptionMorImage.show().then(function(response) {
 									if (response.button == 'ok') {								
 										var uriImage = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
-										itemRestService.upd(record.cdItem, controller.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
+										itemDataService.upd(record.cdItem, controller.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
 											controller.gridOptions.api.reload().then(function(responseData) {
 												imgEl.attr('src', response.data.image);								
 

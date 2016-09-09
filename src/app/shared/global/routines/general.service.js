@@ -6,7 +6,7 @@
 		.module('routines')
 		.service('generalService', generalService);
 
-	function generalService($q, $sce, $compile, dictionaryRestService, pronunciationRestService, expressionService) {
+	function generalService($q, $sce, $compile, dictionaryDataService, pronunciationRestService, expressionService) {
 		var vm = this;
 		vm.SideEnum = {
 			LEFT: 1,
@@ -16,7 +16,7 @@
 		vm.getAllExpressions = function() {
 			var deferred = $q.defer();
 
-			dictionaryRestService.list().then(function(dictionaryResponseData) {
+			dictionaryDataService.list(true).then(function(dictionaryResponseData) {
 				pronunciationRestService.list().then(function(pronunciationResponseData) {
 					expressionService.loadedExpressions = dictionaryResponseData.concat(pronunciationResponseData);
 					deferred.resolve(expressionService.loadedExpressions);

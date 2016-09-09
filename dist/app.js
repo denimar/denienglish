@@ -1,16 +1,16 @@
 'use strict';
 
 angular
-	.module('category', [
-		'ngResource', 
-		'routines', 
-		'uiDeniModalMdl'
+	.module('dictionary', [
+		
 	]);
 'use strict';
 
 angular
-	.module('dictionary', [
-		
+	.module('category', [
+		'ngResource', 
+		'routines', 
+		'uiDeniModalMdl'
 	]);
 (function() {
 
@@ -128,118 +128,48 @@ angular.module('app').config(function($compileProvider){
 		});	
 
 })();
-(function () {
-	'use strict';
-
-	angular
-		.module('category')
-		.service('categoryRestService', categoryRestService);
-
-	function categoryRestService(restService) {
-
-		var vm = this;
-
-		vm.add = function(cd_categoria_pai, ds_categoria) {
-			var successfullyMessage = {
-				title: 'Adding',
-				message: 'Category added successfully!'
-			};
-			return restService.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
-		};
-
-		vm.rename = function(cd_categoria, ds_categoria) {
-			var successfullyMessage = {
-				title: 'Editing',
-				message: 'Category renamed successfully!'
-			};
-			return restService.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-		};
-
-		vm.del = function(cd_categoria) {
-			var successfullyMessage = {
-				title: 'Deleting',
-				message: 'Category deleted successfully!'
-			};
-			return restService.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-		};
-
-
-	};
-
-})();
-(function() {
-
-	'use strict';
-
-	angular
-		.module('category')
-		.service('categoryService', categoryService);
-
-	function categoryService($q, categoryRestService, uiDeniModalSrv) {
-		var vm = this;
-
-		vm.add = function(scope, cd_categoria_pai) {
-			var deferred = $q.defer();
-
-			uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-				categoryRestService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
-					deferred.resolve(serverResponse.data.data[0]);
-				});
-			});
-
-			return deferred.promise;		
-		};
-
-		vm.rename = function(scope, cd_categoria, ds_categoria) {
-			var deferred = $q.defer();
-
-			uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-				categoryRestService.rename(cd_categoria, enteredText).then(function(serverResponse) {
-					deferred.resolve(serverResponse.data.data[0].dsCategoria);
-				});
-			});
-
-			return deferred.promise;		
-		};
-
-		vm.del = function(cd_categoria) {
-			var deferred = $q.defer();
-			categoryRestService.del(cd_categoria).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0]);
-			});
-			return deferred.promise;			
-		};
-
-
-	};
-
-})();	
 (function() {
 
 	'use strict';
 
 	angular
 		.module('dictionary')
-		.service('dictionaryRestService', dictionaryRestService);
+		.factory('dictionaryDataService', dictionaryDataService);
 
-	function dictionaryRestService($q, restService) {
+	function dictionaryDataService($q, restService) {
+		return {
+			cachedExpressions: [],
+			list: dictionaryList,
+			add: dictionaryAdd,
+			upd: dictionaryUpd,
+			del: dictionaryDel,
+			learnedToogle: dictionaryLearnedToogle,
+			definitionSet: dictionaryDefinitionSet,
+			definitionGet: dictionaryDefinitionGet
+		}
 
-		var vm = this;
-		vm.loadedExpressions = [];
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
 
-		vm.list = function() {
+		function dictionaryList(ignoreCache) {
 			var deferred = $q.defer();
+			var vm = this;
 
-			restService.requestWithPromise('dictionary/list').then(function(dictionaryResponse) {
-				vm.loadedExpressions = dictionaryResponse.data.data;
-				deferred.resolve(vm.loadedExpressions);
-			});
+			if (ignoreCache || vm.cachedExpressions.length === 0) {
+				restService.requestWithPromise('dictionary/list').then(function(dictionaryResponse) {
+					vm.cachedExpressions = dictionaryResponse.data.data;
+					deferred.resolve(vm.cachedExpressions);
+				});
+			} else {
+				deferred.resolve(vm.cachedExpressions);				
+			}	
 
 			return deferred.promise;
 		}
 
 
-		vm.add = function(ds_expressao, ds_tags) {
+		function dictionaryAdd(ds_expressao, ds_tags) {
 			var successfullyMessage = {
 				title: 'Inserting',
 				message: 'Expression added successfully!'
@@ -247,7 +177,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromise('dictionary/add', {'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);		
 		};
 
-		vm.upd = function(cd_dicionario, ds_expressao, ds_tags) {
+		function dictionaryUpd(cd_dicionario, ds_expressao, ds_tags) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Expression updated successfully!'
@@ -255,7 +185,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromise('dictionary/upd', {'cd_dicionario': cd_dicionario, 'ds_expressao': ds_expressao, 'ds_tags': ds_tags}, successfullyMessage);
 		}	
 
-		vm.del = function(cd_dicionario) {
+		function dictionaryDel(cd_dicionario) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Expression deleted successfully!'
@@ -264,7 +194,7 @@ angular.module('app').config(function($compileProvider){
 		};
 
 
-		vm.learnedToogle = function(cd_dicionario) {
+		function dictionaryLearnedToogle(cd_dicionario) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Expression updated successfully!'
@@ -272,7 +202,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromise('dictionary/learned/toogle', {'cd_dicionario': cd_dicionario}, successfullyMessage);		
 		};
 
-		vm.definitionSet = function(cd_dicionario, definition) {
+		function dictionaryDefinitionSet(cd_dicionario, definition) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Expression updated successfully!'
@@ -280,13 +210,13 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('dictionary/definition/set', {}, {cd_dicionario: cd_dicionario, 'tx_definicao': definition}, successfullyMessage);		
 		};
 
-		vm.definitionGet = function(cd_dicionario) {
+		function dictionaryDefinitionGet(cd_dicionario) {
 			return restService.requestWithPromise('dictionary/definition/get', {'cd_dicionario': cd_dicionario});		
 		};	
 
 	};
 
-})();	
+})();
 (function() {
 	
 	'use strict';
@@ -295,34 +225,34 @@ angular.module('app').config(function($compileProvider){
 		.module('dictionary')
 		.service('dictionaryService', dictionaryService);
 
-	function dictionaryService($q, dictionaryRestService, dictionaryModalService, uiDeniModalSrv, pronunciationService) {
+	function dictionaryService($q, dictionaryDataService, dictionaryModalService, uiDeniModalSrv, pronunciationService) {
 		var vm = this;
 
 		vm.list = function() {
-			return dictionaryRestService.list();
+			return dictionaryDataService.list();
 		};
 
 		vm.add = function(ds_expressao, ds_tags) {
-			return dictionaryRestService.add(ds_expressao, ds_tags);
+			return dictionaryDataService.add(ds_expressao, ds_tags);
 		}
 
 		vm.del = function(cd_dicionario) {
-			return dictionaryRestService.del(cd_dicionario);
+			return dictionaryDataService.del(cd_dicionario);
 		};
 
 
 		vm.learnedToogle = function(cd_dicionario) {
-			return dictionaryRestService.learnedToogle(cd_dicionario);
+			return dictionaryDataService.learnedToogle(cd_dicionario);
 		};
 
 		vm.definitionSet = function(cd_dicionario, definition) {
-			return dictionaryRestService.definitionSet(cd_dicionario, definition);
+			return dictionaryDataService.definitionSet(cd_dicionario, definition);
 		};
 
 		vm.definitionGet = function(cd_dicionario) {
 			var deferred = $q.defer();
 
-			dictionaryRestService.definitionGet(cd_dicionario).then(function(serverResponse) {
+			dictionaryDataService.definitionGet(cd_dicionario).then(function(serverResponse) {
 				deferred.resolve(serverResponse.data.data[0].txDefinicao);			
 			});
 
@@ -353,6 +283,99 @@ angular.module('app').config(function($compileProvider){
 	};
 
 })();	
+(function () {
+	'use strict';
+
+	angular
+		.module('category')
+		.factory('categoryDataService', categoryDataService);
+
+	function categoryDataService(restService) {
+		
+		return {
+			add: categoryAdd,
+			rename: categoryRename,
+			del: categoryDel
+		}
+
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
+
+		function categoryAdd(cd_categoria_pai, ds_categoria) {
+			var successfullyMessage = {
+				title: 'Adding',
+				message: 'Category added successfully!'
+			};
+			return restService.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+		};
+
+		function categoryRename(cd_categoria, ds_categoria) {
+			var successfullyMessage = {
+				title: 'Editing',
+				message: 'Category renamed successfully!'
+			};
+			return restService.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+		};
+
+		function categoryDel(cd_categoria) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Category deleted successfully!'
+			};
+			return restService.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+		};
+
+	}	
+
+})();
+(function() {
+
+	'use strict';
+
+	angular
+		.module('category')
+		.service('categoryService', categoryService);
+
+	function categoryService($q, categoryDataService, uiDeniModalSrv) {
+		var vm = this;
+
+		vm.add = function(scope, cd_categoria_pai) {
+			var deferred = $q.defer();
+
+			uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
+				categoryDataService.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+					deferred.resolve(serverResponse.data.data[0]);
+				});
+			});
+
+			return deferred.promise;		
+		};
+
+		vm.rename = function(scope, cd_categoria, ds_categoria) {
+			var deferred = $q.defer();
+
+			uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
+				categoryDataService.rename(cd_categoria, enteredText).then(function(serverResponse) {
+					deferred.resolve(serverResponse.data.data[0].dsCategoria);
+				});
+			});
+
+			return deferred.promise;		
+		};
+
+		vm.del = function(cd_categoria) {
+			var deferred = $q.defer();
+			categoryDataService.del(cd_categoria).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0]);
+			});
+			return deferred.promise;			
+		};
+
+
+	};
+
+})();	
 (function() {
 
 	'use strict';
@@ -373,20 +396,39 @@ angular.module('app').config(function($compileProvider){
 	
 	angular
 		.module('item')
-		.service('itemRestService', itemRestService);
+		.factory('itemDataService', itemDataService);
 
-	function itemRestService(restService) {
-		var vm = this;
+	function itemDataService(restService) {
+		
+		return {
+			list: itemList,
+			get: itemGet,
+			add: itemAdd,
+			upd: itemUpd,
+			del: itemDel,
+			favorite: {
+				set: itemFavoriteSet,
+				get: itemFavoriteGet
+			},
+			revision: {
+				set: itemRevisionSet,
+				get: itemRevisionGet
+			}
+		}
 
-		vm.list = function(cd_categoria) {
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
+		
+		function itemList(cd_categoria) {
 			return restService.requestWithPromise('item/list', {'cd_categoria': cd_categoria});
 		}
 
-		vm.get = function(cd_item) {
+		function itemGet(cd_item) {
 			return restService.requestWithPromise('item/get', {'cd_item': cd_item});
 		}
 
-		vm.add = function(topCategoryNode, cd_categoria, ds_item, bt_imagem) {
+		function itemAdd(topCategoryNode, cd_categoria, ds_item, bt_imagem) {
 			var successfullyMessage = {
 				title: 'Inserting',
 				message: 'Item added successfully!'
@@ -394,7 +436,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('item/add', {'topCategoryNode': topCategoryNode, 'cd_categoria': cd_categoria, 'ds_item': ds_item}, {'bt_imagem': bt_imagem}, successfullyMessage);		
 		}
 
-		vm.upd = function(cd_item, cd_categoria, ds_item, bt_imagem) {
+		function itemUpd(cd_item, cd_categoria, ds_item, bt_imagem) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Item updated successfully!'
@@ -402,7 +444,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('item/upd', {'cd_item': cd_item, 'cd_categoria': cd_categoria, 'ds_item': ds_item}, {'bt_imagem': bt_imagem}, successfullyMessage);		
 		}
 
-		vm.del = function(cd_item) {
+		function itemDel(cd_item) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Item deleted successfully!'
@@ -410,34 +452,26 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromise('item/del', {'cd_item': cd_item}, successfullyMessage, 'Confirm deleting?');
 		}
 
-		vm.favorite = {
+		function itemFavoriteSet(cd_item, bl_favorite) {
+			return restService.requestWithPromise('item/favorite/set', {'cd_item': cd_item, 'bl_favorite': bl_favorite});
+		}
 
-			set: function(cd_item, bl_favorite) {
-				return restService.requestWithPromise('item/favorite/set', {'cd_item': cd_item, 'bl_favorite': bl_favorite});
-			},
+		function itemFavoriteGet(cd_item) {
+			return restService.requestWithPromise('item/favorite/get', {'cd_item': cd_item});			
+		}
 
-			get: function(cd_item) {
-				return restService.requestWithPromise('item/favorite/get', {'cd_item': cd_item});			
-			}
+		function itemRevisionSet(cd_item, bl_fazer_revisao) {
+			return restService.requestWithPromise('item/revision/set', {'cd_item': cd_item, 'bl_fazer_revisao': bl_fazer_revisao});
+		}
 
-		}	
+		function itemRevisionGet(cd_item) {
+			return restService.requestWithPromise('item/revision/get', {'cd_item': cd_item});			
+		}
 
-		vm.revision = {
-
-			set: function(cd_item, bl_fazer_revisao) {
-				return restService.requestWithPromise('item/revision/set', {'cd_item': cd_item, 'bl_fazer_revisao': bl_fazer_revisao});
-			},
-
-			get: function(cd_item) {
-				return restService.requestWithPromise('item/revision/get', {'cd_item': cd_item});			
-			}
-
-		}	
-
-
-	};
+	}	
 
 })();	
+
 (function() {
 	'use strict';
 
@@ -445,7 +479,7 @@ angular.module('app').config(function($compileProvider){
 		.module('item')
 		.service('itemService', itemService);
 
-	function itemService($rootScope, $q, itemRestService, generalService, uiDeniModalSrv, newVideoItemModalService, videoRestService, restService, textService) {
+	function itemService($rootScope, $q, itemDataService, generalService, uiDeniModalSrv, newVideoItemModalService, videoDataService, restService, textService) {
 		var vm = this;
 
 		/**
@@ -458,7 +492,7 @@ angular.module('app').config(function($compileProvider){
 			wndDescriptionMorImage.show().then(function(response) {
 				if (response.button == 'ok') {
 					var imageURI = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 150, 150, 0.5);
-					itemRestService.add(textService.topParentNodeId, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
+					itemDataService.add(textService.topParentNodeId, parentCategory, response.data.description, imageURI).then(function(responseAdd) {
 						deferred.resolve(responseAdd);
 					});				
 				} else {
@@ -506,7 +540,7 @@ angular.module('app').config(function($compileProvider){
 
 		 	newVideoItemModalService.showModal(scope).then(function(response) {
 		 		$rootScope.loading = true;
-		 		videoRestService.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
+		 		videoDataService.add(parentCategory, scope.newVideoItemModal.tp_video, scope.newVideoItemModal.id_video, scope.newVideoItemModal.description).then(function(serverResponse) {
 	 				deferred.resolve(serverResponse);
 	 				$rootScope.loading = false;
 		 		});
@@ -536,7 +570,7 @@ angular.module('app').config(function($compileProvider){
 		 *
 		 */
 		vm.del = function(cd_item) {
-			return itemRestService.del(cd_item);
+			return itemDataService.del(cd_item);
 		}
 
 		/**
@@ -546,7 +580,7 @@ angular.module('app').config(function($compileProvider){
 
 			set: function(cd_item, bl_favorite) {
 				var deferred = $q.defer();
-				itemRestService.favorite.set(cd_item, bl_favorite).then(function(serverReturn) {
+				itemDataService.favorite.set(cd_item, bl_favorite).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFavorite);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -556,7 +590,7 @@ angular.module('app').config(function($compileProvider){
 
 			get: function(cd_item) {
 				var deferred = $q.defer();
-				itemRestService.favorite.get(cd_item).then(function(serverReturn) {
+				itemDataService.favorite.get(cd_item).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFavorite);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -573,7 +607,7 @@ angular.module('app').config(function($compileProvider){
 
 			set: function(cd_item, bl_fazer_revisao) {
 				var deferred = $q.defer();
-				itemRestService.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
+				itemDataService.revision.set(cd_item, bl_fazer_revisao).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -583,7 +617,7 @@ angular.module('app').config(function($compileProvider){
 
 			get: function(cd_item) {
 				var deferred = $q.defer();
-				itemRestService.revision.get(cd_item).then(function(serverReturn) {
+				itemDataService.revision.get(cd_item).then(function(serverReturn) {
 					deferred.resolve(serverReturn.data.data[0].blFazerRevisao);
 				}, function(reason) {
 					deferred.reject(reason);
@@ -801,7 +835,7 @@ angular.module('app').config(function($compileProvider){
             .service('dictionaryModalService', dictionaryModalService);
 
 
-      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, dictionaryRestService, dictionaryModalEditService, pronunciationRestService, expressionService) {
+      function dictionaryModalService($rootScope, $q, $timeout, uiDeniModalSrv, dictionaryModalEnums, dictionaryDataService, dictionaryModalEditService, pronunciationRestService, expressionService) {
       	var vm = this;
             vm.controller;      
 
@@ -852,7 +886,7 @@ angular.module('app').config(function($compileProvider){
                   return {
                         keyField: 'cdDicionario',
                         rowHeight: '25px',
-                        data: dictionaryRestService.loadedExpressions,
+                        data: dictionaryDataService.cachedExpressions,
                         hideHeaders: true,
                         columns: [
                               {
@@ -879,7 +913,7 @@ angular.module('app').config(function($compileProvider){
                                           mdIcon: 'delete_forever',
                                           tooltip: 'Remove a expression from dictionary',
                                           fn: function(record, column, imgActionColumn) {
-                                                dictionaryRestService.del(record.cdDicionario).then(function(serverResponse) {
+                                                dictionaryDataService.del(record.cdDicionario).then(function(serverResponse) {
 
                                                       var deleteItemFn = function(data) {
                                                             for (var i = data.length - 1; i >= 0; i--) {
@@ -968,7 +1002,7 @@ angular.module('app').config(function($compileProvider){
                   var searchInput = $('.dictionary-modal .search-input');            
                   var expressionAdd = searchInput.val();
                   
-                  dictionaryRestService.add(expressionAdd, '').then(function(serverResponse) {
+                  dictionaryDataService.add(expressionAdd, '').then(function(serverResponse) {
                         expressionAdded = serverResponse.data.data[0];
 
                         var insertItemFn = function(data) {
@@ -1006,7 +1040,7 @@ angular.module('app').config(function($compileProvider){
 		.module('routines')
 		.service('generalService', generalService);
 
-	function generalService($q, $sce, $compile, dictionaryRestService, pronunciationRestService, expressionService) {
+	function generalService($q, $sce, $compile, dictionaryDataService, pronunciationRestService, expressionService) {
 		var vm = this;
 		vm.SideEnum = {
 			LEFT: 1,
@@ -1016,7 +1050,7 @@ angular.module('app').config(function($compileProvider){
 		vm.getAllExpressions = function() {
 			var deferred = $q.defer();
 
-			dictionaryRestService.list().then(function(dictionaryResponseData) {
+			dictionaryDataService.list(true).then(function(dictionaryResponseData) {
 				pronunciationRestService.list().then(function(pronunciationResponseData) {
 					expressionService.loadedExpressions = dictionaryResponseData.concat(pronunciationResponseData);
 					deferred.resolve(expressionService.loadedExpressions);
@@ -1504,7 +1538,7 @@ angular.module('app').config(function($compileProvider){
             .module('pronunciation')
             .service('pronunciationModalService', pronunciationModalService);
       
-      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, pronunciationRestService, pronunciationService, dictionaryRestService, expressionService) {
+      function pronunciationModalService($q, uiDeniModalSrv, pronunciationModalEnums, pronunciationRestService, pronunciationService, dictionaryDataService, expressionService) {
       	var vm = this;
             vm.controller;      
 
@@ -1534,7 +1568,7 @@ angular.module('app').config(function($compileProvider){
 
                         }
                   }).show().then(function() {
-                        expressionService.loadedExpressions = dictionaryRestService.loadedExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
+                        expressionService.loadedExpressions = dictionaryDataService.cachedExpressions.concat(vm.controller.gridPronunciationOptions.alldata);
                         deferred.resolve(vm.controller.gridPronunciationOptions.alldata);
                   });
 
@@ -1674,111 +1708,6 @@ angular.module('app').config(function($compileProvider){
 
 	angular
 		.module('app')
-		.service('spacedRevisionSelectExpressionsModalService', spacedRevisionSelectExpressionsModalService);
-
-	function spacedRevisionSelectExpressionsModalService($rootScope, $timeout, $filter, $q, revisionService, revisionRestService, uiDeniModalSrv) {
-		var vm = this;
-		vm.controller;
-		vm.expressions;
-
-		vm.setController = function(controller) {
-			vm.controller = controller;
-		}
-
-		vm.showModal = function(cdItem) {
-			var deferred = $q.defer();
-
-			$rootScope.loading = true;
-		
-			revisionService.getExpressions(cdItem, false).then(function(expressions) {
-				$rootScope.loading = false;
-
-				vm.expressions = expressions;			
-
-		        var modal = uiDeniModalSrv.createWindow({
-		            scope: $rootScope,
-		            title: 'Spaced Revision - Selecting Expressions',
-		            width: '750px',         
-		            height: '600px',
-		            position: uiDeniModalSrv.POSITION.CENTER,
-		            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-		            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.view.html',
-		            modal: true,
-		            listeners: {
-
-		            	onshow: function(objWindow) {
-		            	}
-
-		            }
-		        });
-
-				modal.show().then(function(modalResponse) {
-					if (modalResponse.button == 'ok') {
-						revisionRestService.updExpressions(cdItem, vm.controller.expressions).then(function() {
-							deferred.resolve(vm.controller.expressions);
-						});
-
-					} else {
-						deferred.reject();
-					}
-				});
-
-			});			
-
-
-			return deferred.promise;
-		}
-
-		vm.getExpressions = function() {
-			return vm.expressions;
-		}
-
-		vm.filterExpressionsDicionary = function(expression) {
-			return expression.t50dci;
-		}
-
-		vm.filterExpressionsPronunciation = function(expression) {
-			return expression.t51prn;
-		}
-
-		/*
-		vm.addWords = function() {
-
-			vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
-				return record.t50dci;
-			});
-
-			vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
-				return record.t51prn;
-			});
-
-
-		}
-
-		/*
-		vm.getNgModelExpression = function(expression) {
-			var ngModel;
-			if (expression.t50dci) {
-				ngModel = 'd' + expression.t50dci.cdDicionario;
-			} else {
-				ngModel = 'p' + expression.t51prn.cdPronuncia;
-			}
-
-			vm.controller.selectedExpressions[ngModel] = true;
-
-			return 'ctrl.selectedExpressions.' + ngModel;
-		}
-		*/
-
-	};
-
-})();	
-(function() {
-	
-	'use strict';
-
-	angular
-		.module('app')
 		.service('spacedRevisionModalService', spacedRevisionModalService);
 
 	function spacedRevisionModalService($rootScope, $filter, stringService, videoService, dictionaryService, pronunciationService, revisionRestService, uiDeniModalSrv, revisionService, spacedRevisionSelectExpressionsModalService) {
@@ -1890,6 +1819,111 @@ angular.module('app').config(function($compileProvider){
 
 })();	
 (function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
+		.service('spacedRevisionSelectExpressionsModalService', spacedRevisionSelectExpressionsModalService);
+
+	function spacedRevisionSelectExpressionsModalService($rootScope, $timeout, $filter, $q, revisionService, revisionRestService, uiDeniModalSrv) {
+		var vm = this;
+		vm.controller;
+		vm.expressions;
+
+		vm.setController = function(controller) {
+			vm.controller = controller;
+		}
+
+		vm.showModal = function(cdItem) {
+			var deferred = $q.defer();
+
+			$rootScope.loading = true;
+		
+			revisionService.getExpressions(cdItem, false).then(function(expressions) {
+				$rootScope.loading = false;
+
+				vm.expressions = expressions;			
+
+		        var modal = uiDeniModalSrv.createWindow({
+		            scope: $rootScope,
+		            title: 'Spaced Revision - Selecting Expressions',
+		            width: '750px',         
+		            height: '600px',
+		            position: uiDeniModalSrv.POSITION.CENTER,
+		            buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+		            urlTemplate: 'src/app/shared/spaced-revision/spaced-revision-select-expressions-modal/spaced-revision-select-expressions-modal.view.html',
+		            modal: true,
+		            listeners: {
+
+		            	onshow: function(objWindow) {
+		            	}
+
+		            }
+		        });
+
+				modal.show().then(function(modalResponse) {
+					if (modalResponse.button == 'ok') {
+						revisionRestService.updExpressions(cdItem, vm.controller.expressions).then(function() {
+							deferred.resolve(vm.controller.expressions);
+						});
+
+					} else {
+						deferred.reject();
+					}
+				});
+
+			});			
+
+
+			return deferred.promise;
+		}
+
+		vm.getExpressions = function() {
+			return vm.expressions;
+		}
+
+		vm.filterExpressionsDicionary = function(expression) {
+			return expression.t50dci;
+		}
+
+		vm.filterExpressionsPronunciation = function(expression) {
+			return expression.t51prn;
+		}
+
+		/*
+		vm.addWords = function() {
+
+			vm.controller.dictionary = $filter('filter')(vm.expressions, function(record, index, array) {
+				return record.t50dci;
+			});
+
+			vm.controller.pronunciation = $filter('filter')(vm.expressions, function(record, index, array) {
+				return record.t51prn;
+			});
+
+
+		}
+
+		/*
+		vm.getNgModelExpression = function(expression) {
+			var ngModel;
+			if (expression.t50dci) {
+				ngModel = 'd' + expression.t50dci.cdDicionario;
+			} else {
+				ngModel = 'p' + expression.t51prn.cdPronuncia;
+			}
+
+			vm.controller.selectedExpressions[ngModel] = true;
+
+			return 'ctrl.selectedExpressions.' + ngModel;
+		}
+		*/
+
+	};
+
+})();	
+(function() {
 
       'use strict';
 
@@ -1897,7 +1931,7 @@ angular.module('app').config(function($compileProvider){
             .module('app')
             .service('dictionaryModalEditService', dictionaryModalEditService);
 
-      function dictionaryModalEditService($q, $interval, uiDeniModalSrv, dictionaryRestService) {
+      function dictionaryModalEditService($q, $interval, uiDeniModalSrv, dictionaryDataService) {
             var vm = this;
             vm.controller;      
             
@@ -1942,7 +1976,7 @@ angular.module('app').config(function($compileProvider){
                         }
                   }).show().then(function(modalResponse) {
                         if (modalResponse.button == 'ok') {
-                              dictionaryRestService.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
+                              dictionaryDataService.upd(recordToEdit.cdDicionario, vm.controller.model.dsExpression, vm.controller.model.dsTags);
                               deferred.resolve(vm.controller.model);
                         }
                   });
@@ -1961,7 +1995,7 @@ angular.module('app').config(function($compileProvider){
 		.module('dictionary')
 		.service('dictionaryDefinitionViewerService', dictionaryDefinitionViewerService);
 
-	function dictionaryDefinitionViewerService(dictionaryRestService) {
+	function dictionaryDefinitionViewerService(dictionaryDataService) {
 
 		var vm = this;
 		vm.cdDicionario = null;
@@ -1987,7 +2021,7 @@ angular.module('app').config(function($compileProvider){
 			_updateDefinitionDiv('');
 			vm.cdDicionario = cdDicionario;		
 			if (cdDicionario) {
-				dictionaryRestService.definitionGet(cdDicionario).then(function(serverResponse) {
+				dictionaryDataService.definitionGet(cdDicionario).then(function(serverResponse) {
 					if (serverResponse.data.total > 0) {
 						var record = serverResponse.data.data[0];
 					    vm.controller.currentDefinition = record.txDefinicao;
@@ -2003,7 +2037,7 @@ angular.module('app').config(function($compileProvider){
 		}
 
 		vm.definitionSaveClick = function() {
-		    dictionaryRestService.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
+		    dictionaryDataService.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
 				vm.controller.editingDefinition = false;                  
 				_updateDefinitionDiv(vm.controller.currentDefinition);
 		    });
@@ -2139,27 +2173,6 @@ angular.module('app').config(function($compileProvider){
 
 	angular
 		.module('app')
-		.controller('SpacedRevisionSelectExpressionsModalController', SpacedRevisionSelectExpressionsModalController);
-
-	function SpacedRevisionSelectExpressionsModalController(spacedRevisionSelectExpressionsModalService) {
-		this.selectedExpressions = {};
-
-		spacedRevisionSelectExpressionsModalService.setController(this);
-		
-		this.expressions = spacedRevisionSelectExpressionsModalService.getExpressions();
-
-		this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModalService.filterExpressionsDicionary;
-		this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModalService.filterExpressionsPronunciation;
-
-	};
-
-})();	
-(function() {
-	
-	'use strict';
-
-	angular
-		.module('app')
 		.controller('SpacedRevisionController', SpacedRevisionController);
 
 	function SpacedRevisionController(stringService, restService, itemService, revisionService, dictionaryService, spacedRevisionModalService) {		
@@ -2212,6 +2225,27 @@ angular.module('app').config(function($compileProvider){
 			new Error('Attributes passed in a wrong way!')
 		}
 		*/
+
+	};
+
+})();	
+(function() {
+	
+	'use strict';
+
+	angular
+		.module('app')
+		.controller('SpacedRevisionSelectExpressionsModalController', SpacedRevisionSelectExpressionsModalController);
+
+	function SpacedRevisionSelectExpressionsModalController(spacedRevisionSelectExpressionsModalService) {
+		this.selectedExpressions = {};
+
+		spacedRevisionSelectExpressionsModalService.setController(this);
+		
+		this.expressions = spacedRevisionSelectExpressionsModalService.getExpressions();
+
+		this.filterExpressionsDicionary = spacedRevisionSelectExpressionsModalService.filterExpressionsDicionary;
+		this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModalService.filterExpressionsPronunciation;
 
 	};
 
@@ -2296,7 +2330,7 @@ angular.module('app').config(function($compileProvider){
 		.module('app')
 		.service('homeService', homeService);
 
-	function homeService($timeout, $rootScope, generalService, categoryService, restService, itemService, stringService, spacedRevisionModalService, uiDeniModalSrv, itemRestService, textService) {
+	function homeService($timeout, $rootScope, generalService, categoryService, restService, itemService, stringService, spacedRevisionModalService, uiDeniModalSrv, itemDataService, textService) {
 
 		var vm = this;
 		var jsTreeInstance = null;
@@ -2528,7 +2562,7 @@ angular.module('app').config(function($compileProvider){
 								wndDescriptionMorImage.show().then(function(response) {
 									if (response.button == 'ok') {								
 										var uriImage = generalService.getDataURLImagemObjeto(response.data.imageEl.get(0), 160, 140, 1);
-										itemRestService.upd(record.cdItem, controller.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
+										itemDataService.upd(record.cdItem, controller.currentCategory, response.data.description, uriImage).then(function(responseUpd) {
 											controller.gridOptions.api.reload().then(function(responseData) {
 												imgEl.attr('src', response.data.image);								
 
@@ -2623,20 +2657,29 @@ angular.module('app').config(function($compileProvider){
 
     angular
 	    .module('text')
-	    .service('textRestService', textRestService);
+	    .factory('textDataService', textDataService);
 
-	function textRestService(restService) {
-		var vm = this;
+	function textDataService(restService) {
 
-		vm.list = function(cdItem) {
+		return {
+			list: textList,
+			getContent: textGetContent,
+			setContent: textSetContent
+		}
+
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/
+
+		function textList(cdItem) {
 			return restService.requestWithPromise('text/list', {'cd_item': cdItem});
 		};
 
-		vm.getContent = function(cdTexto) {
+		function textGetContent(cdTexto) {
 			return restService.requestWithPromise('text/content/get', {'cd_texto': cdTexto});
 		};
 
-		vm.setContent = function(cdTexto, content) {
+		function textSetContent(cdTexto, content) {
 			var successfullyMessage = {
 				title: 'Texts',
 				message: 'text updated successfully!'
@@ -2644,9 +2687,8 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('text/content/set', {}, {'cd_texto': cdTexto, 'tx_conteudo': content}, successfullyMessage);
 		};
 
-
 	}
-
+		
 })();	
 (function() {
 	
@@ -2656,7 +2698,7 @@ angular.module('app').config(function($compileProvider){
 		.module('text')
 		.service('textService', textService);
 
-	function textService(textRestService, stringService, generalService) {
+	function textService(textDataService, stringService, generalService) {
 
 		var vm = this;
 		vm.topParentNodeId = 275; //t02ctg.cdCategoria from the top parent node
@@ -2678,12 +2720,23 @@ angular.module('app').config(function($compileProvider){
 
 	angular
 		.module('video')
-		.service('videoRestService', videoRestService);
+		.service('videoDataService', videoDataService);
 
-	function videoRestService(restService) {
-		var vm = this;
+	function videoDataService(restService) {
 
-		vm.add = function(cdCategoria, tpVideo, idVideo, dsItem) {
+		return {
+			add: videoAdd,
+			get: videoGet,
+			commentaries: {
+				set: videoComentariesSet
+			}
+		}	
+
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/		
+
+		function videoAdd(cdCategoria, tpVideo, idVideo, dsItem) {
 			var successfullyMessage = {
 				title: 'Videos',
 				message: 'Video added successfully!'
@@ -2691,22 +2744,17 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('video/add', {}, {'cd_categoria': cdCategoria, 'tp_video': tpVideo, 'id_video': idVideo, 'ds_item': dsItem}, successfullyMessage);
 		};
 
-		vm.get = function(cdItem) {
+		function videoGet(cdItem) {
 			return restService.requestWithPromise('video/get', {'cd_item': cdItem});
 		};
 
-		vm.commentaries = {
-
-			set: function(cdVideo, commentary) {
-				var successfullyMessage = {
-					title: 'Videos',
-					message: 'commentary updated successfully!'
-				};
-				return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cdVideo}, {'txCommentaries': commentary}, successfullyMessage);
-			}
-
+		function videoComentariesSet(cdVideo, commentary) {
+			var successfullyMessage = {
+				title: 'Videos',
+				message: 'commentary updated successfully!'
+			};
+			return restService.requestWithPromisePayLoad('video/commentary/set', {'cd_video': cdVideo}, {'txCommentaries': commentary}, successfullyMessage);
 		};
-
 
 	}
 
@@ -2719,7 +2767,7 @@ angular.module('app').config(function($compileProvider){
 		.module('video')
 		.service('videoService', videoService);
 
-	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoRestService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
+	function videoService($rootScope, $timeout, $sce, $compile, $interval, $q, videoDataService, restService, stringService, videoModalImportSubtitleLyricsService, videoModalImportSubtitleSrtService, subtitleModalService, generalService) {
 		var vm = this;
 		vm.topParentNodeId = 276; //t02ctg.cdCategoria from the top parent node
 		vm.controller = null;
@@ -2769,7 +2817,7 @@ angular.module('app').config(function($compileProvider){
 				}	
 			};		
 
-			videoRestService.get(cdItem).then(function(serverReturn) {
+			videoDataService.get(cdItem).then(function(serverReturn) {
 				var t08vdo = serverReturn.data.data[0];
 				deferred.resolve(t08vdo);
 
@@ -2875,11 +2923,11 @@ angular.module('app').config(function($compileProvider){
 		vm.configWYSIWYG = function(controller, cdItem) {
 
 			var fnExecSaveButton = function() {
-				videoRestService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
+				videoDataService.commentaries.set(controller.t08vdo.cdVideo, controller.t08vdo.txComentarios);
 			};
 
 			var fnExecCancelButton = function() {
-		    	videoRestService.get(cdItem).then(function(serverResponse) {
+		    	videoDataService.get(cdItem).then(function(serverResponse) {
 		    		controller.t08vdo = serverResponse.data.data[0];
 		    	});
 			};
@@ -2917,16 +2965,28 @@ angular.module('app').config(function($compileProvider){
 
 	angular
 		.module('video')
-		.service('subtitleRestService', subtitleRestService);
+		.service('subtitleDataService', subtitleDataService);
 
-	function subtitleRestService(restService) {
-		var vm = this;
+	function subtitleDataService(restService) {
 
-		vm.list = function(cdItem) {
+		return {
+			list: subtitleList,
+			add: subtitleAdd,
+			upd: subtitleUpd,
+			incASecond: subtitleIncASecond,
+			decASecond: subtitleDecASecond,
+			del: subtitleDel
+		}
+
+		/***************************************************
+		 IMPLEMENTATION ************************************
+		****************************************************/	
+			
+		function subtitleList(cdItem) {
 			return restService.requestWithPromise('subtitle/list', {'cd_item': cdItem});
 		};
 
-		vm.add = function(cdVideo, nrStart, nrEnd, dsTexto) {
+		function subtitleAdd(cdVideo, nrStart, nrEnd, dsTexto) {
 			var successfullyMessage = {
 				title: 'Inserting',
 				message: 'Subtitle added successfully!'
@@ -2934,7 +2994,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cdVideo, 'nr_start': nrStart, 'nr_end': nrEnd, 'ds_texto': dsTexto}, successfullyMessage);		
 		};
 
-		vm.upd = function(cdItemSubtitle, nrStart, nrEnd, dsTexto) {
+		function subtitleUpd(cdItemSubtitle, nrStart, nrEnd, dsTexto) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
@@ -2942,7 +3002,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cdItemSubtitle, 'nr_start': nrStart, 'nr_end': nrEnd, 'ds_texto': dsTexto}, successfullyMessage);		
 		};
 
-		vm.incASecond = function(cdItemSubtitle) {
+		function subtitleIncASecond(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
@@ -2950,7 +3010,7 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage);		
 		};
 
-		vm.decASecond = function(cdItemSubtitle) {
+		function subtitleDecASecond(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Updating',
 				message: 'Subtitle updated successfully!'
@@ -2958,14 +3018,13 @@ angular.module('app').config(function($compileProvider){
 			return restService.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage);		
 		};
 
-		vm.del = function(cdItemSubtitle) {
+		function subtitleDel(cdItemSubtitle) {
 			var successfullyMessage = {
 				title: 'Deleting',
 				message: 'Subtitle deleted successfully!'
 			};
 			return restService.requestWithPromise('subtitle/del', {'cd_item_subtitle': cdItemSubtitle}, successfullyMessage, 'Confirm deleting?');
 		};
-
 
 	}
 
@@ -3122,7 +3181,7 @@ angular.module('app').config(function($compileProvider){
 		.module('video')
 		.service('subtitleModalService', subtitleModalService);
 
-	function subtitleModalService($q, uiDeniModalSrv, stringService, subtitleRestService) {
+	function subtitleModalService($q, uiDeniModalSrv, stringService, subtitleDataService) {
 		var vm = this;
 
 		var EnumOperation = {
@@ -3177,11 +3236,11 @@ angular.module('app').config(function($compileProvider){
 
 					console.log(controller.subtitleModalData);
 					if (operation === EnumOperation.EDITING) { //Editing
-						subtitleRestService.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
+						subtitleDataService.upd(record.cdItemSubtitle, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
 							deferred.resolve(responseServer.data[0]);
 						});
 					} else { //Adding
-						subtitleRestService.add(controller.t08vdo.cdVideo, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
+						subtitleDataService.add(controller.t08vdo.cdVideo, controller.subtitleModalData.start, controller.subtitleModalData.end, controller.subtitleModalData.text).then(function(responseServer) {
 							deferred.resolve(responseServer.data[0]);
 						});
 					}
@@ -3265,8 +3324,8 @@ angular.module('app').config(function($compileProvider){
         .controller('textController', textController);
 
     function textController($scope, $rootScope, $routeParams, dictionaryService, dictionaryModalService, pronunciationService, 
-        pronunciationModalService, textRestService, textService, generalService, stringService, 
-        uiDeniModalSrv, spacedRevisionModalService, itemRestService) {
+        pronunciationModalService, textDataService, textService, generalService, stringService, 
+        uiDeniModalSrv, spacedRevisionModalService, itemDataService) {
          
         var vm = this;
 
@@ -3280,12 +3339,12 @@ angular.module('app').config(function($compileProvider){
         vm.t05itm = null;
         vm.t07txt = null;
 
-        itemRestService.get(vm.params.cdItem).then(function(serverResponse) {
+        itemDataService.get(vm.params.cdItem).then(function(serverResponse) {
             vm.t05itm = serverResponse.data.data[0];
             $rootScope.subTitle = vm.t05itm.dsItem;
         });
 
-        textRestService.list(vm.params.cdItem).then(function(serverResponse) {
+        textDataService.list(vm.params.cdItem).then(function(serverResponse) {
         	vm.texts = serverResponse.data.data;
             vm.selectedIndex = 0;     	
         });
@@ -3308,7 +3367,7 @@ angular.module('app').config(function($compileProvider){
                     $rootScope.loading = true;
         	    	vm.t07txt = vm.texts[current];
 
-        			textRestService.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
+        			textDataService.getContent(vm.t07txt.cdTexto).then(function(serverResponse) {
         				generalService.getAllExpressions().then(function(response) {
                             textService.setContent(vm, $scope, serverResponse.data.data[0].txConteudo);
                             $rootScope.loading = false;
@@ -3324,7 +3383,7 @@ angular.module('app').config(function($compileProvider){
         };
 
         vm.saveClick = function() {
-            textRestService.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
+            textDataService.setContent(vm.t07txt.cdTexto, vm.content).then(function(serverResponse) {           
                 textService.setContent(vm, $scope, serverResponse.data[0].txConteudo);
                 vm.editing = false;             
             });
@@ -3366,8 +3425,8 @@ angular.module('app').config(function($compileProvider){
 		.controller('videoController', videoController);
 
 	function videoController(
-		$scope, $rootScope, $routeParams, generalService, itemRestService, videoService, subtitleModalService, 
-		subtitleRestService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, 
+		$scope, $rootScope, $routeParams, generalService, itemDataService, videoService, subtitleModalService, 
+		subtitleDataService, uiDeniModalSrv, pronunciationService, pronunciationModalService, dictionaryService, 
 		dictionaryModalService, spacedRevisionModalService) {
 
 		var vm = this;
@@ -3382,7 +3441,7 @@ angular.module('app').config(function($compileProvider){
 		vm.commentaries = '';
 		vm.initialCommentaries = '';
 
-		itemRestService.get($scope.params.cdItem).then(function(serverResponse) {
+		itemDataService.get($scope.params.cdItem).then(function(serverResponse) {
 			vm.t05itm = serverResponse.data.data[0];
 			$rootScope.subTitle = vm.t05itm.dsItem;
 		});
@@ -3432,7 +3491,7 @@ angular.module('app').config(function($compileProvider){
 
 		vm.delSubtitleButtonClick = function() {
 			var record = vm.gridSubtitlesOptions.api.getSelectedRow();
-			subtitleRestService.del(record.cdItemSubtitle).then(function() {
+			subtitleDataService.del(record.cdItemSubtitle).then(function() {
 				vm.gridSubtitlesOptions.api.reload();
 			});
 		};
@@ -3446,9 +3505,9 @@ angular.module('app').config(function($compileProvider){
 
 			var fn;
 			if (increment > 0) {
-				fn = subtitleRestService.incASecond;
+				fn = subtitleDataService.incASecond;
 			} else {
-				fn = subtitleRestService.decASecond;
+				fn = subtitleDataService.decASecond;
 			}
 
 			fn(cdItemSubtitle, record.nrStart, record.nrEnd, record.dsTexto).then(function(serverResponse) {

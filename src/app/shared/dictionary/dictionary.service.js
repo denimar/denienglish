@@ -6,34 +6,34 @@
 		.module('dictionary')
 		.service('dictionaryService', dictionaryService);
 
-	function dictionaryService($q, dictionaryRestService, dictionaryModalService, uiDeniModalSrv, pronunciationService) {
+	function dictionaryService($q, dictionaryDataService, dictionaryModalService, uiDeniModalSrv, pronunciationService) {
 		var vm = this;
 
 		vm.list = function() {
-			return dictionaryRestService.list();
+			return dictionaryDataService.list();
 		};
 
 		vm.add = function(ds_expressao, ds_tags) {
-			return dictionaryRestService.add(ds_expressao, ds_tags);
+			return dictionaryDataService.add(ds_expressao, ds_tags);
 		}
 
 		vm.del = function(cd_dicionario) {
-			return dictionaryRestService.del(cd_dicionario);
+			return dictionaryDataService.del(cd_dicionario);
 		};
 
 
 		vm.learnedToogle = function(cd_dicionario) {
-			return dictionaryRestService.learnedToogle(cd_dicionario);
+			return dictionaryDataService.learnedToogle(cd_dicionario);
 		};
 
 		vm.definitionSet = function(cd_dicionario, definition) {
-			return dictionaryRestService.definitionSet(cd_dicionario, definition);
+			return dictionaryDataService.definitionSet(cd_dicionario, definition);
 		};
 
 		vm.definitionGet = function(cd_dicionario) {
 			var deferred = $q.defer();
 
-			dictionaryRestService.definitionGet(cd_dicionario).then(function(serverResponse) {
+			dictionaryDataService.definitionGet(cd_dicionario).then(function(serverResponse) {
 				deferred.resolve(serverResponse.data.data[0].txDefinicao);			
 			});
 
