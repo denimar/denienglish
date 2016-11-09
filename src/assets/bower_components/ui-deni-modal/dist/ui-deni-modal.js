@@ -335,7 +335,11 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			//HEADER
 			////////////////////////////////////////////////////			
 			var divHeader = $(document.createElement('div'));
+<<<<<<< HEAD
 			divHeader.addClass('modal-header');			
+=======
+			divHeader.addClass('deni-modal-header');			
+>>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 			divHeader.html(config.title);
 			$objWindow.append(divHeader);
 			divHeader.mousedown(function() {
@@ -389,7 +393,11 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			////////////////////////////////////////////////////			
 			var divContent = document.createElement('div');
 			var $divContent = $(divContent);
+<<<<<<< HEAD
 			$divContent.addClass('modal-content');
+=======
+			$divContent.addClass('deni-modal-content');
+>>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 			
 
 			if (config.htmlTemplate) {
@@ -757,6 +765,14 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 						//Seta o evento change para o file input
 						var $fileInput = $objWindowShowed.find('input[type=file]');
 						var $img = $objWindowShowed.find('img');						
+<<<<<<< HEAD
+=======
+/*
+						if (config.imgEl) {
+							var image = _getDataURLImagemObjeto(config.imgEl.get(0), 150, 150, 0.5);
+							$img.attr('src', image);
+*/
+>>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 						if (config.imgSrc) {
 							$img.attr('src', config.imgSrc);
 						}	
@@ -793,7 +809,11 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			var objWindow = me.createWindow(config);
 
 			objWindow.getData = function() {
+<<<<<<< HEAD
 				var form = $($(objWindow).find('.modal-content').find('form'));
+=======
+				var form = $($(objWindow).find('.deni-modal-content').find('form'));
+>>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 				var descriptionEl = form.find('input[type=text]');
 				var description = descriptionEl.val();
 				var imageEl = form.find('img');

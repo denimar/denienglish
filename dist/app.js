@@ -223,8 +223,13 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 	        uiDeniModalSrv.createWindow({
 	            scope: scope,
 	            title: 'Dictionary - ' + dsExpressao,
+<<<<<<< HEAD
 	            width: '750px',         
 	            height: '400px',
+=======
+	            width: '800px',         
+	            height: '500px',
+>>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 	            position: uiDeniModalSrv.POSITION.CENTER,
 	            buttons: [uiDeniModalSrv.BUTTON.OK],
 	            htmlTemplate: '<dictionary-definition-view cd-dicionario="' + cdDicionario + '"></dictionary-definition-view>',
