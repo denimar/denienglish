@@ -14,7 +14,7 @@ angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
 		  rowHeight: 180, //default=150
 	  },
     listeners: {
-      onselectionchange: function(record) {
+      onselectionchange: function(controller, element, rowIndex, record) {
         console.clear();
         console.log(JSON.stringify(record, false, '    '));
       }

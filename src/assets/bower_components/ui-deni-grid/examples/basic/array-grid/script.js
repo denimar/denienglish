@@ -2,7 +2,7 @@
 angular.module('myApp', ['ui-deni-grid']);
 
 //Controller
-angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
+angular.module('myApp').controller('ExampleCtrl', function($scope) {
 
     $scope.gridOptions = {
         columns: [

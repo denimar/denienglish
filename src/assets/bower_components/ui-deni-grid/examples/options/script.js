@@ -58,6 +58,10 @@ angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
     }
     */
 
+    $scope.toogleEnabled = function() {
+        $scope.gridOptions.api.setEnabled(!$scope.gridOptions.api.getEnabled());        
+    }
+
     $scope.selectThirdRow = function() {
         $scope.gridOptions.api.selectRow(452, false, true);
     }

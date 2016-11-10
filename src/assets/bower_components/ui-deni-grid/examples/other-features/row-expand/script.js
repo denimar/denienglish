@@ -12,7 +12,7 @@ angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
                          '<div>';
 
     $scope.gridOptions = {
-        url: 'https://denimar.github.io/ui-deni-grid/examples/data/movies/00500.json',
+        url: 'https://denimar.github.io/static-data/movies/00500.json',
         rowDetails: {
             height: '72px', //50 is default
             template: customTemplate,

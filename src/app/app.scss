@@ -80,24 +80,6 @@ header {
 
 	}
 	*/
-<<<<<<< HEAD
-}
-
-.progress-bar-loading {
-	height: 3px;
-	width: 100%;
-
-	md-progress-linear .md-container {
-	    background-color: white;
-		height: 3px;
-
-		.md-bar {
-		    background-color: chartreuse;
-		}			
-	}
-}
-
-=======
 
 	.progress-bar-loading {
 		height: 3px;
@@ -114,7 +96,6 @@ header {
 	}
 
 }
->>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 
 .material-icons {
 	color: #a6a6a6;
@@ -152,15 +133,13 @@ footer {
 	
 }
 
-<<<<<<< HEAD
-=======
 
+/*
 .modal-backdrop {  
-  z-index: -1 !important; /*It's necessary to works the modal inside summernote */
+  z-index: -1 !important; //It's necessary to works the modal inside summernote 
 }
+*/
 
-
->>>>>>> a985514cc488ae583b95bae21dcf6bf299357bd5
 md-input-container {
 	padding: 0px;
 	margin: 0px;
@@ -188,3 +167,8 @@ label {
     border-bottom-style: dashed;
     border-bottom-width: 1px;	
 }
+
+/* without the configuration below is imposssible to enable image button in summernote */
+.modal-backdrop {
+	z-index: 950 !important;
+}	

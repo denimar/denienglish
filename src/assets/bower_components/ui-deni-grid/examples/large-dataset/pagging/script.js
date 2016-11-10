@@ -5,7 +5,7 @@ angular.module('myApp', ['ui-deni-grid']);
 angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
 
   $scope.gridOptions = {
-    url: 'http://server-denimar.rhcloud.com/examples/data?type=employees',
+    url: 'http://fakedata-denimarm.rhcloud.com/data?type=employees',
     paging: true,
     columns: [{
       header: 'Name',

@@ -77,7 +77,7 @@ angular.module('myApp').controller('MainCtrl', function($scope) {
 			children: [
 				{
 					text: 'Traditional Way',
-					path: '????',
+					path: null,
 					description: '?????'
 				},
 				{
@@ -94,12 +94,12 @@ angular.module('myApp').controller('MainCtrl', function($scope) {
 				},
 				{
 					text: 'Infinite Scroll',
-					path: '????',
+					path: null,
 					description: '?????'
 				},
 				{
 					text: 'Endless Paging',
-					path: 'tnn61pkm',
+					path: null,
 					description: '?????'
 				},
 			],
@@ -304,38 +304,12 @@ angular.module('myApp').controller('MainCtrl', function($scope) {
 	}
 
 	$scope.itemClick = function(item) {
-		//window.open('http://jsfiddle.net/denimar/' + item.path + '/embedded/result,html,js,css,resources/', '_blank');
-		window.open('preview.html?path=' + item.path + '&title=' + item.text + '&description=' + item.description, '_blank');
-		/*
-		//deniModalSrv.ghost('Title test', "Messages Here!");
-
-		var path = item.path || '';
-		if (path != '') {
-			if (path.length == 8) { //jsfiddle
-				path = '//jsfiddle.net/' + path + '/embedded/result,html,js,css,resources/';
-			}
+		if (item.path == null) {
+			alert('Feature Under Construction');
+			return;
 		}
-		
-		var htmlTemplate = '<div class="modal-exemple">\n' +
-		                   '    <div class="modal-exemple-title"	>\n' +
-		                   '        ' + item.description + '\n' +
-		                   '    </div>\n' +		                   
-		                   '    <iframe class="modal-exemple-iframe" src="' + path + '" allowfullscreen="allowfullscreen" frameborder="0"></iframe>\n' +
-						   '    <a href="http://jsfiddle.net/denimar/' + item.path + '/embedded/result,html,js,css,resources/" target="_blank">view in a new window</a>\n' +
-		                   '</div>';
 
-	 	var config = {
-			width: '950px',
-			height: '700px',
-			position: deniModalSrv.POSITION.CENTER,
-			modal: true,
-			htmlTemplate: htmlTemplate,
-			title: item.text
-		};
-
-		var objWindow = deniModalSrv.createWindow(config);		
-		objWindow.show();
-		*/
+		window.open('preview.html?path=' + item.path + '&title=' + item.text + '&description=' + item.description, '_blank');
 	}
 
 

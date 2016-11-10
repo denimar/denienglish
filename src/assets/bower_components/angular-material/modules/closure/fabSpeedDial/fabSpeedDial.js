@@ -2,13 +2,14 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.1.0-rc.5-master-9082e4a
+ * v1.1.1-master-a636476
  */
 goog.provide('ngmaterial.components.fabShared');
 goog.require('ngmaterial.core');
 (function() {
   'use strict';
 
+  MdFabController['$inject'] = ["$scope", "$element", "$animate", "$mdUtil", "$mdConstant", "$timeout"];
   angular.module('material.components.fabShared', ['material.core'])
     .controller('MdFabController', MdFabController);
 
@@ -301,7 +302,6 @@ goog.require('ngmaterial.core');
       return $element.find('md-fab-actions');
     }
   }
-  MdFabController.$inject = ["$scope", "$element", "$animate", "$mdUtil", "$mdConstant", "$timeout"];
 })();
 
 (function() {
@@ -312,6 +312,8 @@ goog.require('ngmaterial.core');
    *
    * @type {number}
    */
+  MdFabSpeedDialFlingAnimation['$inject'] = ["$timeout"];
+  MdFabSpeedDialScaleAnimation['$inject'] = ["$timeout"];
   var cssAnimationDuration = 300;
 
   /**
@@ -382,16 +384,16 @@ goog.require('ngmaterial.core');
    * <hljs lang="html">
    * <md-fab-speed-dial md-direction="up" class="md-fling">
    *   <md-fab-trigger>
-   *     <md-button aria-label="Add..."><md-icon icon="/img/icons/plus.svg"></md-icon></md-button>
+   *     <md-button aria-label="Add..."><md-icon md-svg-src="/img/icons/plus.svg"></md-icon></md-button>
    *   </md-fab-trigger>
    *
    *   <md-fab-actions>
    *     <md-button aria-label="Add User">
-   *       <md-icon icon="/img/icons/user.svg"></md-icon>
+   *       <md-icon md-svg-src="/img/icons/user.svg"></md-icon>
    *     </md-button>
    *
    *     <md-button aria-label="Add Group">
-   *       <md-icon icon="/img/icons/group.svg"></md-icon>
+   *       <md-icon md-svg-src="/img/icons/group.svg"></md-icon>
    *     </md-button>
    *   </md-fab-actions>
    * </md-fab-speed-dial>
@@ -511,9 +513,8 @@ goog.require('ngmaterial.core');
         runAnimation(element);
         delayDone(done);
       }
-    }
+    };
   }
-  MdFabSpeedDialFlingAnimation.$inject = ["$timeout"];
 
   function MdFabSpeedDialScaleAnimation($timeout) {
     function delayDone(done) { $timeout(done, cssAnimationDuration, false); }
@@ -555,9 +556,8 @@ goog.require('ngmaterial.core');
         runAnimation(element);
         delayDone(done);
       }
-    }
+    };
   }
-  MdFabSpeedDialScaleAnimation.$inject = ["$timeout"];
 })();
 
 ngmaterial.components.fabShared = angular.module("material.components.fabShared");
