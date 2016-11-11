@@ -31,7 +31,8 @@ gulp.task('scripts', function() {
     
   *****************************************************************************/ 
   gulp.src('')
-
+	.pipe(addsrc.append('src/app/app.mock.js')) //mocks for all tests in the application	
+	
   	//MODULES AT FIRST
 	//.pipe(addsrc.append('src/app/shared/**/*mdl.js'))  
 	.pipe(addsrc.append('src/app/shared/**/*.module.js'))  	
@@ -46,6 +47,7 @@ gulp.task('scripts', function() {
 	//.pipe(addsrc.append('src/app/shared/**/*val.js'))  		
 	//.pipe(addsrc.append('src/app/shared/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*.service.js'))	
+	.pipe(addsrc.append('src/app/shared/**/*.mock.js'))		
 	//.pipe(addsrc.append('src/app/shared/**/*ctrl.js'))  		
 	.pipe(addsrc.append('src/app/shared/**/*.controller.js')) 	
 	//.pipe(addsrc.append('src/app/shared/**/*drv.js'))
@@ -58,6 +60,7 @@ gulp.task('scripts', function() {
 	//.pipe(addsrc.append('src/app/components/**/*val.js'))  		
 	//.pipe(addsrc.append('src/app/components/**/*srv.js'))  		
 	.pipe(addsrc.append('src/app/components/**/*.service.js'))  			
+	.pipe(addsrc.append('src/app/components/**/*.mock.js'))  				
 	//.pipe(addsrc.append('src/app/components/**/*ctrl.js'))  	
 	.pipe(addsrc.append('src/app/components/**/*.controller.js')) 	
 	//.pipe(addsrc.append('src/app/components/**/*drv.js'))  		

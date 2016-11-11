@@ -19,12 +19,7 @@
 				position: uiDeniModalSrv.POSITION.CENTER,
 				buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
 				urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.view.html',
-				modal: true,
-				listeners: {
-					onshow: function(objWindow) {
-						scope.newVideoItemModal.kindOfVideo = 0;
-					}
-				}
+				modal: true
 			});
 
 			modal.show().then(function(modalResponse) {

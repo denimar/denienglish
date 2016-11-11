@@ -1,3 +1,69 @@
+(function() {
+	'use strict';
+
+	angular
+		.module('mock', [])
+		.factory('appMock', appMock);
+
+	function appMock(uiDeniModalSrv)	{
+
+		return {
+			uiDeniModalSrv: {
+				createWindow: mockUiDeniModalSrvCreateWindow, 
+				prompt: mockUiDeniModalSrvPrompt,
+				createWindowDescriptionMoreImage: mockUiDeniModalSrvCreateWindowDescriptionMoreImage 	
+			}
+		}
+
+		////
+
+		function mockUiDeniModalSrvCreateWindow() {
+			spyOn(uiDeniModalSrv, 'createWindow').and.returnValue({
+				show: function() {
+					return {
+						then: function(callbackFn){
+							callbackFn({
+								'button': 'ok'
+							});
+						}
+					}	
+				}	
+			});
+		}
+
+		function mockUiDeniModalSrvPrompt(textReturn) {
+			spyOn(uiDeniModalSrv, 'prompt').and.returnValue({
+				then: function(callbackFn){
+					callbackFn(textReturn);
+				}
+			});		
+		}
+
+		function mockUiDeniModalSrvCreateWindowDescriptionMoreImage() {
+			spyOn(uiDeniModalSrv, 'createWindowDescriptionMoreImage').and.returnValue({
+				show: function() {
+					return {
+						then: function(callbackFn){
+							callbackFn({
+								'button': 'ok',
+								'data': {
+									'imageEl': {
+										get: function(fakeNr) {
+											return 0;
+										}
+									}
+								}
+							});
+						}
+					}	
+				}	
+			});
+		}
+
+	}
+
+})();	
+
 'use strict';
 
 angular
@@ -23,6 +89,11 @@ angular
 })();
 
 
+'use strict'
+
+angular
+	.module('pronunciation', [
+	]);
 'use strict';
 
 angular
@@ -35,11 +106,6 @@ angular
 		'dictionary',
 		'routines', 
 		'uiDeniModalMdl'		
-	]);
-'use strict'
-
-angular
-	.module('pronunciation', [
 	]);
 'use strict';
 
@@ -392,6 +458,119 @@ angular.module('app').config(function($compileProvider){
 
 })();
 (function() {
+
+	'use strict'
+
+	angular
+		.module('pronunciation')
+		.service('pronunciationRestService', pronunciationRestService);
+
+	function pronunciationRestService($q, restService) {
+
+		var vm = this;
+		vm.loadedExpressions = [];		
+
+		vm.list = function() {
+			var deferred = $q.defer();
+
+			restService.requestWithPromise('pronunciation/list').then(function(pronunciationResponse) {
+				vm.loadedExpressions = pronunciationResponse.data.data;
+				deferred.resolve(vm.loadedExpressions);
+			});
+
+			return deferred.promise;
+		}
+
+		vm.add = function(ds_expressao) {
+			var successfullyMessage = {
+				title: 'Inserting',
+				message: 'Expression added successfully!'
+			}
+			return restService.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
+		}
+
+		vm.del = function(cd_pronuncia) {
+			var successfullyMessage = {
+				title: 'Deleting',
+				message: 'Expression deleted successfully!'
+			}
+			return restService.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
+		}
+
+
+		vm.learnedToogle = function(cd_pronuncia) {
+			var successfullyMessage = {
+				title: 'Updating',
+				message: 'Expression updated successfully!'
+			}
+			return restService.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
+		}
+
+	};
+
+})();	
+(function() {
+
+	'use strict'
+
+	angular
+		.module('pronunciation')
+		.service('pronunciationService', pronunciationService);
+
+	function pronunciationService($q, $window) {
+		var vm = this;
+
+		this.listenExpression = function(expression) {
+			var deferred = $q.defer();
+
+			try {
+				if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
+					//var altenativeSite = 'http://emmasaying.com/?s=';
+					var altenativeSite = 'http://www.wordreference.com/enpt/'
+					$window.open(altenativeSite + expression);
+				} else {
+					var timer = setInterval(function() {
+					    var voices = speechSynthesis.getVoices();
+					    if (voices.length !== 0) {
+					    	clearInterval(timer);
+
+							var sentence = new SpeechSynthesisUtterance();
+							sentence.text = expression;
+							sentence.lang = 'en-US';
+
+						    for(var i = 0; i < voices.length; i++) {
+								if(voices[i].lang == sentence.lang ){
+									sentence.voice = voices[i];
+									break;
+								}
+							}				
+
+							sentence.rate = 0.8;
+							
+							sentence.onstart = function(event) { 
+							}
+							sentence.onend = function(event) { 
+								deferred.resolve();
+							}
+							
+							speechSynthesis.speak(sentence);
+						}
+							
+					}, 200);
+						
+				}	
+			} catch(e) {
+				deferred.reject(e);
+			}
+
+			return deferred.promise;
+		}
+
+
+	};
+
+})();	
+(function() {
 	'use strict';
 	
 	angular
@@ -630,119 +809,6 @@ angular.module('app').config(function($compileProvider){
 	};
 
 })();
-(function() {
-
-	'use strict'
-
-	angular
-		.module('pronunciation')
-		.service('pronunciationRestService', pronunciationRestService);
-
-	function pronunciationRestService($q, restService) {
-
-		var vm = this;
-		vm.loadedExpressions = [];		
-
-		vm.list = function() {
-			var deferred = $q.defer();
-
-			restService.requestWithPromise('pronunciation/list').then(function(pronunciationResponse) {
-				vm.loadedExpressions = pronunciationResponse.data.data;
-				deferred.resolve(vm.loadedExpressions);
-			});
-
-			return deferred.promise;
-		}
-
-		vm.add = function(ds_expressao) {
-			var successfullyMessage = {
-				title: 'Inserting',
-				message: 'Expression added successfully!'
-			}
-			return restService.requestWithPromise('pronunciation/add', {'ds_expressao': ds_expressao}, successfullyMessage);		
-		}
-
-		vm.del = function(cd_pronuncia) {
-			var successfullyMessage = {
-				title: 'Deleting',
-				message: 'Expression deleted successfully!'
-			}
-			return restService.requestWithPromise('pronunciation/del', {'cd_pronuncia': cd_pronuncia}, successfullyMessage, 'Confirm deleting?');
-		}
-
-
-		vm.learnedToogle = function(cd_pronuncia) {
-			var successfullyMessage = {
-				title: 'Updating',
-				message: 'Expression updated successfully!'
-			}
-			return restService.requestWithPromise('pronunciation/learned/toogle', {'cd_pronuncia': cd_pronuncia}, successfullyMessage);		
-		}
-
-	};
-
-})();	
-(function() {
-
-	'use strict'
-
-	angular
-		.module('pronunciation')
-		.service('pronunciationService', pronunciationService);
-
-	function pronunciationService($q, $window) {
-		var vm = this;
-
-		this.listenExpression = function(expression) {
-			var deferred = $q.defer();
-
-			try {
-				if (event.ctrlKey && event.shiftKey) { //CTRL+SHIFT --> abre o site http://emmasaying.com para ver se eles possuem a pronúncia da expressão
-					//var altenativeSite = 'http://emmasaying.com/?s=';
-					var altenativeSite = 'http://www.wordreference.com/enpt/'
-					$window.open(altenativeSite + expression);
-				} else {
-					var timer = setInterval(function() {
-					    var voices = speechSynthesis.getVoices();
-					    if (voices.length !== 0) {
-					    	clearInterval(timer);
-
-							var sentence = new SpeechSynthesisUtterance();
-							sentence.text = expression;
-							sentence.lang = 'en-US';
-
-						    for(var i = 0; i < voices.length; i++) {
-								if(voices[i].lang == sentence.lang ){
-									sentence.voice = voices[i];
-									break;
-								}
-							}				
-
-							sentence.rate = 0.8;
-							
-							sentence.onstart = function(event) { 
-							}
-							sentence.onend = function(event) { 
-								deferred.resolve();
-							}
-							
-							speechSynthesis.speak(sentence);
-						}
-							
-					}, 200);
-						
-				}	
-			} catch(e) {
-				deferred.reject(e);
-			}
-
-			return deferred.promise;
-		}
-
-
-	};
-
-})();	
 (function() {
 	
 	'use strict';
@@ -1486,51 +1552,6 @@ angular.module('app').config(function($compileProvider){
 
 })();	
 (function() {
-	'use strict';
-	
-	angular
-		.module('item')
-		.service('newVideoItemModalService', newVideoItemModalService);
-
-	function newVideoItemModalService($q, uiDeniModalSrv) {
-		var vm = this;
-
-		vm.showModal = function(scope) {
-		 	var deferred = $q.defer();
-
-			var modal = uiDeniModalSrv.createWindow({
-				scope: scope,
-				title: 'Creating a new video',
-				width: '550px',			
-				height: '300px',
-				position: uiDeniModalSrv.POSITION.CENTER,
-				buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
-				urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.view.html',
-				modal: true,
-				listeners: {
-					onshow: function(objWindow) {
-						scope.newVideoItemModal.kindOfVideo = 0;
-					}
-				}
-			});
-
-			modal.show().then(function(modalResponse) {
-				if (modalResponse.button == 'ok') {
-					deferred.resolve(scope.newVideoItemModal);
-
-				} else {
-					deferred.reject();
-				}
-			});		
-
-
-			return deferred.promise;
-		}
-
-	};
-
-})();	
-(function() {
 
       'use strict'
 
@@ -1702,6 +1723,46 @@ angular.module('app').config(function($compileProvider){
       };
 
 })();
+(function() {
+	'use strict';
+	
+	angular
+		.module('item')
+		.service('newVideoItemModalService', newVideoItemModalService);
+
+	function newVideoItemModalService($q, uiDeniModalSrv) {
+		var vm = this;
+
+		vm.showModal = function(scope) {
+		 	var deferred = $q.defer();
+
+			var modal = uiDeniModalSrv.createWindow({
+				scope: scope,
+				title: 'Creating a new video',
+				width: '550px',			
+				height: '300px',
+				position: uiDeniModalSrv.POSITION.CENTER,
+				buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
+				urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.view.html',
+				modal: true
+			});
+
+			modal.show().then(function(modalResponse) {
+				if (modalResponse.button == 'ok') {
+					deferred.resolve(scope.newVideoItemModal);
+
+				} else {
+					deferred.reject();
+				}
+			});		
+
+
+			return deferred.promise;
+		}
+
+	};
+
+})();	
 (function() {
 	
 	'use strict';
@@ -2053,6 +2114,78 @@ angular.module('app').config(function($compileProvider){
 
 })();		
 (function() {
+	'use strict';
+
+	angular
+		.module('category')
+		.factory('categoryMock', categoryMock);
+
+	function categoryMock(restService)	{
+
+		var fakeCategory = {cdCategoria: 1, dsCategoria: '_Catecory-Testing'};
+		var fakeCallback = {
+			data: {
+				data: [fakeCategory]
+			}		
+		};	
+		var fakeThenCallback = {
+			then: function(callbackFn) {
+				callbackFn(fakeCallback);
+			}
+		};
+
+
+		return {
+			fakeCategory: fakeCategory,
+			fakeCallback: fakeCallback,
+			fakeThenCallback: fakeThenCallback,
+			mock: mock
+		}
+
+		function mock() {
+			spyOn(restService, 'requestWithPromise').and.returnValue(fakeThenCallback);		
+		}
+	}
+
+})();	
+
+(function() {
+	'use strict';
+
+	angular
+		.module('item')
+		.factory('itemMock', itemMock);
+
+	function itemMock(restService)	{
+
+		var fakeItem = {cdItem: 1, dsItem: '_Item-Testing', blFavorite: true, blFazerRevisao: true};
+		var fakeCallback = {
+			data: {
+				data: [fakeItem]
+			}		
+		};
+		var fakeThenCallback = {
+			then: function(callbackFn) {
+				callbackFn(fakeCallback);
+			}
+		};
+
+		return {
+			fakeItem: fakeItem,
+			fakeCallback: fakeCallback,
+			fakeThenCallback: fakeThenCallback,
+			mock: mock
+		}
+
+		function mock() {
+			spyOn(restService, 'requestWithPromise').and.returnValue(fakeThenCallback);		
+			spyOn(restService, 'requestWithPromisePayLoad').and.returnValue(fakeThenCallback);				
+		}
+	}
+
+})();	
+
+(function() {
 
 	'use strict';
 
@@ -2083,18 +2216,6 @@ angular.module('app').config(function($compileProvider){
 
 })();
 (function() {
-	'use strict';
-
-	angular
-		.module('item')
-		.controller('newVideoItemModalController', newVideoItemModalController);
-
-	function newVideoItemModalController($sce) {
-		var vm = this;
-	};
-
-})();	
-(function() {
 
 	'use strict'
 
@@ -2124,6 +2245,18 @@ angular.module('app').config(function($compileProvider){
 	};
 
 })();
+(function() {
+	'use strict';
+
+	angular
+		.module('item')
+		.controller('newVideoItemModalController', newVideoItemModalController);
+
+	function newVideoItemModalController($sce) {
+		var vm = this;
+	};
+
+})();	
 (function() {
 	
 	'use strict';
@@ -2917,6 +3050,70 @@ angular.module('app').config(function($compileProvider){
 
 })();
 (function() {
+
+  'use strict';
+
+  angular
+    .module('video')
+    .service('videoModalImportSubtitleLyricsService', videoModalImportSubtitleLyricsService);
+
+  function videoModalImportSubtitleLyricsService($rootScope, $q, restService, uiDeniModalSrv) {
+
+  	var vm = this;
+    vm.cdItem = null;
+  	vm.controller = null;
+
+  	vm.setController = function(controller, scope) {
+  		vm.controller = controller;
+      vm.controller.cdItem = vm.cdItem;
+  	};
+
+  	vm.showModal = function(cdItem) {
+        vm.cdItem = cdItem;
+        var deferred = $q.defer();
+
+        var wndImportSubtitle = uiDeniModalSrv.createWindow({
+              scope: $rootScope,
+              title: 'Importing Subtitle from a text (often lyrics of musics)',
+              width: '550px',         
+              height: '500px',
+              position: uiDeniModalSrv.POSITION.CENTER,
+              buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
+              urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.view.html',
+              modal: true,
+              listeners: {
+
+              	onshow: function(objWindow) {
+              	}
+
+              }
+        });
+
+        wndImportSubtitle.show().then(function(modalResponse) {
+
+          if (modalResponse.button === 'ok') {
+            var successfullyMessage = {
+              title: 'Updating',
+              message: 'Item updated successfully!'
+            };
+
+            var textArea = $(wndImportSubtitle).find('textarea');
+            var lyrics = textArea.val();
+
+            restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
+              deferred.resolve(serverReturn.data);
+            });   
+          }
+
+        });
+
+        return deferred.promise;
+  	};
+
+  }
+
+})();  
+(function() {
 	
 	'use strict';
 
@@ -2987,70 +3184,6 @@ angular.module('app').config(function($compileProvider){
 
 })();
 
-(function() {
-
-  'use strict';
-
-  angular
-    .module('video')
-    .service('videoModalImportSubtitleLyricsService', videoModalImportSubtitleLyricsService);
-
-  function videoModalImportSubtitleLyricsService($rootScope, $q, restService, uiDeniModalSrv) {
-
-  	var vm = this;
-    vm.cdItem = null;
-  	vm.controller = null;
-
-  	vm.setController = function(controller, scope) {
-  		vm.controller = controller;
-      vm.controller.cdItem = vm.cdItem;
-  	};
-
-  	vm.showModal = function(cdItem) {
-        vm.cdItem = cdItem;
-        var deferred = $q.defer();
-
-        var wndImportSubtitle = uiDeniModalSrv.createWindow({
-              scope: $rootScope,
-              title: 'Importing Subtitle from a text (often lyrics of musics)',
-              width: '550px',         
-              height: '500px',
-              position: uiDeniModalSrv.POSITION.CENTER,
-              buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],
-              urlTemplate: 'src/app/components/video/video-modal-import-subtitle-lyrics/video-modal-import-subtitle-lyrics.view.html',
-              modal: true,
-              listeners: {
-
-              	onshow: function(objWindow) {
-              	}
-
-              }
-        });
-
-        wndImportSubtitle.show().then(function(modalResponse) {
-
-          if (modalResponse.button === 'ok') {
-            var successfullyMessage = {
-              title: 'Updating',
-              message: 'Item updated successfully!'
-            };
-
-            var textArea = $(wndImportSubtitle).find('textarea');
-            var lyrics = textArea.val();
-
-            restService.requestWithPromisePayLoad('subtitle/importlyrics', {}, {'cdItem': vm.cdItem, 'lyrics': lyrics}, successfullyMessage).then(function(serverReturn) {
-              deferred.resolve(serverReturn.data);
-            });   
-          }
-
-        });
-
-        return deferred.promise;
-  	};
-
-  }
-
-})();  
 (function() {
 
     'use strict';
