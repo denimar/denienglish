@@ -5,7 +5,7 @@ angular.module('myApp', ['ui-deni-grid']);
 angular.module('myApp').controller('ExampleCtrl', function($scope) {
 
     $scope.gridOptions = {
-        url: 'https://denimar.github.io/ui-deni-grid/examples/data/movies/movies-00500.json',    
+        url: 'https://denimar.github.io/static-data/movies/00500.json',    
         fixedCols: {
             indicator: true,
         },

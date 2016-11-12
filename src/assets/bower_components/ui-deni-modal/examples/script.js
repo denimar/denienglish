@@ -74,7 +74,7 @@ angular.module('myApp').controller('ExampleCtrl', function($scope, $templateCach
 		waitWindow.show();
 		setTimeout(function() {
 			waitWindow.close();
-		}, 3000);
+		}, 20000);
 	}
 
 	this.openDialogConfirm = function() {
@@ -102,6 +102,12 @@ angular.module('myApp').controller('ExampleCtrl', function($scope, $templateCach
 	this.openDialogWarning = function() {
 		uiDeniModalSrv.warning("Warning message testing...");
 	}
+
+	this.openPromptDialog = function() {
+		uiDeniModalSrv.prompt('Title here', "Enter a text", true, $scope).then(function(enteredText) {
+			uiDeniModalSrv.ghost('Response', 'The entered text was "' + enteredText + '"');
+		});
+	}		
 
 	this.openDialogImageAndDescriptionAdd = function() {
 		var wndDescriptionMorImage = uiDeniModalSrv.createWindowDescriptionMoreImage();

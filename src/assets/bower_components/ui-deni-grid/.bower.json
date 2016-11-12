@@ -5,11 +5,11 @@
   "authors": [
     "Denimar de Moraes <denimar@gmail.com>"
   ],
-  "_release": "e0a9c37805",
+  "_release": "32181a1d55",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "e0a9c37805ef2223950d4dd065b22aa76c093bc5"
+    "commit": "32181a1d5552c783523aa876f79253a77f7be1e9"
   },
   "_source": "https://github.com/denimar/ui-deni-grid.git",
   "_target": "*",

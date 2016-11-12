@@ -1,35 +1,21 @@
 body {
 	margin: 0px;
-	padding: 0px;
-	overflow: hidden;
+	padding: 4px;
 	font-family: tahoma,arial;
+	overflow-y: hidden;
+	overflow-x: hidden;	
 }
 
 * {
 	box-sizing: border-box;
 }	
 
-h1 {
-	color: #004d99;
-}
-
-.examples-ui-deni-grid {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	overflow-x: hidden;
-	overflow-y: auto;
-	padding: 8px;
-	display: none;
-}
-
-.group {
-	margin-top: 4px;	
-	float: left;	
-	display: block;
-	width: 100%;		
-	font-size: 16px;	
-	font-weight: bold;
+header {
+	padding: 10px 10px;
+	font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+	background: #2e7bcf url(../dist/images/header-bg.jpg) 0 0 repeat-x;
+	border-bottom: solid 1px #275da1;	
+	color: white;
 }
 
 hr {
@@ -41,9 +27,54 @@ hr {
 	background-image: -o-linear-gradient(left, #ccc, #f0f0f0); 	
 }
 
-a:link {text-decoration:none; color:#568e8f;font-size:14px;}
-a:visited {color:#568e8f;}
-a:hover {text-decoration:underline; color:#24478f;}
+.examples-ui-deni-grid {
+	display: block;
+	overflow-y: auto;
+	width: calc(100% - 8px);
+	height: calc(100% - 98px);	
+	position: absolute;
+	border: solid 1px #3580D3;
+	padding: 8px;
+}
+
+.examples-ui-deni-grid .examples-container {
+	display: block;
+}
+
+.example h3 {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #474747;
+  text-indent: 3px;
+}
+
+.example h3:before {
+  padding-right: 5px;
+  content: "///";
+  color: #9ddcff;
+}
+
+
+#main-content h3 {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #474747;
+  text-indent: 3px;
+}
+
+#main-content h3:before {
+  padding-right: 0.3em;
+  margin-left: -2em;
+  content: "///";
+  color: #9ddcff;
+}
+
 
 .items-container {
 	margin-top: 2px;

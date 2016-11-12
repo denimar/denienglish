@@ -1,4 +1,4 @@
-angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile, $templateRequest) {
+angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile, $templateRequest, $interpolate) {
 
 		var me = this;
 
@@ -20,6 +20,20 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			                    '  </tr>' +		                    
 			                    '</table>';	                    
 
+		var _TEMPLATE_PROMPT_MATERIAL = '<div class="template-prompt" layout="column">\n' +		
+									    '  <md-input-container flex>\n' +
+									    '    <label>{{htmlMessage}}</label>\n' +
+									    '    <input type="text" />\n' +
+									    '  </md-input-container>\n' +
+									    '</div>';
+
+		var _TEMPLATE_PROMPT = '<div class="template-prompt">\n' +		
+							   '	<div>\n' +		
+							   '		<div class="message">{{htmlMessage}}</div>\n' +
+							   '		<input type="text" />\n' +
+							   '	</div>\n' +				
+							   '</div>';
+
 		var _TEMPLATE_DIALOG_DESCRIPTION_MORE_IMAGE = '<form style="padding:20px;">\n' +
 														'<table>\n' +
 															'<tr>\n' +
@@ -29,7 +43,7 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 															'<tr>\n' +
 																'<td style="vertical-align:top; text-align:right;">Image</td>\n' +
 																'<td>\n' +
-																'	<image id="imgDialogImageDescription"style="padding:2px; float:left; width:150px; height:150px; margin-top:3px; border:solid 1px silver;" />\n' +
+																'	<image crossOrigin="Anonymous" id="imgDialogImageDescription"style="float:left; width:150px; height:150px; margin-top:3px;" />\n' +
 																'	<div style="float:left; margin-top:3px">\n'+
 																'		<input style="display:none;" accept="image/*" type="file" id="file-2" class="inputfile inputfile-2" /><label for="file-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"/></svg> <span>Choose a file&hellip;</span></label>\n' +
 																'	</div>\n' +
@@ -155,7 +169,7 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			    height: config.height,
 			    position: 'fixed',
 			    'border': 'solid 1px ' + _OUTTER_BORDER_COLOR,
-				'z-index': 2
+				'z-index': 998
 			});
 
 			$objWindow.keydown(function(event) {
@@ -177,7 +191,7 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 				    position: 'fixed', /* Stay in place */
 					top: '0px',
     				left: '0px',				    
-				    'z-index': 10, /* Sit on top */
+				    'z-index': 997, /* Sit on top */
 				    'padding-top': '100px', /* Location of the box */
 				    width: '100%', /* Full width */
 				    height: '100%', /* Full height */
@@ -316,7 +330,7 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			//HEADER
 			////////////////////////////////////////////////////			
 			var divHeader = $(document.createElement('div'));
-			divHeader.addClass('modal-header');			
+			divHeader.addClass('deni-modal-header');			
 			divHeader.html(config.title);
 			$objWindow.append(divHeader);
 			divHeader.mousedown(function() {
@@ -370,13 +384,16 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			////////////////////////////////////////////////////			
 			var divContent = document.createElement('div');
 			var $divContent = $(divContent);
-			$divContent.addClass('modal-content');
+			$divContent.addClass('deni-modal-content');
 			
 
 			if (config.htmlTemplate) {
-				$divContent.html(config.htmlTemplate);
-				//var element = $compile(config.htmlTemplate)(config.scope);
-				//$divContent.append(element);
+				if (config.scope) {
+					var element = $compile(config.htmlTemplate)(config.scope);
+					$divContent.append(element);
+				} else {
+					$divContent.html(config.htmlTemplate);
+				}	
 			} else if (config.urlTemplate) {
 				$templateRequest(config.urlTemplate).then(function(template) {
 					var element = $compile(template)(config.scope);
@@ -459,6 +476,51 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 		/**
 		 *
 		 */
+		me.prompt = function(htmlTitle, htmlMessage, initialText, material, scope) {
+			var deferred = $q.defer();
+
+			var template = material ? _TEMPLATE_PROMPT_MATERIAL : _TEMPLATE_PROMPT;
+			template = $interpolate(template) ({htmlMessage: htmlMessage});
+
+			var wndPrompt = me.createWindow({
+				scope: scope,
+				title: htmlTitle || 'Enter a text',
+				width: '470px',			
+				height: '140px',
+				position: me.POSITION.CENTER,
+				buttons: [me.BUTTON.OK, me.BUTTON.CANCEL],			
+				htmlTemplate: template,
+				modal: true,
+				listeners: {
+					onshow: function(wnd) {
+						var input = $(wnd).find('input');
+						input.val(initialText);
+
+						$(wnd).keydown(function() {
+							var key = event.which || event.keyCode;  // Use either which or keyCode, depending on browser support
+							if (key == 13) {  // 13 is the RETURN key
+								wnd.close('ok');
+							}
+						});
+					}
+				}
+			})
+
+			wndPrompt.show().then(function(msgResponse) {
+				if (msgResponse.button == 'ok') {
+					var input = $(wndPrompt).find('input');
+					deferred.resolve(input.val());
+				} else {
+					deferred.reject();
+				}
+			});
+
+			return deferred.promise;
+		}
+
+		/**
+		 *
+		 */
 		 me.ghost = function(htmlTitle, htmlMessage, iconDialog, position) {
 		 	position = position || me.POSITION.TOP_RIGHT;
 			var objWindow = me.createEmptyWindow({
@@ -487,10 +549,6 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 
 			//TABLE
 			var tableContent = document.createElement('table');
-			$(tableContent).css({
-				//border: 'solid 1px red',
-				//color: 'white'
-			});
 
 			//ROW
 			var rowContent = tableContent.insertRow();
@@ -557,6 +615,8 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 
 			var $objWindow = $(objWindow);
 			$objWindow.css({
+				//'height': '150px',				
+				'width': '330px',				
 			    'background-color': 'white',
 			    'border-color': _OUTTER_BORDER_COLOR,
 			    'border-radius': '3px',
@@ -582,15 +642,17 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 
 			var imgDlg = document.createElement('img');
 			$(imgDlg).css({
-				width: '130px',
-				//height: '18px',		
+				width: '290px',
+				//height: '14px',				
+
 				'box-sizing': 'border-box',		
-				'margin-top': '15px',
-				'margin-bottom': '5px'
-				//height: '40px',
+				'margin-top': '25px',
+				'opacity': '0.5',
+				'margin-bottom': '5px',
+				//'border': 'solid 1px red'
 				//border: 'solid 1px green',
 			});
-			imgDlg.src = "../assets/images/loading6.gif";
+			imgDlg.src = "data:image/gif;base64,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";
 			objWindow.appendChild(imgDlg);
 
 			/*
@@ -694,6 +756,11 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 						//Seta o evento change para o file input
 						var $fileInput = $objWindowShowed.find('input[type=file]');
 						var $img = $objWindowShowed.find('img');						
+/*
+						if (config.imgEl) {
+							var image = _getDataURLImagemObjeto(config.imgEl.get(0), 150, 150, 0.5);
+							$img.attr('src', image);
+*/
 						if (config.imgSrc) {
 							$img.attr('src', config.imgSrc);
 						}	
@@ -730,7 +797,7 @@ angular.module('uiDeniModalMdl').service('uiDeniModalSrv', function($q, $compile
 			var objWindow = me.createWindow(config);
 
 			objWindow.getData = function() {
-				var form = $($(objWindow).find('.modal-content').find('form'));
+				var form = $($(objWindow).find('.deni-modal-content').find('form'));
 				var descriptionEl = form.find('input[type=text]');
 				var description = descriptionEl.val();
 				var imageEl = form.find('img');

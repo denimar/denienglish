@@ -5,7 +5,7 @@ angular.module('myApp', ['ui-deni-grid']);
 angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
 
   $scope.gridOptions = {
-    url: 'https://denimar.github.io/ui-deni-grid/examples/data/employees/01000.json',
+    url: 'https://denimar.github.io/static-data/employees/01000.json',
     grouping: {
       expr: 'address.city',
       template: '<b>{address.city} - {address.state}</b> ({count})'

@@ -1,4 +1,13 @@
-/**
-*
- */
-angular.module('ui-deni-grid', []);
+(function() {
+
+	'use strict';
+
+	angular
+		.module('ui-deni-grid', [
+
+			//
+			
+		]);
+
+
+})();		

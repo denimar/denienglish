@@ -23,7 +23,7 @@ angular.module('myApp').controller('ExampleCtrl', function($scope, $http) {
       endlessPaging: true
 	  },
     listeners: {
-      onselectionchange: function(record) {
+      onselectionchange: function(controller, element, rowIndex, record) {
         console.clear();
         console.log(JSON.stringify(record, false, '    '));
       }
