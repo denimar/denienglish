@@ -84,10 +84,11 @@ footer {
     padding: 4px 8px 0px 0px;
     font-size: 12px; }
 
-.modal-backdrop {
-  z-index: -1 !important;
-  /*It's necessary to works the modal inside summernote */ }
-
+/*
+.modal-backdrop {  
+  z-index: -1 !important; //It's necessary to works the modal inside summernote 
+}
+*/
 md-input-container {
   padding: 0px;
   margin: 0px; }
@@ -111,6 +112,10 @@ label {
   outline: 0;
   border-bottom-style: dashed;
   border-bottom-width: 1px; }
+
+/* without the configuration below is imposssible to enable image button in summernote */
+.modal-backdrop {
+  z-index: 950 !important; }
 
 .home.category {
   border: solid 1px #99BCE8;

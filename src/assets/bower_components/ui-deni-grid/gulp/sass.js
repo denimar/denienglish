@@ -8,7 +8,11 @@ var path = require('path');
 module.exports = function() {
 
     gulp.src([
+<<<<<<< HEAD
     		'./src/ui-deni-grid.scss'
+=======
+    		'../src/ui-deni-grid.scss'
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
     	])
     	.pipe(sass().on("error", function(error) {
 			var pos = error.file.lastIndexOf('/');

@@ -2,7 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
+<<<<<<< HEAD
  * v1.1.1-master-f6dedff
+=======
+ * v1.1.1-master-a636476
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -9848,7 +9852,11 @@ function MdDialogProvider($$interimElementProvider) {
   return $$interimElementProvider('$mdDialog')
     .setDefaults({
       methods: ['disableParentScroll', 'hasBackdrop', 'clickOutsideToClose', 'escapeToClose',
+<<<<<<< HEAD
           'targetEvent', 'closeTo', 'openFrom', 'parent', 'fullscreen', 'multiple'],
+=======
+          'targetEvent', 'closeTo', 'openFrom', 'parent', 'fullscreen'],
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
       options: dialogDefaultOptions
     })
     .addPreset('alert', {
@@ -10100,9 +10108,15 @@ function MdDialogProvider($$interimElementProvider) {
       }
 
       options.themeWatch = themeCtrl.$shouldWatch;
+<<<<<<< HEAD
 
       var theme = options.theme || themeCtrl.$mdTheme;
 
+=======
+
+      var theme = options.theme || themeCtrl.$mdTheme;
+
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
       if (theme) {
         options.scope.theme = theme;
       }
@@ -14900,6 +14914,7 @@ angular
  * @usage
  *
  * #### Centering the panel
+<<<<<<< HEAD
  *
  * <hljs lang="js">
  * new MdPanelPosition().absolute().center();
@@ -14908,6 +14923,16 @@ angular
  * #### Overlapping the panel with an element
  *
  * <hljs lang="js">
+=======
+ *
+ * <hljs lang="js">
+ * new MdPanelPosition().absolute().center();
+ * </hljs>
+ *
+ * #### Overlapping the panel with an element
+ *
+ * <hljs lang="js">
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
  * new MdPanelPosition()
  *     .relativeTo(someElement)
  *     .addPanelPosition(
@@ -14915,9 +14940,15 @@ angular
  *       $mdPanel.yPosition.ALIGN_TOPS
  *     );
  * </hljs>
+<<<<<<< HEAD
  *
  * #### Aligning the panel with the bottom of an element
  *
+=======
+ *
+ * #### Aligning the panel with the bottom of an element
+ *
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
  * <hljs lang="js">
  * new MdPanelPosition()
  *     .relativeTo(someElement)
@@ -15346,6 +15377,7 @@ MdPanelService.prototype.create = function(config) {
   var panelRef = new MdPanelRef(this._config, this._$injector);
   this._trackedPanels[config.id] = panelRef;
   this._config.scope.$on('$destroy', angular.bind(panelRef, panelRef.detach));
+<<<<<<< HEAD
 
   if (this._config.groupName) {
     if (angular.isString(this._config.groupName)) {
@@ -15356,6 +15388,18 @@ MdPanelService.prototype.create = function(config) {
     });
   }
 
+=======
+
+  if (this._config.groupName) {
+    if (angular.isString(this._config.groupName)) {
+      this._config.groupName = [this._config.groupName];
+    }
+    angular.forEach(this._config.groupName, function(group) {
+      panelRef.addToGroup(group);
+    });
+  }
+
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
   return panelRef;
 };
 
@@ -34803,4 +34847,8 @@ angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-TH
 })();
 
 
+<<<<<<< HEAD
 })(window, window.angular);;window.ngMaterial={version:{full: "1.1.1-master-f6dedff"}};
+=======
+})(window, window.angular);;window.ngMaterial={version:{full: "1.1.1-master-a636476"}};
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0

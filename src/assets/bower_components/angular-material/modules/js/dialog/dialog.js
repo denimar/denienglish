@@ -2,7 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
+<<<<<<< HEAD
  * v1.1.1-master-f6dedff
+=======
+ * v1.1.1-master-a636476
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -597,7 +601,11 @@ function MdDialogProvider($$interimElementProvider) {
   return $$interimElementProvider('$mdDialog')
     .setDefaults({
       methods: ['disableParentScroll', 'hasBackdrop', 'clickOutsideToClose', 'escapeToClose',
+<<<<<<< HEAD
           'targetEvent', 'closeTo', 'openFrom', 'parent', 'fullscreen', 'multiple'],
+=======
+          'targetEvent', 'closeTo', 'openFrom', 'parent', 'fullscreen'],
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
       options: dialogDefaultOptions
     })
     .addPreset('alert', {
@@ -849,9 +857,15 @@ function MdDialogProvider($$interimElementProvider) {
       }
 
       options.themeWatch = themeCtrl.$shouldWatch;
+<<<<<<< HEAD
 
       var theme = options.theme || themeCtrl.$mdTheme;
 
+=======
+
+      var theme = options.theme || themeCtrl.$mdTheme;
+
+>>>>>>> 9244bb73336a346f2fbab0945090b9d548480cb0
       if (theme) {
         options.scope.theme = theme;
       }
