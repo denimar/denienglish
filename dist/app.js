@@ -54,6 +54,74 @@ angular.module('app').constant('PronunciationModalEnums', {
 });	
 'use strict';
 
+angular.module('app').service('categoryRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.add = function(cd_categoria_pai, ds_categoria) {
+		var successfullyMessage = {
+			title: 'Adding',
+			message: 'Category added successfully!'
+		};
+		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
+	};
+
+	vm.rename = function(cd_categoria, ds_categoria) {
+		var successfullyMessage = {
+			title: 'Editing',
+			message: 'Category renamed successfully!'
+		};
+		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
+	};
+
+	vm.del = function(cd_categoria) {
+		var successfullyMessage = {
+			title: 'Deleting',
+			message: 'Category deleted successfully!'
+		};
+		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
+	};
+
+
+});
+
+'use strict';
+
+angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
+
+	var vm = this;
+
+	vm.add = function(scope, cd_categoria_pai) {
+		var deferred = $q.defer();
+
+		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
+			categoryRestSrv.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0]);
+			});
+		});
+
+		return deferred.promise;		
+	};
+
+	vm.rename = function(scope, cd_categoria, ds_categoria) {
+		var deferred = $q.defer();
+
+		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
+			categoryRestSrv.rename(cd_categoria, enteredText).then(function(serverResponse) {
+				deferred.resolve(serverResponse.data.data[0].dsCategoria);
+			});
+		});
+
+		return deferred.promise;		
+	};
+
+	vm.del = function(cd_categoria) {
+		return categoryRestSrv.del(cd_categoria);		
+	};
+
+});
+'use strict';
+
 angular.module('app').service('DictionaryRestSrv', function(AppSrv) {
 
 	var vm = this;
@@ -165,74 +233,6 @@ angular.module('app').service('dictionarySrv', function($q, DictionaryRestSrv, d
 	    }
 
 	};	
-
-});
-'use strict';
-
-angular.module('app').service('categoryRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.add = function(cd_categoria_pai, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Adding',
-			message: 'Category added successfully!'
-		};
-		return AppSrv.requestWithPromise('category/add', {'cd_categoria_pai': cd_categoria_pai, 'ds_categoria': ds_categoria}, successfullyMessage);
-	};
-
-	vm.rename = function(cd_categoria, ds_categoria) {
-		var successfullyMessage = {
-			title: 'Editing',
-			message: 'Category renamed successfully!'
-		};
-		return AppSrv.requestWithPromise('category/upd', {'cd_categoria': cd_categoria, 'ds_categoria': ds_categoria}, successfullyMessage);
-	};
-
-	vm.del = function(cd_categoria) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Category deleted successfully!'
-		};
-		return AppSrv.requestWithPromise('category/del', {'cd_categoria': cd_categoria}, successfullyMessage, 'Confirm deleting?');
-	};
-
-
-});
-
-'use strict';
-
-angular.module('app').service('categorySrv', function($q, categoryRestSrv, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.add = function(scope, cd_categoria_pai) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('New Category', "Enter a descrption of the category", '', true, scope).then(function(enteredText) {
-			categoryRestSrv.add(cd_categoria_pai, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0]);
-			});
-		});
-
-		return deferred.promise;		
-	};
-
-	vm.rename = function(scope, cd_categoria, ds_categoria) {
-		var deferred = $q.defer();
-
-		uiDeniModalSrv.prompt('Renaming Category', "Enter a descrption of the category", ds_categoria, true, scope).then(function(enteredText) {
-			categoryRestSrv.rename(cd_categoria, enteredText).then(function(serverResponse) {
-				deferred.resolve(serverResponse.data.data[0].dsCategoria);
-			});
-		});
-
-		return deferred.promise;		
-	};
-
-	vm.del = function(cd_categoria) {
-		return categoryRestSrv.del(cd_categoria);		
-	};
 
 });
 angular.module('app').service('ItemRestSrv', function(AppSrv) {
@@ -1008,6 +1008,43 @@ angular.module('app').service('StringSrv', function(AppSrv) {
 	};
 
 });
+angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSrv) {
+
+	var vm = this;
+
+	vm.showModal = function(scope) {
+	 	var deferred = $q.defer();
+
+		var modal = uiDeniModalSrv.createWindow({
+			scope: scope,
+			title: 'Creating a new video',
+			width: '550px',			
+			height: '300px',
+			position: uiDeniModalSrv.POSITION.CENTER,
+			buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
+			urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.tpl.htm',
+			modal: true,
+			listeners: {
+				onshow: function(objWindow) {
+					scope.newVideoItemModal.kindOfVideo = 0;
+				}
+			}
+		});
+
+		modal.show().then(function(modalResponse) {
+			if (modalResponse.button == 'ok') {
+				deferred.resolve(scope.newVideoItemModal);
+
+			} else {
+				deferred.reject();
+			}
+		});		
+
+
+		return deferred.promise;
+	}
+
+});
 angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDeniModalSrv, PronunciationModalEnums, AppConsts, PronunciationRestSrv, pronunciationSrv) {
 
 	var vm = this;
@@ -1169,43 +1206,6 @@ angular.module('app').service('pronunciationModalSrv', function($q, AppSrv, uiDe
             return vm.controller.searchState == PronunciationModalEnums.SearchState.ADDED;
       }
 
-
-});
-angular.module('app').service('newVideoItemModalSrv', function($q, uiDeniModalSrv) {
-
-	var vm = this;
-
-	vm.showModal = function(scope) {
-	 	var deferred = $q.defer();
-
-		var modal = uiDeniModalSrv.createWindow({
-			scope: scope,
-			title: 'Creating a new video',
-			width: '550px',			
-			height: '300px',
-			position: uiDeniModalSrv.POSITION.CENTER,
-			buttons: [uiDeniModalSrv.BUTTON.OK, uiDeniModalSrv.BUTTON.CANCEL],			
-			urlTemplate: 'src/app/shared/item/new-video-item-modal/new-video-item-modal.tpl.htm',
-			modal: true,
-			listeners: {
-				onshow: function(objWindow) {
-					scope.newVideoItemModal.kindOfVideo = 0;
-				}
-			}
-		});
-
-		modal.show().then(function(modalResponse) {
-			if (modalResponse.button == 'ok') {
-				deferred.resolve(scope.newVideoItemModal);
-
-			} else {
-				deferred.reject();
-			}
-		});		
-
-
-		return deferred.promise;
-	}
 
 });
 angular.module('app').service('spacedRevisionModalSrv', function($rootScope, $filter, StringSrv, AppConsts, dictionarySrv, pronunciationSrv, RevisionRestSrv, uiDeniModalSrv, revisionSrv, spacedRevisionSelectExpressionsModal) {
@@ -1413,61 +1413,6 @@ angular.module('app').service('spacedRevisionSelectExpressionsModal', function($
 	*/
 
 });
-angular.module('app').service('dictionaryDefinitionViewSrv', function(DictionaryRestSrv) {
-
-	var vm = this;
-	vm.cdDicionario = null;
-	vm.controller = null;
-
-	vm.setController = function(controller) {
-		vm.controller = controller;
-	}
-
-	var _updateDefinitionDiv = function(definition) {
-		var definitionEl = vm.controller.element.find('.definition');
-	    definitionEl.html('');
-
-	    if (definition) {
-		    var div = $(document.createElement('div'));
-		    div.html(definition);
-		    definitionEl.append(div);
-		}    
-	}
-
-	vm.refreshDefinition = function(cdDicionario) {
-		vm.controller.currentDefinition = '';
-		_updateDefinitionDiv('');
-		vm.cdDicionario = cdDicionario;		
-		if (cdDicionario) {
-			DictionaryRestSrv.definitionGet(cdDicionario).then(function(serverResponse) {
-				if (serverResponse.data.total > 0) {
-					var record = serverResponse.data.data[0];
-				    vm.controller.currentDefinition = record.txDefinicao;
-				    _updateDefinitionDiv(vm.controller.currentDefinition);
-				}
-			});
-		}	
-	}
-
-	vm.definitionEditClick = function() {
-		vm.controller.currentDefinitionBeforeEditing = vm.controller.currentDefinition;
-	    vm.controller.editingDefinition = true;
-	}
-
-	vm.definitionSaveClick = function() {
-	    DictionaryRestSrv.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
-			vm.controller.editingDefinition = false;                  
-			_updateDefinitionDiv(vm.controller.currentDefinition);
-	    });
-	}
-
-	vm.definitionCancelClick = function() {
-	    vm.controller.currentDefinition = vm.controller.currentDefinitionBeforeEditing;
-	    vm.controller.editingDefinition = false;
-	}
-
-
-});
 'use strict';
 
 angular.module('app').service('dictionaryModalEditSrv', function($q, $interval, uiDeniModalSrv, DictionaryRestSrv) {
@@ -1525,6 +1470,61 @@ angular.module('app').service('dictionaryModalEditSrv', function($q, $interval, 
 	};
 
 });
+angular.module('app').service('dictionaryDefinitionViewSrv', function(DictionaryRestSrv) {
+
+	var vm = this;
+	vm.cdDicionario = null;
+	vm.controller = null;
+
+	vm.setController = function(controller) {
+		vm.controller = controller;
+	}
+
+	var _updateDefinitionDiv = function(definition) {
+		var definitionEl = vm.controller.element.find('.definition');
+	    definitionEl.html('');
+
+	    if (definition) {
+		    var div = $(document.createElement('div'));
+		    div.html(definition);
+		    definitionEl.append(div);
+		}    
+	}
+
+	vm.refreshDefinition = function(cdDicionario) {
+		vm.controller.currentDefinition = '';
+		_updateDefinitionDiv('');
+		vm.cdDicionario = cdDicionario;		
+		if (cdDicionario) {
+			DictionaryRestSrv.definitionGet(cdDicionario).then(function(serverResponse) {
+				if (serverResponse.data.total > 0) {
+					var record = serverResponse.data.data[0];
+				    vm.controller.currentDefinition = record.txDefinicao;
+				    _updateDefinitionDiv(vm.controller.currentDefinition);
+				}
+			});
+		}	
+	}
+
+	vm.definitionEditClick = function() {
+		vm.controller.currentDefinitionBeforeEditing = vm.controller.currentDefinition;
+	    vm.controller.editingDefinition = true;
+	}
+
+	vm.definitionSaveClick = function() {
+	    DictionaryRestSrv.definitionSet(vm.cdDicionario, vm.controller.currentDefinition).then(function(serverResponse) {
+			vm.controller.editingDefinition = false;                  
+			_updateDefinitionDiv(vm.controller.currentDefinition);
+	    });
+	}
+
+	vm.definitionCancelClick = function() {
+	    vm.controller.currentDefinition = vm.controller.currentDefinitionBeforeEditing;
+	    vm.controller.editingDefinition = false;
+	}
+
+
+});
 angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModalSrv, DictionaryModalEnums) {
 
 	//use this control in the service	
@@ -1543,27 +1543,6 @@ angular.module('app').controller('DictionaryModalCtrl', function(dictionaryModal
 	this.showSearchButton = dictionaryModalSrv.showSearchButton;
 
 	this.showLoading = dictionaryModalSrv.showLoading;
-
-});
-
-angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
-
-	//use this control in the service	
-	pronunciationModalSrv.setController(this);
-
-	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
-	this.searchValue = '';
-
-	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
-
-	this.searchInputChange = pronunciationModalSrv.searchInputChange;
-	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
-
-	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
-	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
-	this.showSearchButton = pronunciationModalSrv.showSearchButton;
-
-	this.showLoading = pronunciationModalSrv.showLoading;
 
 });
 
@@ -1633,6 +1612,27 @@ angular.module('app').controller('NewVideoItemModalCtrl', function($sce) {
 	}
 
 });
+angular.module('app').controller('PronunciationModalCtrl', function(pronunciationModalSrv, PronunciationModalEnums) {
+
+	//use this control in the service	
+	pronunciationModalSrv.setController(this);
+
+	this.searchState = PronunciationModalEnums.SearchState.STOPPED; //will be fulfilled by PronunciationModalEnums.SearchState enum
+	this.searchValue = '';
+
+	this.gridPronunciationOptions = pronunciationModalSrv.getGridPronunciationOptions();
+
+	this.searchInputChange = pronunciationModalSrv.searchInputChange;
+	this.searchInputKeydown = pronunciationModalSrv.searchInputKeydown;
+
+	this.searchButtonClick = pronunciationModalSrv.searchButtonClick;
+	this.searchButtonAddClick = pronunciationModalSrv.searchButtonAddClick;
+	this.showSearchButton = pronunciationModalSrv.showSearchButton;
+
+	this.showLoading = pronunciationModalSrv.showLoading;
+
+});
+
 angular.module('app').controller('SpacedRevisionCtrl', function(StringSrv, AppConsts, itemSrv, categorySrv, revisionSrv, dictionarySrv, spacedRevisionModalSrv) {
 	
 	var vm = this;
@@ -1700,6 +1700,15 @@ angular.module('app').controller('SpacedRevisionSelectExpressionsModalCtrl', fun
 	this.filterExpressionsPronunciation = spacedRevisionSelectExpressionsModal.filterExpressionsPronunciation;
 
 });
+angular.module('app').controller('DictionaryModalEditCtrl', function(dictionaryModalEditSrv) {
+
+	//use this control in the service	
+	dictionaryModalEditSrv.setController(this);
+
+	this.model = {};
+
+});
+
 angular.module('app').controller('DictionaryDefinitionViewCtrl', function($scope, dictionaryDefinitionViewSrv) {
 	
 	dictionaryDefinitionViewSrv.setController(this);
@@ -1717,15 +1726,6 @@ angular.module('app').controller('DictionaryDefinitionViewCtrl', function($scope
 	});
 
 });
-angular.module('app').controller('DictionaryModalEditCtrl', function(dictionaryModalEditSrv) {
-
-	//use this control in the service	
-	dictionaryModalEditSrv.setController(this);
-
-	this.model = {};
-
-});
-
 angular.module('app').directive('dictionaryDefinitionView', function() {
 
 	return {
@@ -2320,6 +2320,56 @@ angular.module('VideoMdl').service('VideoSrv', function($rootScope, $timeout, $s
 
 
 });
+angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
+
+	var vm = this;
+
+	vm.list = function(cd_item) {
+		return AppSrv.requestWithPromise('subtitle/list', {'cd_item': cd_item});
+	}
+
+	vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
+		var successfullyMessage = {
+			title: 'Inserting',
+			message: 'Subtitle added successfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
+	}
+
+	vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
+	}
+
+	vm.incASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
+	vm.decASecond = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Updating',
+			message: 'Subtitle updated successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
+	}
+
+	vm.del = function(cd_item_subtitle) {
+		var successfullyMessage = {
+			title: 'Deleting',
+			message: 'Subtitle deleted successfully!'
+		}
+		return AppSrv.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
+	}
+
+
+});
 angular.module('app').service('videoModalImportSubtitleLyricsSrv', function($rootScope, $q, AppSrv, uiDeniModalSrv) {
 
 	var vm = this;
@@ -2448,56 +2498,6 @@ angular.module('app').service('videoModalImportSubtitleSrtSrv', function($q, $ht
     //spanFileName.html(fileItem.file.name);
   };
 	
-
-});
-angular.module('app').service('SubtitleRestSrv', function(AppSrv) {
-
-	var vm = this;
-
-	vm.list = function(cd_item) {
-		return AppSrv.requestWithPromise('subtitle/list', {'cd_item': cd_item});
-	}
-
-	vm.add = function(cd_video, nr_start, nr_end, ds_texto) {
-		var successfullyMessage = {
-			title: 'Inserting',
-			message: 'Subtitle added successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('subtitle/add', {}, {'cd_video': cd_video, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-	}
-
-	vm.upd = function(cd_item_subtitle, nr_start, nr_end, ds_texto) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return AppSrv.requestWithPromisePayLoad('subtitle/upd', {}, {'cd_item_subtitle': cd_item_subtitle, 'nr_start': nr_start, 'nr_end': nr_end, 'ds_texto': ds_texto}, successfullyMessage);		
-	}
-
-	vm.incASecond = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return AppSrv.requestWithPromise('subtitle/incasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-	}
-
-	vm.decASecond = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Updating',
-			message: 'Subtitle updated successfully!'
-		}
-		return AppSrv.requestWithPromise('subtitle/decasecond', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage);		
-	}
-
-	vm.del = function(cd_item_subtitle) {
-		var successfullyMessage = {
-			title: 'Deleting',
-			message: 'Subtitle deleted successfully!'
-		}
-		return AppSrv.requestWithPromise('subtitle/del', {'cd_item_subtitle': cd_item_subtitle}, successfullyMessage, 'Confirm deleting?');
-	}
-
 
 });
 angular.module('VideoMdl').service('subtitleModalSrv', function($q, uiDeniModalSrv, StringSrv, SubtitleRestSrv) {
@@ -2846,8 +2846,8 @@ angular.module('app').controller('VideoModalImportSubtitleSrtCtrl', function($sc
 });
 //CONSTANTS
 angular.module('app').constant('AppConsts', {
-	//SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
-	SERVER_URL: 'http://localhost:8087/denienglish/', //Local
+	SERVER_URL: 'https://denienglishsrv-denimar.rhcloud.com/', //Hosted in Open Shift
+	//SERVER_URL: 'http://localhost:8087/denienglish/', //Local
 });
 //ENUMERATIONS
 angular.module('app').constant('AppEnums', {
