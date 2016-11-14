@@ -342,15 +342,6 @@ label {
     border-bottom: solid 1px #e6e6e6;
     margin: 4px; }
 
-.video-modal-import-subtitle-lyrics {
-  width: 100%;
-  height: 100%;
-  padding: 10px; }
-  .video-modal-import-subtitle-lyrics textarea {
-    border-width: 0px; }
-    .video-modal-import-subtitle-lyrics textarea:focus {
-      outline: none; }
-
 .video-modal-import-subtitle-srt {
   width: 100%;
   height: 100%;
@@ -382,6 +373,15 @@ label {
         color: #0099e6;
         background-color: white;
         border-color: #33BBFF; }
+
+.video-modal-import-subtitle-lyrics {
+  width: 100%;
+  height: 100%;
+  padding: 10px; }
+  .video-modal-import-subtitle-lyrics textarea {
+    border-width: 0px; }
+    .video-modal-import-subtitle-lyrics textarea:focus {
+      outline: none; }
 
 .subtitle-modal-template {
   padding: 20px; }
@@ -470,23 +470,6 @@ label {
       color: black; }
       .pronunciation-modal .grid-container .gridDictionary .material-icons:hover {
         color: red !important; }
-
-.spaced-revision-select-expressions-modal {
-  width: 100%;
-  height: 100%;
-  padding: 10px; }
-  .spaced-revision-select-expressions-modal .expressions.expressions-pronunciation {
-    margin-left: 10px; }
-  .spaced-revision-select-expressions-modal .expressions .legend {
-    font-size: 22px;
-    color: black;
-    border-bottom: solid 1px #f2f2f2;
-    height: 30px;
-    min-height: 30px;
-    max-height: 30px; }
-  .spaced-revision-select-expressions-modal .expressions .checkboxes {
-    padding: 10px;
-    overflow-y: auto; }
 
 .spaced-revision-modal {
   box-sizing: border-box;
@@ -601,6 +584,23 @@ label {
         .spaced-revision-modal .spaced-revision-container .definition-detail .definition-detail-content .definition-detail-content-content {
           border-top: dotted 2px #DCE0F3;
           height: 330px; }
+
+.spaced-revision-select-expressions-modal {
+  width: 100%;
+  height: 100%;
+  padding: 10px; }
+  .spaced-revision-select-expressions-modal .expressions.expressions-pronunciation {
+    margin-left: 10px; }
+  .spaced-revision-select-expressions-modal .expressions .legend {
+    font-size: 22px;
+    color: black;
+    border-bottom: solid 1px #f2f2f2;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px; }
+  .spaced-revision-select-expressions-modal .expressions .checkboxes {
+    padding: 10px;
+    overflow-y: auto; }
 
 .dictionary-modal-edit {
   padding: 30px 10px 4px 10px; }
